@@ -9,4 +9,5 @@ MinimapAPI.Config = {
 	["PositionX"] = 4, 					--Default = 4
 	["PositionY"] = 4, 					--Default = 4
 	["DisplayMode"] = 2,				--Default = 2
+	["ShowLevelFlags"] = true,			--Default = true
 }
