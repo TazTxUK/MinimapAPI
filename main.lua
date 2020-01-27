@@ -22,12 +22,15 @@ end
 function MinimapAPI.GetRoomTypeIcon(t)
 	local icon = MinimapAPI.RoomTypeIcons[t]
 	if icon then
-		return {anim=icon,frame=0}
+		return {sprite=MinimapAPI.GetSprite(),anim=icon,frame=0}
 	end
 end
 
 function MinimapAPI.GetUnknownRoomTypeIcon(t)
-	return MinimapAPI.UnknownRoomTypeIcons[t]
+	local icon = MinimapAPI.UnknownRoomTypeIcons[t]
+	if icon then
+		return {sprite=MinimapAPI.GetSprite(),anim=icon,frame=0}
+	end
 end
 
 function MinimapAPI.GetRoomShapeIconPositions(rs,iconcount)
@@ -49,10 +52,6 @@ function MinimapAPI.GetLargeRoomShapeIconPositions(rs, iconcount)
 		return MinimapAPI.LargeRoomShapeIconPositions[2][rs]
 	end
 	return r
-end
-
-function MinimapAPI.GetUnknownRoomTypeIcon(t)
-	return MinimapAPI.UnknownRoomTypeIcons[t]
 end
 
 function MinimapAPI.GridIndexToVector(grid_index)
@@ -157,6 +156,10 @@ local function reloadPickupIconList()
 	}
 end
 reloadPickupIconList()
+
+function MinimapAPI.GetLevel()
+	return roommapdata
+end
 
 function MinimapAPI.ShallowCopy(t)
 	local t2 = {}
@@ -534,7 +537,7 @@ local function renderHugeMinimap()
 						
 						local iconlocOffset = Vector(loc.X * largeRoomPixelSize.X, loc.Y * largeRoomPixelSize.Y)
 						local spr = icon.sprite or minimapsmall
-						spr:SetFrame(icon,0)
+						spr:SetFrame(icon.anim,icon.frame)
 						spr:Render(offsetVec + iconlocOffset + v.RenderOffset - largeRoomAnimPivot + largeIconOffset,zvec,zvec)
 						k = k + 1
 					end
@@ -947,3 +950,5 @@ if ModConfigMenu then
 		end,
 	})
 end
+
+Isaac.ConsoleOutput("Minimap API loaded!")
