@@ -1,5 +1,6 @@
 MinimapAPI = RegisterMod("Minimap API",1)
 
+local json = require("json")
 require("minimapapi_data")
 require("minimapapi_config")
 
@@ -129,30 +130,30 @@ local function reloadPickupIconList()
 	end
 	
 	pickupIconList = {
-		{anim="IconWhiteHeart",type=5,variant=10,subtype=4,call=notCollected,icongroup="hearts",priority=10800},
-		{anim="IconGoldHeart",type=5,variant=10,subtype=7,call=notCollected,icongroup="hearts",priority=10700},
-		{anim="IconBoneHeart",type=5,variant=10,subtype=11,call=notCollected,icongroup="hearts",priority=10600},
-		{anim="IconBlackHeart",type=5,variant=10,subtype=6,call=notCollected,icongroup="hearts",priority=10500},
-		{anim="IconBlueHeart",type=5,variant=10,subtype=3,call=notCollected,icongroup="hearts",priority=10400},
-		{anim="IconBlendedHeart",type=5,variant=10,subtype=10,call=notCollected,icongroup="hearts",priority=10300},
-		{anim="IconHalfBlueHeart",type=5,variant=10,subtype=8,call=notCollected,icongroup="hearts",priority=10200},
-		{anim="IconHeart",type=5,variant=10,subtype=1,call=notCollected,icongroup="hearts",priority=10100},
-		{anim="IconHalfHeart",type=5,variant=10,subtype=2,call=notCollected,icongroup="hearts",priority=10000},
-		{anim="IconItem",type=5,variant=100,subtype=-1,call=function(pickup) return pickup.SubType ~= 0 end,icongroup="collectibles",priority=9000},
-		{anim="IconTrinket",type=5,variant=350,subtype=-1,icongroup="collectibles",priority=8000},
-		{anim="IconEternalChest",type=5,variant=53,subtype=-1,call=chestNotCollected,icongroup="chests",priority=7500},
-		{anim="IconGoldChest",type=5,variant=60,subtype=-1,call=chestNotCollected,icongroup="chests",priority=7400},
-		{anim="IconRedChest",type=5,variant=360,subtype=-1,call=chestNotCollected,icongroup="chests",priority=7300},
-		{anim="IconChest",type=5,variant=50,subtype=-1,call=chestNotCollected,icongroup="chests",priority=7200},
-		{anim="IconStoneChest",type=5,variant=51,call=chestNotCollected,subtype=-1,icongroup="chests",priority=7100},
-		{anim="IconSpikedChest",type=5,variant=52,call=chestNotCollected,subtype=-1,icongroup="chests",priority=7000},
-		{anim="IconPill",type=5,variant=70,subtype=-1,call=notCollected,icongroup="pills",priority=6000},
-		{anim="IconKey",type=5,variant=30,subtype=-1,call=notCollected,icongroup="keys",priority=5000},
-		{anim="IconBomb",type=5,variant=40,subtype=-1,call=notCollected,icongroup="bombs",priority=4000},
-		{anim="IconCoin",type=5,variant=20,subtype=-1,call=notCollected,icongroup="coins",priority=3000},
-		{anim="IconBattery",type=5,variant=90,subtype=-1,call=notCollected,icongroup="batteries",priority=2000},
-		{anim="IconCard",type=5,variant=300,subtype=-1,call=notCollected,icongroup="cards",priority=1000},
-		{anim="IconSlot",type=6,variant=-1,subtype=-1,call=notCollected,icongroup="slots",priority=0},
+		{id="WhiteHeart",anim="IconWhiteHeart",type=5,variant=10,subtype=4,call=notCollected,icongroup="hearts",priority=10800},
+		{id="GoldHeart",anim="IconGoldHeart",type=5,variant=10,subtype=7,call=notCollected,icongroup="hearts",priority=10700},
+		{id="BoneHeart",anim="IconBoneHeart",type=5,variant=10,subtype=11,call=notCollected,icongroup="hearts",priority=10600},
+		{id="BlackHeart",anim="IconBlackHeart",type=5,variant=10,subtype=6,call=notCollected,icongroup="hearts",priority=10500},
+		{id="BlueHeart",anim="IconBlueHeart",type=5,variant=10,subtype=3,call=notCollected,icongroup="hearts",priority=10400},
+		{id="BlendedHeart",anim="IconBlendedHeart",type=5,variant=10,subtype=10,call=notCollected,icongroup="hearts",priority=10300},
+		{id="HalfBlueHeart",anim="IconHalfBlueHeart",type=5,variant=10,subtype=8,call=notCollected,icongroup="hearts",priority=10200},
+		{id="Heart",anim="IconHeart",type=5,variant=10,subtype=1,call=notCollected,icongroup="hearts",priority=10100},
+		{id="HalfHeart",anim="IconHalfHeart",type=5,variant=10,subtype=2,call=notCollected,icongroup="hearts",priority=10000},
+		{id="Item",anim="IconItem",type=5,variant=100,subtype=-1,call=function(pickup) return pickup.SubType ~= 0 end,icongroup="collectibles",priority=9000},
+		{id="Trinket",anim="IconTrinket",type=5,variant=350,subtype=-1,icongroup="collectibles",priority=8000},
+		{id="EternalChest",anim="IconEternalChest",type=5,variant=53,subtype=-1,call=chestNotCollected,icongroup="chests",priority=7500},
+		{id="GoldChest",anim="IconGoldChest",type=5,variant=60,subtype=-1,call=chestNotCollected,icongroup="chests",priority=7400},
+		{id="RedChest",anim="IconRedChest",type=5,variant=360,subtype=-1,call=chestNotCollected,icongroup="chests",priority=7300},
+		{id="Chest",anim="IconChest",type=5,variant=50,subtype=-1,call=chestNotCollected,icongroup="chests",priority=7200},
+		{id="StoneChest",anim="IconStoneChest",type=5,variant=51,call=chestNotCollected,subtype=-1,icongroup="chests",priority=7100},
+		{id="SpikedChest",anim="IconSpikedChest",type=5,variant=52,call=chestNotCollected,subtype=-1,icongroup="chests",priority=7000},
+		{id="Pill",anim="IconPill",type=5,variant=70,subtype=-1,call=notCollected,icongroup="pills",priority=6000},
+		{id="Key",anim="IconKey",type=5,variant=30,subtype=-1,call=notCollected,icongroup="keys",priority=5000},
+		{id="Bomb",anim="IconBomb",type=5,variant=40,subtype=-1,call=notCollected,icongroup="bombs",priority=4000},
+		{id="Coin",anim="IconCoin",type=5,variant=20,subtype=-1,call=notCollected,icongroup="coins",priority=3000},
+		{id="Battery",anim="IconBattery",type=5,variant=90,subtype=-1,call=notCollected,icongroup="batteries",priority=2000},
+		{id="Card",anim="IconCard",type=5,variant=300,subtype=-1,call=notCollected,icongroup="cards",priority=1000},
+		{id="Slot",anim="IconSlot",type=6,variant=-1,subtype=-1,call=notCollected,icongroup="slots",priority=0},
 	}
 end
 reloadPickupIconList()
@@ -181,6 +182,14 @@ function MinimapAPI.DeepCopy(t)
 	return t2
 end
 
+function MinimapAPI.GetPickupIconAnim(id)
+	for i,v in ipairs(pickupIconList) do
+		if v.id == id then
+			return {sprite=v.sprite or minimapsmall, anim=v.anim, frame=v.frame or 0}
+		end
+	end
+end
+
 function MinimapAPI.GetSprite()
 	return minimapsmall
 end
@@ -189,9 +198,10 @@ function MinimapAPI.GetSpriteLarge()
 	return minimaplarge
 end
 
-function MinimapAPI.AddCustomPickupIcon(mod, sprite, anim, frame, typ, variant, subtype, call, icongroup, priority)
+function MinimapAPI.AddCustomPickupIcon(id, sprite, anim, frame, typ, variant, subtype, call, icongroup, priority)
+	MinimapAPI.RemoveCustomPickupIcon(id)
 	pickupIconList[#pickupIconList + 1] = {
-		mod = mod,
+		id = id,
 		sprite = sprite,
 		anim = anim,
 		frame = frame,
@@ -205,10 +215,10 @@ function MinimapAPI.AddCustomPickupIcon(mod, sprite, anim, frame, typ, variant, 
 	table.sort(pickupIconList, function(a,b) return a.priority > b.priority end)
 end
 
-function MinimapAPI.RemoveCustomPickupIcons(mod)
+function MinimapAPI.RemoveCustomPickupIcon(id)
 	for i=#pickupIconList,1,-1 do
 		local v = pickupIconList[i]
-		if v.mod == mod then
+		if v.id == id then
 			table.remove(pickupIconList,i)
 		end
 	end
@@ -234,7 +244,7 @@ function MinimapAPI.PlayerInRoom(roomdata)
 	return playerMapPos.X == roomdata.Position.X and playerMapPos.Y == roomdata.Position.Y
 end
 
-function MinimapAPI.GetCurrentRoomPickupIcons() --gets item icons for current room ONLY
+function MinimapAPI.GetCurrentRoomPickupIDs() --gets pickup icon ids for current room ONLY
 	local addIcons = {}
 	local pickupgroupset = {}
 	local ents = Isaac.GetRoomEntities()
@@ -248,8 +258,7 @@ function MinimapAPI.GetCurrentRoomPickupIcons() --gets item icons for current ro
 								if v.icongroup then
 									pickupgroupset[v.icongroup] = true
 								end
-								-- if not v.anim then TF.Print("BAD ANIMATION: "..v.type.." "..v.variant.." "..v.subtype) end
-								table.insert(addIcons, {anim = v.anim or "", sprite = v.sprite or minimapsmall, frame = v.frame or 0})
+								table.insert(addIcons, v.id)
 							end
 						end
 					end
@@ -530,17 +539,15 @@ local function renderHugeMinimap()
 				local incurrent = MinimapAPI.PlayerInRoom(v)
 				local displayflags = MinimapAPI.GetDisplayFlags(v)
 				local k = 1
-				local function renderIcons(icons,locs)
-					for n,icon in ipairs(icons) do
-						local loc = locs[k]
-						if not loc then break end
-						
-						local iconlocOffset = Vector(loc.X * largeRoomPixelSize.X, loc.Y * largeRoomPixelSize.Y)
-						local spr = icon.sprite or minimapsmall
-						spr:SetFrame(icon.anim,icon.frame)
-						spr:Render(offsetVec + iconlocOffset + v.RenderOffset - largeRoomAnimPivot + largeIconOffset,zvec,zvec)
-						k = k + 1
-					end
+				local function renderIcon(icon,locs)
+					local loc = locs[k]
+					if not loc then return end
+					
+					local iconlocOffset = Vector(loc.X * largeRoomPixelSize.X, loc.Y * largeRoomPixelSize.Y)
+					local spr = icon.sprite or minimapsmall
+					spr:SetFrame(icon.anim,icon.frame)
+					spr:Render(offsetVec + iconlocOffset + v.RenderOffset - largeRoomAnimPivot + largeIconOffset,zvec,zvec)
+					k = k + 1
 				end
 				
 				if displayflags & 0x4 > 0 then
@@ -551,14 +558,20 @@ local function renderHugeMinimap()
 					
 					local locs = MinimapAPI.GetLargeRoomShapeIconPositions(v.Shape, iconcount)
 					
-					renderIcons(v.PermanentIcons,locs)
+					for _,icon in ipairs(v.PermanentIcons) do
+						renderIcon(icon,locs)
+					end
 					if not incurrent then
-						renderIcons(v.ItemIcons,locs)
+						for _,id in ipairs(v.ItemIcons) do
+							renderIcon(MinimapAPI.GetPickupIconAnim(id),locs)
+						end
 					end
 				elseif displayflags & 0x2 > 0 then
 					if v.LockedIcons and #v.LockedIcons > 0 then
 						local locs = MinimapAPI.GetLargeRoomShapeIconPositions(v.Shape, #v.LockedIcons)
-						renderIcons(v.LockedIcons,locs)
+						for _,icon in ipairs(v.LockedIcons) do
+							renderIcon(icon,locs)
+						end
 					end
 				end
 			end
@@ -614,17 +627,15 @@ local function renderUnboundedMinimap()
 				local incurrent = MinimapAPI.PlayerInRoom(v)
 				local displayflags = MinimapAPI.GetDisplayFlags(v)
 				local k = 1
-				local function renderIcons(icons,locs)
-					for n,icon in ipairs(icons) do
-						local loc = locs[k]
-						if not loc then break end
-						
-						local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
-						local spr = icon.sprite or minimapsmall
-						spr:SetFrame(icon.anim,icon.frame)
-						spr:Render(offsetVec + iconlocOffset + v.RenderOffset,zvec,zvec)
-						k = k + 1
-					end
+				local function renderIcon(icon,locs)
+					local loc = locs[k]
+					if not loc then return end
+					
+					local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
+					local spr = icon.sprite or minimapsmall
+					spr:SetFrame(icon.anim,icon.frame)
+					spr:Render(offsetVec + iconlocOffset + v.RenderOffset,zvec,zvec)
+					k = k + 1
 				end
 				
 				if displayflags & 0x4 > 0 then
@@ -635,14 +646,20 @@ local function renderUnboundedMinimap()
 					
 					local locs = MinimapAPI.GetRoomShapeIconPositions(v.Shape, iconcount)
 					
-					renderIcons(v.PermanentIcons,locs)
+					for _,icon in ipairs(v.PermanentIcons) do
+						renderIcon(icon,locs)
+					end
 					if not incurrent then
-						renderIcons(v.ItemIcons,locs)
+						for _,icon in ipairs(v.ItemIcons) do
+							renderIcon(MinimapAPI.GetPickupIconAnim(icon),locs)
+						end
 					end
 				elseif displayflags & 0x2 > 0 then
 					if v.LockedIcons and #v.LockedIcons > 0 then
 						local locs = MinimapAPI.GetRoomShapeIconPositions(v.Shape, #v.LockedIcons)
-						renderIcons(v.LockedIcons,locs)
+						for _,icon in ipairs(v.LockedIcons) do
+							renderIcon(icon,locs)
+						end
 					end
 				end
 			end
@@ -760,23 +777,21 @@ local function renderBoundedMinimap()
 				local incurrent = MinimapAPI.PlayerInRoom(v)
 				local displayflags = MinimapAPI.GetDisplayFlags(v)
 				local k = 1
-				local function renderIcons(icons,locs)
-					for n,icon in ipairs(icons) do
-						local loc = locs[k]
-						if not loc then break end
-						
-						local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
-						local spr = icon.sprite or minimapsmall
-						local brcutoff = v.RenderOffset + iconlocOffset + iconPixelSize - MinimapAPI.GetFrameBR()
-						local tlcutoff = frameTL-(v.RenderOffset + iconlocOffset)
-						if brcutoff.X < iconPixelSize.X and brcutoff.Y < iconPixelSize.Y and
-						tlcutoff.X < iconPixelSize.X and tlcutoff.Y < iconPixelSize.Y then
-							brcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
-							tlcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
-							spr:SetFrame(icon.anim,icon.frame)
-							spr:Render(offsetVec + iconlocOffset + v.RenderOffset,tlcutoff,brcutoff)
-							k = k + 1
-						end
+				local function renderIcon(icon,locs)
+					local loc = locs[k]
+					if not loc then return end
+					
+					local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
+					local spr = icon.sprite or minimapsmall
+					local brcutoff = v.RenderOffset + iconlocOffset + iconPixelSize - MinimapAPI.GetFrameBR()
+					local tlcutoff = frameTL-(v.RenderOffset + iconlocOffset)
+					if brcutoff.X < iconPixelSize.X and brcutoff.Y < iconPixelSize.Y and
+					tlcutoff.X < iconPixelSize.X and tlcutoff.Y < iconPixelSize.Y then
+						brcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
+						tlcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
+						spr:SetFrame(icon.anim,icon.frame)
+						spr:Render(offsetVec + iconlocOffset + v.RenderOffset,tlcutoff,brcutoff)
+						k = k + 1
 					end
 				end
 				
@@ -788,14 +803,20 @@ local function renderBoundedMinimap()
 					
 					local locs = MinimapAPI.GetRoomShapeIconPositions(v.Shape, iconcount)
 					
-					renderIcons(v.PermanentIcons,locs)
+					for _,icon in ipairs(v.PermanentIcons) do
+						renderIcon(icon,locs)
+					end
 					if not incurrent then
-						renderIcons(v.ItemIcons,locs)
+						for _,icon in ipairs(v.ItemIcons) do
+							renderIcon(MinimapAPI.GetPickupIconAnim(icon),locs)
+						end
 					end
 				elseif displayflags & 0x2 > 0 then
 					if v.LockedIcons and #v.LockedIcons > 0 then
 						local locs = MinimapAPI.GetRoomShapeIconPositions(v.Shape, #v.LockedIcons)
-						renderIcons(v.LockedIcons,locs)
+						for _,icon in ipairs(v.LockedIcons) do
+							renderIcon(icon,locs)
+						end
 					end
 				end
 			end
@@ -809,7 +830,7 @@ MinimapAPI:AddCallback(ModCallbacks.MC_POST_RENDER, function(self)
 		
 		local currentroomdata = MinimapAPI.GetCurrentRoom()
 		if currentroomdata and MinimapAPI.PickupDetectionEnabled() then
-			currentroomdata.ItemIcons = MinimapAPI.GetCurrentRoomPickupIcons()
+			currentroomdata.ItemIcons = MinimapAPI.GetCurrentRoomPickupIDs()
 		end
 			
 		if roommapdata then
