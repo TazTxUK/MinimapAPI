@@ -220,6 +220,7 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 									pickupgroupset[v.IconGroup] = true
 								end
 								table.insert(addIcons, v.IconID)
+								break
 							end
 						end
 					end
