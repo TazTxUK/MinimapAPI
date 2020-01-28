@@ -138,14 +138,6 @@ function MinimapAPI.DeepCopy(t)
 	return t2
 end
 
-function MinimapAPI.GetPickupIconAnim(id)
-	for i,v in ipairs(MinimapAPI.PickupIconList) do
-		if v.ID == id then
-			return {sprite=v.sprite or minimapsmall, anim=v.anim, frame=v.frame or 0}
-		end
-	end
-end
-
 function MinimapAPI.GetIconAnimData(id)
 	for i,v in ipairs(MinimapAPI.IconList) do
 		if v.ID == id then
@@ -162,28 +154,26 @@ function MinimapAPI.GetSpriteLarge()
 	return minimaplarge
 end
 
-function MinimapAPI.AddCustomPickupIcon(id, sprite, anim, frame, typ, variant, subtype, call, icongroup, priority)
+function MinimapAPI.AddCustomPickupIcon(id, iconid, typ, variant, subtype, call, icongroup, priority)
 	MinimapAPI.RemoveCustomPickupIcon(id)
-	MinimapAPI.PickupIconList[#MinimapAPI.PickupIconList + 1] = {
-		id = id,
-		sprite = sprite,
-		anim = anim,
-		frame = frame,
-		type = typ,
-		variant = variant or -1,
-		subtype = subtype or -1,
-		call = call,
-		icongroup = icongroup,
-		priority = priority or math.huge,
+	MinimapAPI.PickupList[#MinimapAPI.PickupList + 1] = {
+		ID = id,
+		IconID = iconid,
+		Type = typ,
+		Variant = variant or -1,
+		SubType = subtype or -1,
+		Call = call,
+		IconGroup = icongroup,
+		Priority = priority or math.huge,
 	}
-	table.sort(MinimapAPI.PickupIconList, function(a,b) return a.priority > b.priority end)
+	table.sort(MinimapAPI.PickupList, function(a,b) return a.Priority > b.Priority end)
 end
 
 function MinimapAPI.RemoveCustomPickupIcon(id)
-	for i=#MinimapAPI.PickupIconList,1,-1 do
-		local v = MinimapAPI.PickupIconList[i]
+	for i=#MinimapAPI.PickupList,1,-1 do
+		local v = MinimapAPI.PickupList[i]
 		if v.ID == id then
-			table.remove(MinimapAPI.PickupIconList,i)
+			table.remove(MinimapAPI.PickupList,i)
 		end
 	end
 end
@@ -212,17 +202,17 @@ function MinimapAPI.GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 	local addIcons = {}
 	local pickupgroupset = {}
 	local ents = Isaac.GetRoomEntities()
-	for i,v in ipairs(MinimapAPI.PickupIconList) do
-		if not pickupgroupset[v.icongroup] then
+	for i,v in ipairs(MinimapAPI.PickupList) do
+		if not pickupgroupset[v.IconGroup] then
 			for _,ent in ipairs(ents) do
-				if ent.Type == v.type then
-					if v.variant == -1 or ent.Variant == v.variant then
-						if v.subtype == -1 or ent.SubType == v.subtype then
-							if (not v.call) or v.call(ent) then
-								if v.icongroup then
-									pickupgroupset[v.icongroup] = true
+				if ent.Type == v.Type then
+					if v.Variant == -1 or ent.Variant == v.Variant then
+						if v.SubType == -1 or ent.SubType == v.SubType then
+							if (not v.Call) or v.Call(ent) then
+								if v.IconGroup then
+									pickupgroupset[v.IconGroup] = true
 								end
-								table.insert(addIcons, v.ID)
+								table.insert(addIcons, v.IconID)
 							end
 						end
 					end
@@ -527,7 +517,7 @@ local function renderHugeMinimap()
 					end
 					if not incurrent then
 						for _,id in ipairs(v.ItemIcons) do
-							renderIcon(MinimapAPI.GetPickupIconAnim(id),locs)
+							renderIcon(MinimapAPI.GetIconAnimData(id),locs)
 						end
 					end
 				elseif displayflags & 0x2 > 0 then
@@ -615,7 +605,7 @@ local function renderUnboundedMinimap()
 					end
 					if not incurrent then
 						for _,icon in ipairs(v.ItemIcons) do
-							renderIcon(MinimapAPI.GetPickupIconAnim(icon),locs)
+							renderIcon(MinimapAPI.GetIconAnimData(icon),locs)
 						end
 					end
 				elseif displayflags & 0x2 > 0 then
@@ -742,20 +732,22 @@ local function renderBoundedMinimap()
 				local displayflags = MinimapAPI.GetDisplayFlags(v)
 				local k = 1
 				local function renderIcon(icon,locs)
-					local loc = locs[k]
-					if not loc then return end
-					
-					local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
-					local spr = icon.sprite or minimapsmall
-					local brcutoff = v.RenderOffset + iconlocOffset + iconPixelSize - MinimapAPI.GetFrameBR()
-					local tlcutoff = frameTL-(v.RenderOffset + iconlocOffset)
-					if brcutoff.X < iconPixelSize.X and brcutoff.Y < iconPixelSize.Y and
-					tlcutoff.X < iconPixelSize.X and tlcutoff.Y < iconPixelSize.Y then
-						brcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
-						tlcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
-						spr:SetFrame(icon.anim,icon.frame)
-						spr:Render(offsetVec + iconlocOffset + v.RenderOffset,tlcutoff,brcutoff)
-						k = k + 1
+					if icon then
+						local loc = locs[k]
+						if not loc then return end
+						
+						local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
+						local spr = icon.sprite or minimapsmall
+						local brcutoff = v.RenderOffset + iconlocOffset + iconPixelSize - MinimapAPI.GetFrameBR()
+						local tlcutoff = frameTL-(v.RenderOffset + iconlocOffset)
+						if brcutoff.X < iconPixelSize.X and brcutoff.Y < iconPixelSize.Y and
+						tlcutoff.X < iconPixelSize.X and tlcutoff.Y < iconPixelSize.Y then
+							brcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
+							tlcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
+							spr:SetFrame(icon.anim,icon.frame)
+							spr:Render(offsetVec + iconlocOffset + v.RenderOffset,tlcutoff,brcutoff)
+							k = k + 1
+						end
 					end
 				end
 				
@@ -772,7 +764,7 @@ local function renderBoundedMinimap()
 					end
 					if not incurrent then
 						for _,icon in ipairs(v.ItemIcons) do
-							renderIcon(MinimapAPI.GetPickupIconAnim(icon),locs)
+							renderIcon(MinimapAPI.GetIconAnimData(icon),locs)
 						end
 					end
 				elseif displayflags & 0x2 > 0 then
