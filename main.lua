@@ -456,7 +456,7 @@ MinimapAPI:AddCallback(ModCallbacks.MC_POST_UPDATE, function(self)
 end)
 
 local function renderHugeMinimap()
-	if Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
+	if  MinimapAPI.Config.OverrideLost or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
 		MinimapAPI:UpdateUnboundedMapOffset() --taz's note to himself: has to be updated per frame!
 		local offsetVec = Vector(screen_size.X - 4, 4)
 		for i,v in ipairs(roommapdata) do
@@ -543,7 +543,7 @@ local function renderHugeMinimap()
 end
 
 local function renderUnboundedMinimap()
-	if Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
+	if  MinimapAPI.Config.OverrideLost or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
 		MinimapAPI:UpdateUnboundedMapOffset()
 		local offsetVec = Vector(screen_size.X - MinimapAPI.Config.PositionX, MinimapAPI.Config.PositionY)
 	
