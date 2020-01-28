@@ -189,7 +189,7 @@ function MinimapAPI:AddCustomIcon(id, sprite, anim, frame)
 	}
 end
 
-function MinimapAPI:RemoveCustomIcon(id, sprite, anim, frame)
+function MinimapAPI:RemoveCustomIcon(id)
 	for i=#MinimapAPI.IconList,1,-1 do
 		local v = MinimapAPI.IconList[i]
 		if v.ID == id then
