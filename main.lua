@@ -790,6 +790,7 @@ local function renderBoundedMinimap()
 end
 
 MinimapAPI:AddCallback(ModCallbacks.MC_POST_RENDER, function(self)
+	if MinimapAPI.Config.Disable then return end
 	screen_size = MinimapAPI:GetScreenSize()
 	if MinimapAPI.Config.DisplayOnNoHUD or not Game():GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD) then
 		
