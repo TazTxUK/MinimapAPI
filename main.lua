@@ -207,6 +207,12 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 		if not pickupgroupset[v.IconGroup] then
 			for _,ent in ipairs(ents) do
 				if ent.Type == v.Type then
+					local toPickup= ent:ToPickup()
+					if toPickup ~= nil then
+						if toPickup:IsShopItem() then
+							goto continue
+						end
+					end
 					if v.Variant == -1 or ent.Variant == v.Variant then
 						if v.SubType == -1 or ent.SubType == v.SubType then
 							if (not v.Call) or v.Call(ent) then
@@ -218,6 +224,7 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 						end
 					end
 				end
+				::continue::
 			end
 		end
 	end
