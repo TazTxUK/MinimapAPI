@@ -102,9 +102,9 @@ MinimapAPI.LargeRoomShapeIconPositions = {
 		[RS.ROOMSHAPE_IV] = {Vector(0,0),Vector(0.5,0),Vector(0,0.5),Vector(0.5,0.5)},
 		[RS.ROOMSHAPE_IIV] = {Vector(0,0.5),Vector(0.5,1),Vector(0,1),Vector(0.5,1)},
 		[RS.ROOMSHAPE_LBR] = {Vector(0,0),Vector(0.5,0),Vector(0,0.5),Vector(0.5,0.5)},
-		[RS.ROOMSHAPE_LTL] = {Vector(1,1),Vector(1.5,1),Vector(1,1.5),Vector(1.5,1.5)},
+		[RS.ROOMSHAPE_LTL] = {Vector(0.9,0.9),Vector(1.4,0.9),Vector(0.9,1.4),Vector(1.4,1.4)},
 		[RS.ROOMSHAPE_LTR] = {Vector(0,1),Vector(0.5,1),Vector(0,1.5),Vector(0.5,1.5)},
-		[RS.ROOMSHAPE_LBL] = {Vector(0,0),Vector(0.5,0),Vector(0,0.5),Vector(0.5,0.5)},
+		[RS.ROOMSHAPE_LBL] = {Vector(0.9,0),Vector(1.4,0),Vector(0.9,0.5),Vector(1.4,0.5)},
 	},
 }
 
