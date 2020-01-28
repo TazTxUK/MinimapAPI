@@ -47,7 +47,7 @@ MinimapAPI.RoomShapePositions = {
 }
 
 MinimapAPI.RoomShapeIconPositions = {
-	[1] = {
+	[1] = { -- iconcount <= 1
 		[RS.ROOMSHAPE_1x1] = {Vector(0,0)},
 		[RS.ROOMSHAPE_1x2] = {Vector(0,0.5)},
 		[RS.ROOMSHAPE_2x1] = {Vector(0.5,0)},
@@ -61,7 +61,7 @@ MinimapAPI.RoomShapeIconPositions = {
 		[RS.ROOMSHAPE_LTR] = {Vector(0,0),Vector(0,1),Vector(1,1)},
 		[RS.ROOMSHAPE_LBL] = {Vector(0,0),Vector(1,0),Vector(1,1)},
 	},
-	[2] = {
+	[2] = { -- iconcount > 1
 		[RS.ROOMSHAPE_1x1] = {Vector(0,0)},
 		[RS.ROOMSHAPE_1x2] = {Vector(0,0),Vector(0,1)},
 		[RS.ROOMSHAPE_2x1] = {Vector(0,0),Vector(1,0)},
@@ -78,7 +78,7 @@ MinimapAPI.RoomShapeIconPositions = {
 }
 
 MinimapAPI.LargeRoomShapeIconPositions = {
-	[1] = {
+	[1] = { -- iconcount <= 1
 		[RS.ROOMSHAPE_1x1] = {Vector(0.25,0.25)},
 		[RS.ROOMSHAPE_1x2] = {Vector(0.25,0.75)},
 		[RS.ROOMSHAPE_2x1] = {Vector(0.75,0.25)},
@@ -92,9 +92,9 @@ MinimapAPI.LargeRoomShapeIconPositions = {
 		[RS.ROOMSHAPE_LTR] = {Vector(0.25,1.25)},
 		[RS.ROOMSHAPE_LBL] = {Vector(1.25,0.25)},
 	},
-	[2] = {
+	[2] = { -- iconcount > 1
 		[RS.ROOMSHAPE_1x1] = {Vector(0,0),Vector(0.5,0),Vector(0,0.5),Vector(0.5,0.5)},
-		[RS.ROOMSHAPE_1x2] = {Vector(0,0.5),Vector(0.5,1),Vector(0,1),Vector(0.5,1)},
+		[RS.ROOMSHAPE_1x2] = {Vector(0,0.5),Vector(0.5,1),Vector(0,1),Vector(0.5,0.5)},
 		[RS.ROOMSHAPE_2x1] = {Vector(0.5,0),Vector(1,0),Vector(0.5,0.5),Vector(1,0.5)},
 		[RS.ROOMSHAPE_2x2] = {Vector(0.5,0.5),Vector(1,0.5),Vector(0.5,1),Vector(1,1)},
 		[RS.ROOMSHAPE_IH] = {Vector(0,0),Vector(0.5,0),Vector(0,0.5),Vector(0.5,0.5)},
@@ -223,7 +223,6 @@ MinimapAPI.IconList = {
 	{ID="BlueHeart",anim="IconBlueHeart",frame=0},
 	{ID="BlendedHeart",anim="IconBlendedHeart",frame=0},
 	{ID="HalfBlueHeart",anim="IconHalfBlueHeart",frame=0},
-	{ID="ScaredHeart",anim="IconHeart",frame=0},
 	{ID="Heart",anim="IconHeart",frame=0},
 	{ID="HalfHeart",anim="IconHalfHeart",frame=0},
 	{ID="Item",anim="IconItem",frame=0},
