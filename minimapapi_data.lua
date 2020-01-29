@@ -131,7 +131,7 @@ MinimapAPI.RoomTypeIconIDs = {
     "ChestRoom",
     "DiceRoom",
     nil,
-    "GreedExit",
+    nil,-- "GreedExit",
     "TreasureRoomGreed"
 }
 
@@ -211,7 +211,7 @@ MinimapAPI.IconList = {
     {ID="BarrenRoom",anim="IconBarrenRoom",frame=0},
     {ID="ChestRoom",anim="IconChestRoom",frame=0},
     {ID="DiceRoom",anim="IconDiceRoom",frame=0},
-    {ID="GreedExit",anim="IconGreedExit",frame=0},
+    --{ID="GreedExit",anim="",frame=0},  --currently no icon
     {ID="TreasureRoomGreed",anim="IconTreasureRoomGreed",frame=0},
 	--Unknowns
     {ID="LockedRoom",anim="IconLockedRoom",frame=0},

@@ -270,7 +270,6 @@ function MinimapAPI:LoadDefaultMap()
 	rooms = Game():GetLevel():GetRooms()
 	roommapdata = {}
 	local treasure_room_count = 0
-	local isGreed = Game().Difficulty == 2 or Game().Difficulty == 3
 	for i=0,#rooms-1 do
 		local v = rooms:Get(i)
 		local t = {
@@ -281,11 +280,12 @@ function MinimapAPI:LoadDefaultMap()
 			Position = MinimapAPI:GridIndexToVector(v.GridIndex),
 			Descriptor = v,
 		}
-		if override_greed and isGreed then
+		if override_greed and Game():IsGreedMode() then
 			if v.Data.Type == RoomType.ROOM_TREASURE then
 				treasure_room_count = treasure_room_count + 1
 				if treasure_room_count == 1 then
-					t.PermanentIcons = {{anim="IconTreasureRoomGreed"}}
+					t.PermanentIcons = {"TreasureRoomGreed"}
+					t.LockedIcons = {"TreasureRoomGreed"}
 				end
 			end
 		end
