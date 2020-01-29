@@ -155,7 +155,7 @@ function MinimapAPI:GetSpriteLarge()
 	return minimaplarge
 end
 
-function MinimapAPI:AddCustomPickupIcon(id, iconid, typ, variant, subtype, call, icongroup, priority)
+function MinimapAPI:AddCustomPickup(id, iconid, typ, variant, subtype, call, icongroup, priority)
 	MinimapAPI:RemoveCustomPickupIcon(id)
 	MinimapAPI.PickupList[#MinimapAPI.PickupList + 1] = {
 		ID = id,
@@ -170,11 +170,30 @@ function MinimapAPI:AddCustomPickupIcon(id, iconid, typ, variant, subtype, call,
 	table.sort(MinimapAPI.PickupList, function(a,b) return a.Priority > b.Priority end)
 end
 
-function MinimapAPI:RemoveCustomPickupIcon(id)
+function MinimapAPI:RemoveCustomPickup(id)
 	for i=#MinimapAPI.PickupList,1,-1 do
 		local v = MinimapAPI.PickupList[i]
 		if v.ID == id then
 			table.remove(MinimapAPI.PickupList,i)
+		end
+	end
+end
+
+function MinimapAPI:AddCustomIcon(id, sprite, anim, frame)
+	MinimapAPI:RemoveCustomIcon(id)
+	MinimapAPI.IconList[#MinimapAPI.PickupList + 1] = {
+		ID = id,
+		sprite = sprite,
+		anim = anim,
+		frame = frame
+	}
+end
+
+function MinimapAPI:RemoveCustomIcon(id)
+	for i=#MinimapAPI.IconList,1,-1 do
+		local v = MinimapAPI.IconList[i]
+		if v.ID == id then
+			table.remove(MinimapAPI.IconList,i)
 		end
 	end
 end
