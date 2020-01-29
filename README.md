@@ -9,11 +9,8 @@ MinimapAPI is a modding API developed for the game "The Binding of Isaac: Rebirt
 - Display mode: Vanilla Borderless
 - Add Map Curse Icons (Treasuremap, compass, blue map, restock,...)
   - Change position of the Map Curse icons (left, bottom[vanilla])
-- Translation functions of the displayFlag mask : IsVisible, IsShadow, showIcon
 - Function - getRandomFreePos() : Returns a X,Y Position, where no room is present but thats adjcent to an existing room (useful for Red Key-like features)
-- Function - enable/disable "show on No HUD Seed"
 - Function disable vanilla mapping behaviors like "build map on transition", "update current room"...
-- Remove room based on its ID
 - Disable Room and Pickup icons seperately
 
 ### Known issues:

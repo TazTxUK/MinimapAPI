@@ -226,7 +226,7 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 		if not pickupgroupset[v.IconGroup] then
 			for _,ent in ipairs(ents) do
 				if ent.Type == v.Type then
-					local toPickup= ent:ToPickup()
+					local toPickup = ent:ToPickup()
 					if toPickup ~= nil then
 						if toPickup:IsShopItem() then
 							goto continue
@@ -264,14 +264,6 @@ function MinimapAPI:RunPlayerPosCallbacks()
 			Isaac.ConsoleOutput("Error in MinimapAPI PlayerPos Callback:\n"..tostring(ret).."\n")
 		end
 	end
-end
-
-function MinimapAPI:GetDisplayFlags(roomdata)
-	return roomdata.DisplayFlags or 0
-end
-
-function MinimapAPI:GetClear(roomdata)
-	return roomdata.Clear or false
 end
 
 function MinimapAPI:InstanceOf(obj,class)
@@ -316,12 +308,31 @@ function MinimapAPI:ClearMap()
 	roommapdata = {}
 end
 
+local maproomfunctions = {
+	IsVisible = function(self)
+		return (self.DisplayFlags or 0) & 1 > 0
+	end,
+	IsShadow = function(self)
+		return (self.DisplayFlags or 0) & 2 > 0
+	end,
+	IsIconVisible = function(self)
+		return (self.DisplayFlags or 0) & 4 > 0
+	end,
+	GetDisplayFlags = function(self)
+		return self.DisplayFlags or 0
+	end,
+	IsClear = function(self)
+		return self.Clear or false
+	end
+}
+
 local maproommeta = {
 	__index = function(self, key)
 		local desc = rawget(self,"Descriptor")
-		if desc then
+		if desc and desc[key] then
 			return desc[key]
 		end
+		return maproomfunctions[key]
 	end,
 }
 
@@ -360,6 +371,15 @@ function MinimapAPI:RemoveRoom(pos)
 		end
 	end
 	return success
+end
+
+function MinimapAPI:RemoveRoomByID(id)
+	for i=#roommapdata,1,-1 do
+		local v = roommapdata[i]
+		if v.ID == id then
+			table.remove(roommapdata, i)
+		end
+	end
 end
 
 function MinimapAPI:GetRoom(pos)
@@ -495,7 +515,7 @@ local function renderHugeMinimap()
 		
 		if MinimapAPI.Config.ShowShadows then
 			for i,v in pairs(roommapdata) do
-				local displayflags = MinimapAPI:GetDisplayFlags(v)
+				local displayflags = v:GetDisplayFlags()
 				if displayflags > 0 then
 					for n,pos in ipairs(MinimapAPI:GetRoomShapePositions(v.Shape)) do
 						pos = Vector(pos.X * largeRoomSize.X, pos.Y * largeRoomSize.Y)
@@ -509,12 +529,12 @@ local function renderHugeMinimap()
 		
 		for i,v in pairs(roommapdata) do
 			local iscurrent = MinimapAPI:PlayerInRoom(v)
-			local displayflags = MinimapAPI:GetDisplayFlags(v)
+			local displayflags = v:GetDisplayFlags()
 			if displayflags & 0x1 > 0 then
 				local anim
 				if iscurrent then
 					anim = "RoomCurrent"
-				elseif MinimapAPI:GetClear(v) then
+				elseif v:IsClear() then
 					anim = "RoomVisited"
 				else
 					anim = "RoomUnvisited"
@@ -527,7 +547,7 @@ local function renderHugeMinimap()
 		if MinimapAPI.Config.ShowIcons then
 			for i,v in pairs(roommapdata) do
 				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI.Config.ShowCurrentRoomItems
-				local displayflags = MinimapAPI:GetDisplayFlags(v)
+				local displayflags = v:GetDisplayFlags()
 				local k = 1
 				local function renderIcon(icon,locs)
 					local loc = locs[k]
@@ -583,7 +603,7 @@ local function renderUnboundedMinimap()
 		
 		if MinimapAPI.Config.ShowShadows then
 			for i,v in pairs(roommapdata) do
-				local displayflags = MinimapAPI:GetDisplayFlags(v)
+				local displayflags = v:GetDisplayFlags()
 				if displayflags > 0 then
 					for n,pos in ipairs(MinimapAPI:GetRoomShapePositions(v.Shape)) do
 						pos = Vector(pos.X * roomSize.X, pos.Y * roomSize.Y)
@@ -597,12 +617,12 @@ local function renderUnboundedMinimap()
 		
 		for i,v in pairs(roommapdata) do
 			local iscurrent = MinimapAPI:PlayerInRoom(v)
-			local displayflags = MinimapAPI:GetDisplayFlags(v)
+			local displayflags = v:GetDisplayFlags()
 			if displayflags & 0x1 > 0 then
 				local anim
 				if iscurrent then
 					anim = "RoomCurrent"
-				elseif MinimapAPI:GetClear(v) then
+				elseif v:IsClear() then
 					anim = "RoomVisited"
 				else
 					anim = "RoomUnvisited"
@@ -615,7 +635,7 @@ local function renderUnboundedMinimap()
 		if MinimapAPI.Config.ShowIcons then
 			for i,v in pairs(roommapdata) do
 				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI.Config.ShowCurrentRoomItems
-				local displayflags = MinimapAPI:GetDisplayFlags(v)
+				local displayflags = v:GetDisplayFlags()
 				local k = 1
 				local function renderIcon(icon,locs)
 					local loc = locs[k]
@@ -717,7 +737,7 @@ local function renderBoundedMinimap()
 		
 		if MinimapAPI.Config.ShowShadows then
 			for i,v in pairs(roommapdata) do
-				local displayflags = MinimapAPI:GetDisplayFlags(v)
+				local displayflags = v:GetDisplayFlags()
 				if displayflags > 0 then
 					for n,pos in ipairs(MinimapAPI:GetRoomShapePositions(v.Shape)) do
 						pos = Vector(pos.X * roomSize.X, pos.Y * roomSize.Y)
@@ -738,12 +758,12 @@ local function renderBoundedMinimap()
 		
 		for i,v in pairs(roommapdata) do
 			local iscurrent = MinimapAPI:PlayerInRoom(v)
-			local displayflags = MinimapAPI:GetDisplayFlags(v)
+			local displayflags = v:GetDisplayFlags()
 			if displayflags & 0x1 > 0 then
 				local anim
 				if iscurrent then
 					anim = "RoomCurrent"
-				elseif MinimapAPI:GetClear(v) then
+				elseif v:IsClear() then
 					anim = "RoomVisited"
 				else
 					anim = "RoomUnvisited"
@@ -765,7 +785,7 @@ local function renderBoundedMinimap()
 		if MinimapAPI.Config.ShowIcons then
 			for i,v in pairs(roommapdata) do
 				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI.Config.ShowCurrentRoomItems
-				local displayflags = MinimapAPI:GetDisplayFlags(v)
+				local displayflags = v:GetDisplayFlags()
 				local k = 1
 				local function renderIcon(icon,locs)
 					if icon then
@@ -839,7 +859,7 @@ MinimapAPI:AddCallback(ModCallbacks.MC_POST_RENDER, function(self)
 end)
 
 if ModConfigMenu then
-	ModConfigMenu.AddSetting("Minimap API","General",
+	ModConfigMenu.AddSetting("Minimap API","Debug",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -854,7 +874,7 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting("Minimap API","General",
+	ModConfigMenu.AddSetting("Minimap API","Debug",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -869,7 +889,7 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting("Minimap API","General",
+	ModConfigMenu.AddSetting("Minimap API","Debug",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -884,7 +904,7 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting("Minimap API","General",
+	ModConfigMenu.AddSetting("Minimap API","Debug",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -899,7 +919,7 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting("Minimap API","General",
+	ModConfigMenu.AddSetting("Minimap API","Visual",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -914,7 +934,7 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting("Minimap API","General",
+	ModConfigMenu.AddSetting("Minimap API","Visual",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -929,7 +949,7 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting("Minimap API","General",
+	ModConfigMenu.AddSetting("Minimap API","Visual",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -944,7 +964,7 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting("Minimap API", "General", {
+	ModConfigMenu.AddSetting("Minimap API", "Visual", {
 		Type = ModConfigMenuOptionType.NUMBER,
 		CurrentSetting = function()
 			return MinimapAPI.Config.DisplayMode
@@ -962,7 +982,7 @@ if ModConfigMenu then
 		end,
 	})
 	
-	ModConfigMenu.AddSetting("Minimap API", "General", {
+	ModConfigMenu.AddSetting("Minimap API", "Visual", {
 		Type = ModConfigMenuOptionType.NUMBER,
 		CurrentSetting = function()
 			return MinimapAPI.Config.MapFrameWidth
@@ -978,7 +998,7 @@ if ModConfigMenu then
 		end,
 	})
 	
-	ModConfigMenu.AddSetting("Minimap API", "General", {
+	ModConfigMenu.AddSetting("Minimap API", "Visual", {
 		Type = ModConfigMenuOptionType.NUMBER,
 		CurrentSetting = function()
 			return MinimapAPI.Config.MapFrameHeight
@@ -994,7 +1014,7 @@ if ModConfigMenu then
 		end,
 	})
 	
-	ModConfigMenu.AddSetting("Minimap API", "General", {
+	ModConfigMenu.AddSetting("Minimap API", "Visual", {
 		Type = ModConfigMenuOptionType.NUMBER,
 		CurrentSetting = function()
 			return MinimapAPI.Config.PositionX
@@ -1010,7 +1030,7 @@ if ModConfigMenu then
 		end,
 	})
 	
-	ModConfigMenu.AddSetting("Minimap API", "General", {
+	ModConfigMenu.AddSetting("Minimap API", "Visual", {
 		Type = ModConfigMenuOptionType.NUMBER,
 		CurrentSetting = function()
 			return MinimapAPI.Config.PositionY
