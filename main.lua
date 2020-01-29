@@ -156,7 +156,7 @@ function MinimapAPI:GetSpriteLarge()
 end
 
 function MinimapAPI:AddCustomPickup(id, iconid, typ, variant, subtype, call, icongroup, priority)
-	MinimapAPI:RemoveCustomPickupIcon(id)
+	MinimapAPI:RemoveCustomPickup(id)
 	MinimapAPI.PickupList[#MinimapAPI.PickupList + 1] = {
 		ID = id,
 		IconID = iconid,
