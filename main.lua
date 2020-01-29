@@ -526,7 +526,7 @@ local function renderHugeMinimap()
 		
 		if MinimapAPI.Config.ShowIcons then
 			for i,v in pairs(roommapdata) do
-				local incurrent = MinimapAPI:PlayerInRoom(v)
+				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI.Config.ShowCurrentRoomItems
 				local displayflags = MinimapAPI:GetDisplayFlags(v)
 				local k = 1
 				local function renderIcon(icon,locs)
@@ -614,7 +614,7 @@ local function renderUnboundedMinimap()
 		
 		if MinimapAPI.Config.ShowIcons then
 			for i,v in pairs(roommapdata) do
-				local incurrent = MinimapAPI:PlayerInRoom(v)
+				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI.Config.ShowCurrentRoomItems
 				local displayflags = MinimapAPI:GetDisplayFlags(v)
 				local k = 1
 				local function renderIcon(icon,locs)
@@ -764,7 +764,7 @@ local function renderBoundedMinimap()
 		
 		if MinimapAPI.Config.ShowIcons then
 			for i,v in pairs(roommapdata) do
-				local incurrent = MinimapAPI:PlayerInRoom(v)
+				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI.Config.ShowCurrentRoomItems
 				local displayflags = MinimapAPI:GetDisplayFlags(v)
 				local k = 1
 				local function renderIcon(icon,locs)
@@ -925,6 +925,21 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowLevelFlags = currentBool
+			end
+		}
+	)
+	
+	ModConfigMenu.AddSetting("Minimap API","General",
+		{
+			Type = ModConfigMenuOptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.ShowCurrentRoomItems
+			end,
+			Display = function()
+				return "Show Current Room Items: "..(MinimapAPI.Config.ShowCurrentRoomItems and "True" or "False")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.ShowCurrentRoomItems = currentBool
 			end
 		}
 	)
