@@ -86,7 +86,7 @@ local override_void = true
 local roomCenterOffset = Vector(0,0)
 local roomAnimPivot = Vector(-2,-2)
 local frameTL = Vector(2,2)
-local screen_size = Vector(0,0)
+local screen_size
 
 local roomSize = Vector(8,7)
 local roomPixelSize = Vector(9,8)
@@ -380,7 +380,7 @@ function MinimapAPI:AddRoom(t)
 		LockedIcons = t.LockedIcons or {},
 		ItemIcons = t.ItemIcons or {},
 		Descriptor = t.Descriptor or nil,
-		RenderOffset = Vector(0,0),
+		RenderOffset = nil,
 		
 		DisplayFlags = t.DisplayFlags or nil,
 		Clear = t.Clear or nil,
@@ -533,14 +533,19 @@ MinimapAPI:AddCallback(ModCallbacks.MC_POST_UPDATE, function(self)
 end)
 
 local function renderHugeMinimap()
-	if  MinimapAPI.Config.OverrideLost or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
+	if MinimapAPI.Config.OverrideLost or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
 		MinimapAPI:UpdateUnboundedMapOffset() --taz's note to himself: has to be updated per frame!
 		local offsetVec = Vector(screen_size.X - 4, 4)
 		for i,v in ipairs(roommapdata) do
 			local roomOffset = v.Position + unboundedMapOffset
 			roomOffset.X = roomOffset.X * largeRoomSize.X --Vector(v.Position.X * largeRoomSize.X,v.Position.Y * largeRoomSize.Y)
 			roomOffset.Y = roomOffset.Y * largeRoomSize.Y 
-			v.RenderOffset = roomOffset + largeRoomAnimPivot
+			v.TargetRenderOffset = roomOffset + largeRoomAnimPivot
+			if v.RenderOffset then
+				v.RenderOffset = v.TargetRenderOffset * MinimapAPI.Config.SmoothSlidingSpeed + v.RenderOffset * (1-MinimapAPI.Config.SmoothSlidingSpeed)
+			else
+				v.RenderOffset = v.TargetRenderOffset
+			end
 		end
 		
 		if MinimapAPI.Config.ShowShadows then
@@ -630,7 +635,12 @@ local function renderUnboundedMinimap()
 			local roomOffset = v.Position + unboundedMapOffset
 			roomOffset.X = roomOffset.X * roomSize.X 
 			roomOffset.Y = roomOffset.Y * roomSize.Y 
-			v.RenderOffset = roomOffset + roomAnimPivot
+			v.TargetRenderOffset = roomOffset + roomAnimPivot
+			if v.RenderOffset then
+				v.RenderOffset = v.TargetRenderOffset * MinimapAPI.Config.SmoothSlidingSpeed + v.RenderOffset * (1-MinimapAPI.Config.SmoothSlidingSpeed)
+			else
+				v.RenderOffset = v.TargetRenderOffset
+			end
 		end
 		
 		if MinimapAPI.Config.ShowShadows then
@@ -766,7 +776,12 @@ local function renderBoundedMinimap()
 			local roomOffset = v.Position - roomCenterOffset
 			roomOffset.X = roomOffset.X * roomSize.X
 			roomOffset.Y = roomOffset.Y * roomSize.Y
-			v.RenderOffset = roomOffset + MinimapAPI:GetFrameCenterOffset() + roomAnimPivot
+			v.TargetRenderOffset = roomOffset + MinimapAPI:GetFrameCenterOffset() + roomAnimPivot
+			if v.RenderOffset then
+				v.RenderOffset = v.TargetRenderOffset * MinimapAPI.Config.SmoothSlidingSpeed + v.RenderOffset * (1-MinimapAPI.Config.SmoothSlidingSpeed)
+			else
+				v.RenderOffset = v.TargetRenderOffset
+			end
 		end
 		
 		if MinimapAPI.Config.ShowShadows then
@@ -874,7 +889,6 @@ MinimapAPI:AddCallback(ModCallbacks.MC_POST_RENDER, function(self)
 	if MinimapAPI.Config.Disable then return end
 	screen_size = MinimapAPI:GetScreenSize()
 	if MinimapAPI.Config.DisplayOnNoHUD or not Game():GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD) then
-		
 		local currentroomdata = MinimapAPI:GetCurrentRoom()
 		if currentroomdata and MinimapAPI:PickupDetectionEnabled() then
 			currentroomdata.ItemIcons = MinimapAPI:GetCurrentRoomPickupIDs()

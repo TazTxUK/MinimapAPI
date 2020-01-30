@@ -17,6 +17,7 @@ MinimapAPI is a modding API developed for the game "The Binding of Isaac: Rebirt
 ### Known issues:
 - Curse of the Lost questionmark isnt handles by the API in any way
 - when entering an offmap room (Devil,angel,...), the map will center around a random spot on the map, rather than the last room visited 
+- Smooth map transitions look odd
 
 ### Needs rework:
 - rework the "Post Render" functions to be less redundant (Assigned: Wofsauge)
