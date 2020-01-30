@@ -580,14 +580,16 @@ local function renderHugeMinimap()
 				local displayflags = v:GetDisplayFlags()
 				local k = 1
 				local function renderIcon(icon,locs)
-					local loc = locs[k]
-					if not loc then return end
-					
-					local iconlocOffset = Vector(loc.X * largeRoomPixelSize.X, loc.Y * largeRoomPixelSize.Y)
-					local spr = icon.sprite or minimapsmall
-					spr:SetFrame(icon.anim,icon.frame)
-					spr:Render(offsetVec + iconlocOffset + v.RenderOffset - largeRoomAnimPivot + largeIconOffset,zvec,zvec)
-					k = k + 1
+					if icon then
+						local loc = locs[k]
+						if not loc then return end
+						
+						local iconlocOffset = Vector(loc.X * largeRoomPixelSize.X, loc.Y * largeRoomPixelSize.Y)
+						local spr = icon.sprite or minimapsmall
+						spr:SetFrame(icon.anim,icon.frame)
+						spr:Render(offsetVec + iconlocOffset + v.RenderOffset - largeRoomAnimPivot + largeIconOffset,zvec,zvec)
+						k = k + 1
+					end
 				end
 				
 				if displayflags & 0x4 > 0 then
@@ -668,14 +670,16 @@ local function renderUnboundedMinimap()
 				local displayflags = v:GetDisplayFlags()
 				local k = 1
 				local function renderIcon(icon,locs)
-					local loc = locs[k]
-					if not loc then return end
-					
-					local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
-					local spr = icon.sprite or minimapsmall
-					spr:SetFrame(icon.anim,icon.frame)
-					spr:Render(offsetVec + iconlocOffset + v.RenderOffset,zvec,zvec)
-					k = k + 1
+					if icon then
+						local loc = locs[k]
+						if not loc then return end
+						
+						local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
+						local spr = icon.sprite or minimapsmall
+						spr:SetFrame(icon.anim,icon.frame)
+						spr:Render(offsetVec + iconlocOffset + v.RenderOffset,zvec,zvec)
+						k = k + 1
+					end
 				end
 				
 				if displayflags & 0x4 > 0 then
