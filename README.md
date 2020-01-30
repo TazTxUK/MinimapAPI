@@ -24,3 +24,25 @@ MinimapAPI is a modding API developed for the game "The Binding of Isaac: Rebirt
 - more intuitive names for most functions
 - a more intuitive way to add a room. "t" or a table is not very intuitive to use...
 - Some comments for the functions with a small explaination on what they are used for, what arguments they require, which of them are optional and what the function returns
+
+#API Documentation
+###Adding and removing rooms from the minimap
+```lua
+MinimapAPI:AddRoom{
+	ID = --any value. This is used to identify your room later.
+	Position = --a vector representing the position of the room on the minimap.
+	Shape = --a RoomShape enum value that represents the sprite on the minimap and where icons will be placed.
+	PermanentIcons = --optional. A list of strings, where each string is the icon ID representing the room's type.
+	LockedIcons = --optional. a list of strings like above, but this is only shown when the player does not know the room's type (eg locked shop, dice room)
+	ItemIcons = --optional. a list of icon IDs that display on the map (eg keys and hearts). This will be overridden once the player enters this room.
+	DisplayFlags = --optional. the display flags for the room. Matches the format of RoomDescriptor.DisplayFlags. Overrides self.Descriptor.DisplayFlags
+	Clear = --optional. the clear boolean for the room. Overrides self.Descriptor.Clear
+	Color = --optional. a Color object that is applied when this room is rendered on the map.
+	Descriptor = --optional. a RoomDescriptor object if you are attaching a vanilla room to this table. Setting this will cause this room's display flags and clear boolean to be taken from this RoomDescriptor.
+
+	AllowRoomOverlap = --optional. The API will automatically remove a room if you add this in the same position, setting this to true will disable this functionality.
+}
+
+MinimapAPI:AddRoom takes a table, with the keys as listed above.
+Returns the room added which is a table containing all of the keys above, except for AllowRoomOverlap
+(The argument table and the table returned are not the same)
