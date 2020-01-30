@@ -1141,7 +1141,7 @@ MinimapAPI:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function(self,is_save)
 					Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
 					DisplayFlags = v.DisplayFlags,
 					Clear = v.Clear,
-					Color = Color(v.Color.R,v.Color.G,v.Color.B,v.Color.A,v.Color.RO,v.Color.GO,v.Color.BO),
+					Color = v.Color and Color(v.Color.R,v.Color.G,v.Color.B,v.Color.A,v.Color.RO,v.Color.GO,v.Color.BO),
 				}
 			end
 		end
@@ -1166,7 +1166,7 @@ MinimapAPI:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, function()
 			DescriptorListIndex = v.Descriptor and v.Descriptor.ListIndex,
 			DisplayFlags = rawget(v,"DisplayFlags"),
 			Clear = rawget(v,"Clear"),
-			Color = {R=v.Color.R,G=v.Color.G,B=v.Color.B,A=v.Color.A,RO=v.Color.RO,GO=v.Color.GO,BO=v.Color.BO}
+			Color = v.Color and {R=v.Color.R,G=v.Color.G,B=v.Color.B,A=v.Color.A,RO=v.Color.RO,GO=v.Color.GO,BO=v.Color.BO}
 		}
 	end
 	MinimapAPI:SaveData(json.encode(saved))
