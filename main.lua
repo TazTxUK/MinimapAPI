@@ -3,7 +3,6 @@ MinimapAPI = RegisterMod("Minimap API",1)
 local json = require("json")
 require("minimapapi_data")
 require("minimapapi_config")
-require("wof")
 
 function MinimapAPI:GetScreenSize()
 	return (Isaac.WorldToScreen(Vector(320,280)) - Game():GetRoom():GetRenderScrollOffset() - Game().ScreenShakeOffset)*2
@@ -155,19 +154,44 @@ function MinimapAPI:GetSpriteLarge()
 	return minimaplarge
 end
 
+local defaultCustomPickupPriority = 11000 --more than vanilla, less than all other potential custom pickups
 function MinimapAPI:AddCustomPickup(id, iconid, typ, variant, subtype, call, icongroup, priority)
-	MinimapAPI:RemoveCustomPickup(id)
-	MinimapAPI.PickupList[#MinimapAPI.PickupList + 1] = {
-		ID = id,
-		IconID = iconid,
-		Type = typ,
-		Variant = variant or -1,
-		SubType = subtype or -1,
-		Call = call,
-		IconGroup = icongroup,
-		Priority = priority or math.huge,
-	}
-	table.sort(MinimapAPI.PickupList, function(a,b) return a.Priority > b.Priority end)
+	if type(id) == "table" and iconid == nil then
+		local t = id
+		if t.ID then
+			MinimapAPI:RemoveCustomPickup(t.ID)
+		end
+		local x = {
+			ID = t.ID,
+			IconID = t.IconID,
+			Type = t.Type,
+			Variant = t.Variant or -1,
+			SubType = t.SubType or -1,
+			Call = t.Call,
+			IconGroup = t.IconGroup,
+			Priority = t.Priority or defaultCustomPickupPriority,
+		}
+		MinimapAPI.PickupList[#MinimapAPI.PickupList + 1] = x
+		table.sort(MinimapAPI.PickupList, function(a,b) return a.Priority > b.Priority end)
+		return x
+	else
+		if id then
+			MinimapAPI:RemoveCustomPickup(id)
+		end
+		local x = {
+			ID = id,
+			IconID = iconid,
+			Type = typ,
+			Variant = variant or -1,
+			SubType = subtype or -1,
+			Call = call,
+			IconGroup = icongroup,
+			Priority = priority or defaultCustomPickupPriority,
+		}
+		MinimapAPI.PickupList[#MinimapAPI.PickupList + 1] = x
+		table.sort(MinimapAPI.PickupList, function(a,b) return a.Priority > b.Priority end)
+		return x
+	end
 end
 
 function MinimapAPI:RemoveCustomPickup(id)
@@ -181,12 +205,14 @@ end
 
 function MinimapAPI:AddCustomIcon(id, sprite, anim, frame)
 	MinimapAPI:RemoveCustomIcon(id)
-	MinimapAPI.IconList[#MinimapAPI.PickupList + 1] = {
+	local x = {
 		ID = id,
 		sprite = sprite,
 		anim = anim,
 		frame = frame
 	}
+	MinimapAPI.IconList[#MinimapAPI.PickupList + 1] = x
+	return x
 end
 
 function MinimapAPI:RemoveCustomIcon(id)
@@ -221,30 +247,34 @@ end
 function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current room ONLY
 	local addIcons = {}
 	local pickupgroupset = {}
+	local entityset = {}
 	local ents = Isaac.GetRoomEntities()
 	for i,v in ipairs(MinimapAPI.PickupList) do
 		if not pickupgroupset[v.IconGroup] then
 			for _,ent in ipairs(ents) do
-				if ent.Type == v.Type then
-					local toPickup = ent:ToPickup()
-					if toPickup ~= nil then
-						if toPickup:IsShopItem() then
-							goto continue
+				if not entityset[GetPtrHash(ent)] then
+					if ent.Type == v.Type then
+						local toPickup = ent:ToPickup()
+						if toPickup ~= nil then
+							if toPickup:IsShopItem() then
+								goto continue
+							end
 						end
-					end
-					if v.Variant == -1 or ent.Variant == v.Variant then
-						if v.SubType == -1 or ent.SubType == v.SubType then
-							if (not v.Call) or v.Call(ent) then
-								if v.IconGroup then
-									pickupgroupset[v.IconGroup] = true
+						if v.Variant == -1 or ent.Variant == v.Variant then
+							if v.SubType == -1 or ent.SubType == v.SubType then
+								if (not v.Call) or v.Call(ent) then
+									if v.IconGroup then
+										pickupgroupset[v.IconGroup] = true
+									end
+									table.insert(addIcons, v.IconID)
+									entityset[GetPtrHash(ent)] = true
+									break
 								end
-								table.insert(addIcons, v.IconID)
-								break
 							end
 						end
 					end
+					::continue::
 				end
-				::continue::
 			end
 		end
 	end
@@ -1095,5 +1125,5 @@ MinimapAPI:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, function()
 	MinimapAPI:SaveData(json.encode(saved))
 end)
 
-
+require("minimapapi_scripts")
 Isaac.ConsoleOutput("Minimap API loaded!\n")
