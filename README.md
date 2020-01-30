@@ -12,6 +12,7 @@ MinimapAPI is a modding API developed for the game "The Binding of Isaac: Rebirt
 - Function - getRandomFreePos() : Returns a X,Y Position, where no room is present but thats adjcent to an existing room (useful for Red Key-like features)
 - Function disable vanilla mapping behaviors like "build map on transition", "update current room"...
 - Disable Room and Pickup icons seperately
+- Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
 
 ### Known issues:
 - Curse of the Lost questionmark isnt handles by the API in any way
