@@ -1093,6 +1093,22 @@ if ModConfigMenu then
 			MinimapAPI.Config.PositionY = currentNum
 		end,
 	})
+	
+	ModConfigMenu.AddSetting("Minimap API", "Experimental", {
+		Type = ModConfigMenuOptionType.NUMBER,
+		CurrentSetting = function()
+			return MinimapAPI.Config.SmoothSlidingSpeed
+		end,
+		Minimum = 0.25,
+		Maximum = 1,
+		ModifyBy = 0.25,
+		Display = function()
+			return "Smooth Movement Speed: "..MinimapAPI.Config.SmoothSlidingSpeed
+		end,
+		OnChange = function(currentNum)
+			MinimapAPI.Config.SmoothSlidingSpeed = currentNum
+		end,
+	})
 end
 
 -- LOADING SAVED GAME
