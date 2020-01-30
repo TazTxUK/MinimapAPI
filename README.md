@@ -9,10 +9,12 @@ MinimapAPI is a modding API developed for the game "The Binding of Isaac: Rebirt
 * New map mode: Small full map (display all rooms in small form!)
 
 ### API Features
-* Custom color rooms
+* Add/remove rooms from the minimap
+* Custom pickups
 * Custom icons
 * Automatic pickup detection
-* Add/remove rooms from the minimap
+* Custom color rooms
+
 
 ## Backlog / Todo-List
 ### Planned Features:
