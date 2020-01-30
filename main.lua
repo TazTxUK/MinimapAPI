@@ -154,7 +154,7 @@ function MinimapAPI:GetSpriteLarge()
 	return minimaplarge
 end
 
-local defaultCustomPickupPriority = 11000 --more than vanilla, less than all other potential custom pickups
+local defaultCustomPickupPriority = 11000 --more than vanilla, less than other potential custom pickups
 function MinimapAPI:AddCustomPickup(id, iconid, typ, variant, subtype, call, icongroup, priority)
 	if type(id) == "table" and iconid == nil then
 		local t = id
@@ -203,13 +203,14 @@ function MinimapAPI:RemoveCustomPickup(id)
 	end
 end
 
-function MinimapAPI:AddCustomIcon(id, sprite, anim, frame)
+function MinimapAPI:AddCustomIcon(id, sprite, anim, frame, color)
 	MinimapAPI:RemoveCustomIcon(id)
 	local x = {
 		ID = id,
 		sprite = sprite,
 		anim = anim,
-		frame = frame
+		frame = frame,
+		color = color
 	}
 	MinimapAPI.IconList[#MinimapAPI.PickupList + 1] = x
 	return x
@@ -380,6 +381,7 @@ function MinimapAPI:AddRoom(t)
 		LockedIcons = t.LockedIcons or {},
 		ItemIcons = t.ItemIcons or {},
 		Descriptor = t.Descriptor or nil,
+		Color = t.Color or nil,
 		RenderOffset = nil,
 		
 		DisplayFlags = t.DisplayFlags or nil,
@@ -574,10 +576,13 @@ local function renderHugeMinimap()
 				else
 					anim = "RoomUnvisited"
 				end
+				minimaplarge.Color = v.Color or Color(1,1,1,1,0,0,0)
 				minimaplarge:SetFrame(anim,MinimapAPI:GetRoomShapeFrame(v.Shape))
 				minimaplarge:Render(offsetVec + v.RenderOffset,zvec,zvec)
 			end
 		end
+		
+		minimaplarge.Color = Color(1,1,1,1,0,0,0)
 		
 		if MinimapAPI.Config.ShowIcons then
 			for i,v in pairs(roommapdata) do
@@ -670,9 +675,12 @@ local function renderUnboundedMinimap()
 					anim = "RoomUnvisited"
 				end
 				minimapsmall:SetFrame(anim,MinimapAPI:GetRoomShapeFrame(v.Shape))
+				minimapsmall.Color = v.Color or Color(1,1,1,1,0,0,0)
 				minimapsmall:Render(offsetVec + v.RenderOffset,zvec,zvec)
 			end
 		end
+		
+		minimapsmall.Color = Color(1,1,1,1,0,0,0)
 		
 		if MinimapAPI.Config.ShowIcons then
 			for i,v in pairs(roommapdata) do
@@ -826,10 +834,13 @@ local function renderBoundedMinimap()
 					brcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
 					tlcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
 					minimapsmall:SetFrame(anim,MinimapAPI:GetRoomShapeFrame(v.Shape))
+					minimapsmall.Color = v.Color or Color(1,1,1,1,0,0,0)
 					minimapsmall:Render(offsetVec + v.RenderOffset,tlcutoff,brcutoff)
 				end
 			end
 		end
+		
+		minimapsmall.Color = Color(1,1,1,1,0,0,0)
 		
 		if MinimapAPI.Config.ShowIcons then
 			for i,v in pairs(roommapdata) do
@@ -1130,6 +1141,7 @@ MinimapAPI:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function(self,is_save)
 					Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
 					DisplayFlags = v.DisplayFlags,
 					Clear = v.Clear,
+					Color = Color(v.Color.R,v.Color.G,v.Color.B,v.Color.A,v.Color.RO,v.Color.GO,v.Color.BO),
 				}
 			end
 		end
@@ -1154,6 +1166,7 @@ MinimapAPI:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, function()
 			DescriptorListIndex = v.Descriptor and v.Descriptor.ListIndex,
 			DisplayFlags = rawget(v,"DisplayFlags"),
 			Clear = rawget(v,"Clear"),
+			Color = {R=v.Color.R,G=v.Color.G,B=v.Color.B,A=v.Color.A,RO=v.Color.RO,GO=v.Color.GO,BO=v.Color.BO}
 		}
 	end
 	MinimapAPI:SaveData(json.encode(saved))
