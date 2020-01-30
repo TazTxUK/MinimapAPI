@@ -25,8 +25,8 @@ MinimapAPI is a modding API developed for the game "The Binding of Isaac: Rebirt
 - a more intuitive way to add a room. "t" or a table is not very intuitive to use...
 - Some comments for the functions with a small explaination on what they are used for, what arguments they require, which of them are optional and what the function returns
 
-#API Documentation
-###Adding and removing rooms from the minimap
+## API Documentation
+### Adding and removing rooms from the minimap
 ```lua
 MinimapAPI:AddRoom{
 	ID = --any value. This is used to identify your room later.
