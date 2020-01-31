@@ -49,13 +49,11 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 
 ### Known issues:
 * Curse of the Lost questionmark isnt handles by the API in any way
-* when entering an offmap room (Devil,angel,...), the map will center around a random spot on the map, rather than the last room visited 
-* Smooth map transitions look odd
 
 ### Needs rework:
 * rework the "Post Render" functions to be less redundant (for @wofsauge)
 * more intuitive names for most functions
-* a more intuitive way to add a room. "t" or a table is not very intuitive to use...
+* overload functions that take tables
 * Some comments for the functions with a small explaination on what they are used for, what arguments they require, which of them are optional and what the function returns
 
 ## API Documentation
