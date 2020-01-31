@@ -55,6 +55,18 @@ MinimapAPI:AddCustomIcon("PillBlackYellow", MinimapAPI.CustomIcons, "CustomIconP
 MinimapAPI:AddCustomIcon("PillWhiteBlack", MinimapAPI.CustomIcons, "CustomIconPillWhiteBlack", 0)
 MinimapAPI:AddCustomIcon("PillWhiteYellow", MinimapAPI.CustomIcons, "CustomIconPillWhiteYellow", 0)
 
+MinimapAPI:AddCustomIcon("DoublePenny", MinimapAPI.CustomIcons, "CustomIconCoinDouble", 0)
+MinimapAPI:AddCustomIcon("GoldenKey", MinimapAPI.CustomIcons, "CustomIconGoldKey", 0)
+MinimapAPI:AddCustomIcon("GoldenBomb", MinimapAPI.CustomIcons, "CustomIconGoldBomb", 0)
+MinimapAPI:AddCustomIcon("SlotBloodDonation", MinimapAPI.CustomIcons, "CustomIconSlotBlood", 0)
+MinimapAPI:AddCustomIcon("SlotFortune", MinimapAPI.CustomIcons, "CustomIconSlotFortune", 0)
+MinimapAPI:AddCustomIcon("DonationMachine", MinimapAPI.CustomIcons, "CustomIconDonation", 0)
+MinimapAPI:AddCustomIcon("RestockMachine", MinimapAPI.CustomIcons, "CustomIconRestock", 0)
+MinimapAPI:AddCustomIcon("GreedDonationMachine", MinimapAPI.CustomIcons, "CustomIconGreedDonation", 0)
+MinimapAPI:AddCustomIcon("Dresser", MinimapAPI.CustomIcons, "CustomIconDresser", 0)
+--MinimapAPI:AddCustomIcon("Trophy", MinimapAPI.CustomIcons, "CustomIconTrophy", 0)  Alternative icon for Trophy
+MinimapAPI:AddCustomIcon("Trophy", MinimapAPI.CustomIcons, "CustomIconFlag", 0)
+
 MinimapAPI:AddCustomPickup("PillBlueBlue","PillBlueBlue",5,70,PillColor.PILL_BLUE_BLUE,nil,"pills",6100)
 MinimapAPI:AddCustomPickup("PillOrangeOrange","PillOrangeOrange",5,70,PillColor.PILL_ORANGE_ORANGE,nil,"pills",6100)
 MinimapAPI:AddCustomPickup("PillWhiteWhite","PillWhiteWhite",5,70,PillColor.PILL_WHITE_WHITE,nil,"pills",6100)
@@ -67,3 +79,14 @@ MinimapAPI:AddCustomPickup("PillWhiteAzure","PillWhiteAzure",5,70,PillColor.PILL
 MinimapAPI:AddCustomPickup("PillBlackYellow","PillBlackYellow",5,70,PillColor.PILL_BLACK_YELLOW,nil,"pills",6100)
 MinimapAPI:AddCustomPickup("PillWhiteBlack","PillWhiteBlack",5,70,PillColor.PILL_WHITE_BLACK,nil,"pills",6100)
 MinimapAPI:AddCustomPickup("PillWhiteYellow","PillWhiteYellow",5,70,PillColor.PILL_WHITE_YELLOW,nil,"pills",6100)
+
+MinimapAPI:AddCustomPickup("DoublePenny","DoublePenny",5,20,4,nil,"coins",6100)
+MinimapAPI:AddCustomPickup("GoldenKey","GoldenKey",5,30,2,nil,"keys",6100)
+MinimapAPI:AddCustomPickup("GoldenBomb","GoldenBomb",5,40,4,nil,"bombs",6100)
+MinimapAPI:AddCustomPickup("SlotBloodDonation","SlotBloodDonation",6,2,1,nil,"slots",6100)
+MinimapAPI:AddCustomPickup("SlotFortune","SlotFortune",6,3,-1,nil,"slots",6100)
+MinimapAPI:AddCustomPickup("DonationMachine","DonationMachine",6,8,-1,nil,"slots",6100)
+MinimapAPI:AddCustomPickup("RestockMachine","RestockMachine",6,10,-1,nil,"slots",6100)
+MinimapAPI:AddCustomPickup("GreedDonationMachine","GreedDonationMachine",6,11,-1,nil,"slots",6100)
+MinimapAPI:AddCustomPickup("Dresser","Dresser",6,12,-1,nil,"slots",6100)
+MinimapAPI:AddCustomPickup("Trophy","Trophy",5,370,-1,nil,"trophies",6100)
