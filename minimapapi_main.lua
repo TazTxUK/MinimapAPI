@@ -735,51 +735,31 @@ end
 local function renderBoundedMinimap()
 	local offsetVec = Vector(screen_size.X - MinimapAPI.Config.MapFrameWidth - MinimapAPI.Config.PositionX - 1, MinimapAPI.Config.PositionY - 2.5)
 	do
-		local fw = 0
-		while fw < MinimapAPI.Config.MapFrameWidth - dframeHorizBarSize.X do
-			minimapsmall:SetFrame("MinimapAPIFrameN",0)
-			minimapsmall:Render(offsetVec + Vector(fw, 0),zvec,zvec)
-			minimapsmall:SetFrame("MinimapAPIFrameS",0)
-			minimapsmall:Render(offsetVec + Vector(fw, MinimapAPI.Config.MapFrameHeight),zvec,zvec)
-			fw = fw + dframeHorizBarSize.X
-		end
-		local horizcutoff = Vector(dframeHorizBarSize.X - (MinimapAPI.Config.MapFrameWidth - fw),0)
+		minimapsmall.Scale = Vector((MinimapAPI.Config.MapFrameWidth+frameTL.X)/dframeHorizBarSize.X,1)
 		minimapsmall:SetFrame("MinimapAPIFrameN",0)
-		minimapsmall:Render(offsetVec + Vector(fw, 0),zvec,horizcutoff)
+		minimapsmall:Render(offsetVec,zvec,zvec)
 		minimapsmall:SetFrame("MinimapAPIFrameS",0)
-		minimapsmall:Render(offsetVec + Vector(fw, MinimapAPI.Config.MapFrameHeight),zvec,horizcutoff)
+		minimapsmall:Render(offsetVec + Vector(0, MinimapAPI.Config.MapFrameHeight),zvec,zvec)
 		
-		local fh = 0
-		while fh < MinimapAPI.Config.MapFrameHeight - dframeVertBarSize.Y do
-			minimapsmall:SetFrame("MinimapAPIFrameW",0)
-			minimapsmall:Render(offsetVec + Vector(0, fh),zvec,zvec)
-			minimapsmall:SetFrame("MinimapAPIFrameE",0)
-			minimapsmall:Render(offsetVec + Vector(MinimapAPI.Config.MapFrameWidth, fh),zvec,zvec)
-			fh = fh + dframeVertBarSize.Y
-		end
-		local vertcutoff = Vector(0,dframeVertBarSize.Y - (MinimapAPI.Config.MapFrameHeight - fh) - 2)
+		minimapsmall.Scale = Vector(1,MinimapAPI.Config.MapFrameHeight/dframeVertBarSize.Y)
 		minimapsmall:SetFrame("MinimapAPIFrameW",0)
-		minimapsmall:Render(offsetVec + Vector(0, fh),zvec,vertcutoff)
+		minimapsmall:Render(offsetVec,zvec,zvec)
 		minimapsmall:SetFrame("MinimapAPIFrameE",0)
-		minimapsmall:Render(offsetVec + Vector(MinimapAPI.Config.MapFrameWidth, fh),zvec,vertcutoff)
+		minimapsmall:Render(offsetVec + Vector(MinimapAPI.Config.MapFrameWidth, 0),zvec,zvec)
 		
-		fw = 0
-		while fw < MinimapAPI.Config.MapFrameWidth do
-			local cutoff = Vector(0,0)
-			if fw > MinimapAPI.Config.MapFrameWidth - dframeCenterSize.X then
-				cutoff.X = dframeCenterSize.X - (MinimapAPI.Config.MapFrameWidth - fw)
-			end
-			fh = 0
-			while fh < MinimapAPI.Config.MapFrameHeight do
-				if fh > MinimapAPI.Config.MapFrameHeight - dframeCenterSize.Y then
-					cutoff.Y = dframeCenterSize.Y - (MinimapAPI.Config.MapFrameHeight - fh)
-				end
-				minimapsmall:SetFrame("MinimapAPIFrameCenter",0)
-				minimapsmall:Render(offsetVec + Vector(fw, fh),zvec,cutoff)
-				fh = fh + dframeCenterSize.Y
-			end
-			fw = fw + dframeCenterSize.X
-		end
+		minimapsmall.Scale = Vector(MinimapAPI.Config.MapFrameWidth/dframeCenterSize.X,MinimapAPI.Config.MapFrameHeight/dframeCenterSize.Y)
+		minimapsmall:SetFrame("MinimapAPIFrameCenter",0)
+		minimapsmall:Render(offsetVec,zvec,zvec)
+		
+		minimapsmall.Scale = Vector((MinimapAPI.Config.MapFrameWidth+frameTL.X)/dframeHorizBarSize.X,1)
+		minimapsmall:SetFrame("MinimapAPIFrameShadowS",0)
+		minimapsmall:Render(offsetVec + Vector(frameTL.X, frameTL.Y + MinimapAPI:GetFrameBR().Y),zvec,zvec)
+		
+		minimapsmall.Scale = Vector(1,(MinimapAPI.Config.MapFrameHeight)/(dframeVertBarSize.Y-frameTL.Y))
+		minimapsmall:SetFrame("MinimapAPIFrameShadowE",0)
+		minimapsmall:Render(offsetVec + Vector(frameTL.X + MinimapAPI:GetFrameBR().X, frameTL.Y),zvec,zvec)
+		
+		minimapsmall.Scale = Vector(1,1)
 	end
 	
 	if MinimapAPI.Config.OverrideLost or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
@@ -909,6 +889,7 @@ MinimapAPI:AddCallback(ModCallbacks.MC_POST_RENDER, function(self)
 		end
 			
 		if roommapdata then
+			minimapsmall.Scale = Vector(1,1)
 			if MinimapAPI:IsLarge() then
 				renderHugeMinimap()
 			elseif MinimapAPI.Config.DisplayMode == 1 then
