@@ -83,7 +83,7 @@ MinimapAPI:AddCustomPickup("PillWhiteYellow","PillWhiteYellow",5,70,PillColor.PI
 MinimapAPI:AddCustomPickup("DoublePenny","DoublePenny",5,20,4,nil,"coins",6100)
 MinimapAPI:AddCustomPickup("GoldenKey","GoldenKey",5,30,2,nil,"keys",6100)
 MinimapAPI:AddCustomPickup("GoldenBomb","GoldenBomb",5,40,4,nil,"bombs",6100)
-MinimapAPI:AddCustomPickup("SlotBloodDonation","SlotBloodDonation",6,2,1,nil,"slots",6100)
+MinimapAPI:AddCustomPickup("SlotBloodDonation","SlotBloodDonation",6,2,-1,nil,"slots",6100)
 MinimapAPI:AddCustomPickup("SlotFortune","SlotFortune",6,3,-1,nil,"slots",6100)
 MinimapAPI:AddCustomPickup("DonationMachine","DonationMachine",6,8,-1,nil,"slots",6100)
 MinimapAPI:AddCustomPickup("RestockMachine","RestockMachine",6,10,-1,nil,"slots",6100)
