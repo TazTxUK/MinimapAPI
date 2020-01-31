@@ -46,6 +46,7 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
   * Donation Machine
   * Restock Machine
   * Broken Shovel
+* Hovering over a room will display a list of its contents *(Thanks JSG!)*
 
 ### Known issues:
 * Curse of the Lost questionmark isnt handles by the API in any way
