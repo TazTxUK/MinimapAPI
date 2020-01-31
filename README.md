@@ -29,6 +29,23 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 * Function disable vanilla mapping behaviors like "build map on transition", "update current room"...
 * Disable Room and Pickup icons seperately
 * Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
+* Implement new pickup icons:
+  * Blood Donation Machine
+  * Fortune Telling Machine
+* Draw new pickup icons (where applicable):
+  * Rune (redesign)
+  * Beggar (redesign)
+  * Grab bags
+  * Nickels
+  * Dimes
+  * Golden Keys
+  * Golden Bombs
+  * Demon Beggar
+  * Key Master
+  * Bomb Bum
+  * Donation Machine
+  * Restock Machine
+  * Broken Shovel
 
 ### Known issues:
 * Curse of the Lost questionmark isnt handles by the API in any way

@@ -212,7 +212,7 @@ function MinimapAPI:AddCustomIcon(id, sprite, anim, frame, color)
 		frame = frame,
 		color = color
 	}
-	MinimapAPI.IconList[#MinimapAPI.PickupList + 1] = x
+	MinimapAPI.IconList[#MinimapAPI.IconList + 1] = x
 	return x
 end
 
@@ -691,7 +691,6 @@ local function renderUnboundedMinimap()
 					if icon then
 						local loc = locs[k]
 						if not loc then return end
-						
 						local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
 						local spr = icon.sprite or minimapsmall
 						spr:SetFrame(icon.anim,icon.frame)
