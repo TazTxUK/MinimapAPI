@@ -92,7 +92,21 @@ MinimapAPI.LargeRoomShapeIconPositions = {
 		[RS.ROOMSHAPE_LTR] = {Vector(0.25,1.25)},
 		[RS.ROOMSHAPE_LBL] = {Vector(1.25,0.25)},
 	},
-	[2] = { -- iconcount > 1
+	[2] = { -- iconcount == 2
+		[RS.ROOMSHAPE_1x1] = {Vector(0,0.25),Vector(0.5,0.25)},
+		[RS.ROOMSHAPE_1x2] = {Vector(0,0.75),Vector(0.5,0.75)},
+		[RS.ROOMSHAPE_2x1] = {Vector(0.5,0.25),Vector(1,0.25)},
+		[RS.ROOMSHAPE_2x2] = {Vector(0.5,0.75),Vector(1,0.75)},
+		[RS.ROOMSHAPE_IH] = {Vector(0,0.25),Vector(0.5,0.25)},
+		[RS.ROOMSHAPE_IIH] = {Vector(0.5,0.25),Vector(1,0.25)},
+		[RS.ROOMSHAPE_IV] = {Vector(0,0.25),Vector(0.5,0.25)},
+		[RS.ROOMSHAPE_IIV] = {Vector(0,0.75),Vector(0.5,0.75)},
+		[RS.ROOMSHAPE_LBR] = {Vector(0,0.25),Vector(0.5,0.25)},
+		[RS.ROOMSHAPE_LTL] = {Vector(1,1.25),Vector(1.5,1.25)},
+		[RS.ROOMSHAPE_LTR] = {Vector(0,1.25),Vector(0.5,1.25)},
+		[RS.ROOMSHAPE_LBL] = {Vector(1,0.25),Vector(1.5,0.25)},
+	},
+	[3] = { -- iconcount >= 3
 		[RS.ROOMSHAPE_1x1] = {Vector(0,0),Vector(0.5,0),Vector(0,0.5),Vector(0.5,0.5)},
 		[RS.ROOMSHAPE_1x2] = {Vector(0,0.5),Vector(0.5,1),Vector(0,1),Vector(0.5,0.5)},
 		[RS.ROOMSHAPE_2x1] = {Vector(0.5,0),Vector(1,0),Vector(0.5,0.5),Vector(1,0.5)},

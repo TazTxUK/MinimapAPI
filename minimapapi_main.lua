@@ -40,8 +40,10 @@ function MinimapAPI:GetLargeRoomShapeIconPositions(rs, iconcount)
 	iconcount = iconcount or math.huge
 	if iconcount <= 1 then
 		return MinimapAPI.LargeRoomShapeIconPositions[1][rs]
-	else
+	elseif iconcount == 2 then
 		return MinimapAPI.LargeRoomShapeIconPositions[2][rs]
+	else
+		return MinimapAPI.LargeRoomShapeIconPositions[3][rs]
 	end
 	return r
 end
