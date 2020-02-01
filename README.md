@@ -95,16 +95,6 @@ Removes all rooms from the minimap with the ID given.
 ### Adding custom pickups and icons
 
 ```lua
-MinimapAPI:AddCustomIcon(IconID, Sprite, string animationName, number frame)
-```
-
-Adds a custom icon to the icon list, using the above parameters.
-If Sprite isn't provided, MinimapAPI will use the small minimap sprite.
-animationName is required.
-If frame isn't provided, 0 is used as the default.
-> TODO: If frame isn't provided, it will play the animation instead.
-
-```lua
 MinimapAPI:AddCustomIcon(id, Sprite, string animationName, number frame, (optional) Color color)
 ```
 
@@ -113,9 +103,8 @@ MinimapAPI:AddCustomIcon(id, Sprite, string animationName, number frame, (option
 * If Sprite isn't provided, MinimapAPI will use the small minimap sprite.
 * animationName is required.
 * If frame isn't provided, 0 is used as the default.
-  * **TODO:** If frame isn't provided, it will play the animation instead.
-* Color is not implemented.
-  * **TODO:** The color is applied to the icon drawn.
+
+* If you want to control the icon via your mod (such as animating it, changing animation frames, rotation etc), only give the sprite parameter and leave all the others blank or nil. The API will not attempt to change the sprite if this is the case.
 
 ```lua
 MinimapAPI:RemoveCustomIcon(id)
