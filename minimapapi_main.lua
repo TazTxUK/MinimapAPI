@@ -140,9 +140,7 @@ end
 
 function MinimapAPI:GetIconAnimData(id)
 	for i, v in ipairs(MinimapAPI.IconList) do
-		if v.ID == id then
-			return {sprite = v.sprite or minimapsmall, anim = v.anim, frame = v.frame or 0}
-		end
+		return v
 	end
 end
 
@@ -446,7 +444,6 @@ end
 
 function MinimapAPI:SetPlayerPosition(position)
 	playerMapPos = Vector(position.X, position.Y)
-	MinimapAPI:UpdateMinimapCenterOffset()
 	custom_playerpos = true
 end
 
@@ -487,7 +484,6 @@ local function updatePlayerPos()
 		playerMapPos = MinimapAPI:GridIndexToVector(currentroom.GridIndex)
 		custom_playerpos = false
 		MinimapAPI:RunPlayerPosCallbacks()
-		MinimapAPI:UpdateMinimapCenterOffset()
 	end
 end
 
@@ -534,6 +530,16 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_UPDATE, function(self)
 		mapheldframes = 0
 	end
 end)
+
+local defaultColor = Color(1, 1, 1, 1, 0, 0, 0)
+local function updateMinimapIcon(spr, t)
+	if t.anim then
+		spr:SetFrame(t.anim, t.frame)
+	end
+	if t.Color then
+		spr.Color = t.Color or defaultColor
+	end
+end
 
 local function renderUnboundedMinimap(size)
 	if MinimapAPI.Config.OverrideLost or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
@@ -595,19 +601,22 @@ local function renderUnboundedMinimap(size)
 				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI.Config.ShowCurrentRoomItems
 				local displayflags = v:GetDisplayFlags()
 				local k = 1
-				local function renderIcon(icon, locs)
-					if icon then
-						local loc = locs[k]
-						if not loc then return end
-						local iconlocOffset = Vector(loc.X * renderRoomSize.X, loc.Y * renderRoomSize.Y)
-						local spr = icon.sprite or sprite
-						spr:SetFrame(icon.anim, icon.frame)
-						if size == "small" then
-							spr:Render(offsetVec + iconlocOffset + v.RenderOffset, zvec, zvec)
-						else
-							spr:Render(offsetVec + iconlocOffset + v.RenderOffset - largeRoomAnimPivot + largeIconOffset, zvec, zvec)
+				local function renderIcons(icons, locs)
+					for _,icon in ipairs(icons) do
+						local icontb = MinimapAPI:GetIconAnimData(icon)
+						if icontb then
+							local loc = locs[k]
+							if not loc then return end
+							local iconlocOffset = Vector(loc.X * renderRoomSize.X, loc.Y * renderRoomSize.Y)
+							local spr = icontb.sprite or sprite
+							updateMinimapIcon(spr, icontb)
+							if size == "small" then
+								spr:Render(offsetVec + iconlocOffset + v.RenderOffset, zvec, zvec)
+							else
+								spr:Render(offsetVec + iconlocOffset + v.RenderOffset - largeRoomAnimPivot + largeIconOffset, zvec, zvec)
+							end
+							k = k + 1
 						end
-						k = k + 1
 					end
 				end
 
@@ -621,13 +630,10 @@ local function renderUnboundedMinimap(size)
 					if size ~= "small" then
 						locs = MinimapAPI:GetLargeRoomShapeIconPositions(v.Shape, iconcount)
 					end
-					for _, icon in ipairs(v.PermanentIcons) do
-						renderIcon(MinimapAPI:GetIconAnimData(icon), locs)
-					end
+					
+					renderIcons(v.PermanentIcons, locs)
 					if not incurrent then
-						for _, icon in ipairs(v.ItemIcons) do
-							renderIcon(MinimapAPI:GetIconAnimData(icon), locs)
-						end
+						renderIcons(v.ItemIcons, locs)
 					end
 				elseif displayflags & 0x2 > 0 then
 					if v.LockedIcons and #v.LockedIcons > 0 then
@@ -635,9 +641,7 @@ local function renderUnboundedMinimap(size)
 						if size ~= "small" then
 							locs = MinimapAPI:GetRoomShapeIconPositions(v.Shape, #v.LockedIcons)
 						end
-						for _, icon in ipairs(v.LockedIcons) do
-							renderIcon(MinimapAPI:GetIconAnimData(icon), locs)
-						end
+						renderIcons(v.LockedIcons, locs)
 					end
 				end
 			end
@@ -677,6 +681,8 @@ local function renderBoundedMinimap()
 	end
 
 	if MinimapAPI.Config.OverrideLost or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
+		MinimapAPI:UpdateMinimapCenterOffset()
+	
 		for i, v in ipairs(roommapdata) do
 			local roomOffset = v.Position - roomCenterOffset
 			roomOffset.X = roomOffset.X * roomSize.X
@@ -742,24 +748,27 @@ local function renderBoundedMinimap()
 		if MinimapAPI.Config.ShowIcons then
 			for i, v in pairs(roommapdata) do
 				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI.Config.ShowCurrentRoomItems
-				local displayflags = v:GetDisplayFlags()
+				local displayflags = v.DisplayFlags or 0
 				local k = 1
-				local function renderIcon(icon, locs)
-					if icon then
-						local loc = locs[k]
-						if not loc then return end
+				local function renderIcons(icons, locs)
+					for _,icon in ipairs(icons) do
+						local icontb = MinimapAPI:GetIconAnimData(icon)
+						if icontb then
+							local loc = locs[k]
+							if not loc then return end
 
-						local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
-						local spr = icon.sprite or minimapsmall
-						local brcutoff = v.RenderOffset + iconlocOffset + iconPixelSize - MinimapAPI:GetFrameBR()
-						local tlcutoff = frameTL - (v.RenderOffset + iconlocOffset)
-						if brcutoff.X < iconPixelSize.X and brcutoff.Y < iconPixelSize.Y and 
-						tlcutoff.X < iconPixelSize.X and tlcutoff.Y < iconPixelSize.Y then
-							brcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
-							tlcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
-							spr:SetFrame(icon.anim, icon.frame)
-							spr:Render(offsetVec + iconlocOffset + v.RenderOffset, tlcutoff, brcutoff)
-							k = k + 1
+							local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
+							local spr = icon.sprite or minimapsmall
+							updateMinimapIcon(spr, icontb)
+							local brcutoff = v.RenderOffset + iconlocOffset + iconPixelSize - MinimapAPI:GetFrameBR()
+							local tlcutoff = frameTL - (v.RenderOffset + iconlocOffset)
+							if brcutoff.X < iconPixelSize.X and brcutoff.Y < iconPixelSize.Y and 
+							tlcutoff.X < iconPixelSize.X and tlcutoff.Y < iconPixelSize.Y then
+								brcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
+								tlcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
+								spr:Render(offsetVec + iconlocOffset + v.RenderOffset, tlcutoff, brcutoff)
+								k = k + 1
+							end
 						end
 					end
 				end
@@ -772,20 +781,14 @@ local function renderBoundedMinimap()
 
 					local locs = MinimapAPI:GetRoomShapeIconPositions(v.Shape, iconcount)
 
-					for _, icon in ipairs(v.PermanentIcons) do
-						renderIcon(MinimapAPI:GetIconAnimData(icon), locs)
-					end
+					renderIcons(v.PermanentIcons, locs)
 					if not incurrent then
-						for _, icon in ipairs(v.ItemIcons) do
-							renderIcon(MinimapAPI:GetIconAnimData(icon), locs)
-						end
+						renderIcons(v.ItemIcons, locs)
 					end
 				elseif displayflags & 0x2 > 0 then
 					if v.LockedIcons and #v.LockedIcons > 0 then
 						local locs = MinimapAPI:GetRoomShapeIconPositions(v.Shape, #v.LockedIcons)
-						for _, icon in ipairs(v.LockedIcons) do
-							renderIcon(MinimapAPI:GetIconAnimData(icon), locs)
-						end
+						renderIcons(v.LockedIcons, locs)
 					end
 				end
 			end
