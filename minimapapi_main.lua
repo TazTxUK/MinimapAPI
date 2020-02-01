@@ -515,6 +515,28 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 	end
 end
 
+function MinimapAPI:getDiscoveredBounds()
+	local minx
+	local maxx
+	local miny
+	local maxy
+	for i = 1, #(roommapdata) do
+		local v = roommapdata[i]
+		if (v.DisplayFlags or 0) > 0 then
+			local minxval = v.Position.X
+			if not minx or (minxval < minx) then minx = minxval	end
+			local maxxval = v.Position.X + MinimapAPI:GetRoomShapeGridSize(v.Shape).X
+			if not maxx or (maxxval > maxx) then maxx = maxxval	end
+			
+			local minyval = v.Position.Y
+			if not miny or (minyval < miny) then miny = minyval	end
+			local maxyval = v.Position.Y + MinimapAPI:GetRoomShapeGridSize(v.Shape).Y
+			if not maxy or (maxyval > maxy) then maxy = maxyval	end
+		end
+	end
+	return {minx,maxx,miny,maxy}
+end
+
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 	updatePlayerPos()
 end)
@@ -798,6 +820,34 @@ local function renderBoundedMinimap()
 	end
 end
 
+local function renderMinimapIcons()
+	local gameLvl= Game():GetLevel()
+	local curseIconPos=Vector( screen_size.X - MinimapAPI.Config.PositionX, MinimapAPI.Config.PositionY + 5)
+	local bounds= MinimapAPI:getDiscoveredBounds()
+	
+	if MinimapAPI:IsLarge() then curseIconPos= curseIconPos + Vector(- (bounds[2]-bounds[1])* largeRoomPixelSize.X, 0) 
+	elseif MinimapAPI.Config.DisplayMode == 1 then curseIconPos= curseIconPos + Vector( - (bounds[2]-bounds[1])*roomPixelSize.X, 0) 
+	elseif MinimapAPI.Config.DisplayMode == 2 then curseIconPos= curseIconPos +Vector( - MinimapAPI.Config.MapFrameWidth - 8, 0) end
+
+	if true then
+		local offset=Vector(0,0)
+		if gameLvl:GetStateFlag(LevelStateFlag.STATE_MAP_EFFECT) then 
+			minimapicons:SetFrame("icons", 2)
+			minimapicons:Render(curseIconPos+offset, zvec, zvec)
+			offset=offset+Vector(0,16)
+		end
+		if gameLvl:GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT) then 
+			minimapicons:SetFrame("icons", 1)
+			minimapicons:Render(curseIconPos+offset, zvec, zvec)
+			offset=offset+Vector(0,16)
+		end
+		if gameLvl:GetStateFlag(LevelStateFlag.STATE_COMPASS_EFFECT) then 
+			minimapicons:SetFrame("icons", 0)
+			minimapicons:Render(curseIconPos+offset, zvec, zvec)
+		end
+	end
+end
+
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 		if MinimapAPI.Config.Disable then return end
 		screen_size = MinimapAPI:GetScreenSize()
@@ -816,6 +866,9 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 				elseif MinimapAPI.Config.DisplayMode == 2 then
 					renderBoundedMinimap()
 				end
+				if MinimapAPI.Config.ShowLevelFlags then
+					renderMinimapIcons()
+				end
 			end
 		end
 	end
@@ -824,7 +877,7 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 if ModConfigMenu then
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Debug",
+		"General",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -841,7 +894,7 @@ if ModConfigMenu then
 
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Debug",
+		"General",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -858,7 +911,7 @@ if ModConfigMenu then
 
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Debug",
+		"General",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -875,7 +928,7 @@ if ModConfigMenu then
 
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Debug",
+		"General",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
