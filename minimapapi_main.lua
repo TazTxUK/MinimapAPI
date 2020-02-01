@@ -850,6 +850,16 @@ end
 
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 		if MinimapAPI.Config.Disable then return end
+		if MinimapAPI.Config.HideInCombat == 2 then
+			local r = Game():GetRoom()
+			if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
+				return
+			end
+		elseif MinimapAPI.Config.HideInCombat == 3 then
+			if not Game():GetRoom():IsClear() then
+				return
+			end
+		end
 		screen_size = MinimapAPI:GetScreenSize()
 		if MinimapAPI.Config.DisplayOnNoHUD or not Game():GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD) then
 			local currentroomdata = MinimapAPI:GetCurrentRoom()
@@ -993,6 +1003,26 @@ if ModConfigMenu then
 			end
 		}
 	)
+	
+	local hicstrings = {"Never","Bosses Only","Always"}
+	ModConfigMenu.AddSetting(
+		"Minimap API",
+		"Visual",
+		{
+			Type = ModConfigMenuOptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.HideInCombat
+			end,
+			Minimum = 1,
+			Maximum = 3,
+			Display = function()
+				return "Hide Map in Combat: " .. hicstrings[MinimapAPI.Config.HideInCombat]
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.HideInCombat = currentNum
+			end
+		}
+	)
 
 	ModConfigMenu.AddSetting(
 		"Minimap API",
@@ -1124,7 +1154,9 @@ MinimapAPI:AddCallback(
 	function(self, is_save)
 		if MinimapAPI:HasData() then
 			local saved = json.decode(Isaac.LoadModData(MinimapAPI))
-			MinimapAPI.Config = saved.Config
+			for i,v in pairs(saved.Config) do
+				MinimapAPI.Config[i] = v
+			end
 			if is_save then
 				local vanillarooms = Game():GetLevel():GetRooms()
 				MinimapAPI:ClearMap()
