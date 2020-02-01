@@ -30,9 +30,9 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 * Disable Room and Pickup icons seperately
 * Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
 * Draw new pickup icons (where applicable):
-  * Rune (redesign)
   * Nickels
   * Dimes
+  * Trapdoor
   * (Broken Shovel)
 * Hovering over a room will display a list of its contents *(Thanks JSG!)*
 
