@@ -5,7 +5,7 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 
 ### Unique Features
 * Dynamically resizable minimap
-* New unique custom icons for pickups, slot machines and beggars
+* Over 30 new unique custom icons for pickups, slot machines and beggars
 * Highly configurable: Turn on/off parts of the minimap, like shadows or icons
 * Smooth minimap movement (This must be enabled in the config under Experimental)
 * New map mode: Small full map (display all rooms in small form!)
