@@ -23,7 +23,7 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 * New Setting: Map Transparency
 * Split the Mod config settings in categories
 * Display mode: Vanilla Borderless
-* Add Map Curse Icons (Treasuremap, compass, blue map, restock,...)
+* Add Map Curse Icons (restock, curses)
   * Change position of the Map Curse icons (left, bottom[vanilla])
 * Function - getRandomFreePos() : Returns a X,Y Position, where no room is present but thats adjcent to an existing room (useful for Red Key-like features)
 * Function disable vanilla mapping behaviors like "build map on transition", "update current room"...
