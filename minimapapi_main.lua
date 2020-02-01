@@ -140,7 +140,9 @@ end
 
 function MinimapAPI:GetIconAnimData(id)
 	for i, v in ipairs(MinimapAPI.IconList) do
-		return v
+		if v.ID == id then
+			return v
+		end
 	end
 end
 
@@ -534,7 +536,7 @@ end)
 local defaultColor = Color(1, 1, 1, 1, 0, 0, 0)
 local function updateMinimapIcon(spr, t)
 	if t.anim then
-		spr:SetFrame(t.anim, t.frame)
+		spr:SetFrame(t.anim, t.frame or 0)
 	end
 	if t.Color then
 		spr.Color = t.Color or defaultColor
@@ -758,7 +760,7 @@ local function renderBoundedMinimap()
 							if not loc then return end
 
 							local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
-							local spr = icon.sprite or minimapsmall
+							local spr = icontb.sprite or minimapsmall
 							updateMinimapIcon(spr, icontb)
 							local brcutoff = v.RenderOffset + iconlocOffset + iconPixelSize - MinimapAPI:GetFrameBR()
 							local tlcutoff = frameTL - (v.RenderOffset + iconlocOffset)
