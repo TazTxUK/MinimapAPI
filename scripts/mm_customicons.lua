@@ -67,6 +67,11 @@ MinimapAPI:AddCustomIcon("Dresser", MinimapAPI.CustomIcons, "CustomIconDresser",
 MinimapAPI:AddCustomIcon("Trophy", MinimapAPI.CustomIcons, "CustomIconTrophy", 0)
 MinimapAPI:AddCustomIcon("CheckeredFlag", MinimapAPI.CustomIcons, "CustomIconFlag", 0)
 
+MinimapAPI:AddCustomIcon("Devilbeggar", MinimapAPI.CustomIcons, "CustomIconDevilBeggar", 0)
+MinimapAPI:AddCustomIcon("ShellGame", MinimapAPI.CustomIcons, "CustomIconShellGame", 0)
+MinimapAPI:AddCustomIcon("KeyBeggar", MinimapAPI.CustomIcons, "CustomIconKeyBeggar", 0)
+MinimapAPI:AddCustomIcon("Bombbeggar", MinimapAPI.CustomIcons, "CustomIconBombBeggar", 0)
+
 MinimapAPI:AddCustomPickup("PillBlueBlue","PillBlueBlue",5,70,PillColor.PILL_BLUE_BLUE,nil,"pills",6100)
 MinimapAPI:AddCustomPickup("PillOrangeOrange","PillOrangeOrange",5,70,PillColor.PILL_ORANGE_ORANGE,nil,"pills",6100)
 MinimapAPI:AddCustomPickup("PillWhiteWhite","PillWhiteWhite",5,70,PillColor.PILL_WHITE_WHITE,nil,"pills",6100)
@@ -91,3 +96,8 @@ MinimapAPI:AddCustomPickup("GreedDonationMachine","GreedDonationMachine",6,11,-1
 MinimapAPI:AddCustomPickup("Dresser","Dresser",6,12,-1,nil,"slots",100)
 MinimapAPI:AddCustomPickup("Trophy","CheckeredFlag",5,370,-1,nil,"trophies",12000)
 MinimapAPI:AddCustomPickup("BigChest","CheckeredFlag",5,340,-1,nil,"trophies",12000)
+
+MinimapAPI:AddCustomPickup("Devilbeggar","Devilbeggar",6,5,-1,nil,"beggars",100)
+MinimapAPI:AddCustomPickup("ShellGame","ShellGame",6,6,-1,nil,"beggars",100)
+MinimapAPI:AddCustomPickup("KeyBeggar","KeyBeggar",6,7,-1,nil,"beggars",100)
+MinimapAPI:AddCustomPickup("Bombbeggar","Bombbeggar",6,9,-1,nil,"beggars",100)
