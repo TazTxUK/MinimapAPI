@@ -31,12 +31,8 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 * Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
 * Draw new pickup icons (where applicable):
   * Rune (redesign)
-  * Beggar (redesign)
   * Nickels
   * Dimes
-  * Demon Beggar
-  * Key Master
-  * Bomb Bum
   * (Broken Shovel)
 * Hovering over a room will display a list of its contents *(Thanks JSG!)*
 
