@@ -89,11 +89,11 @@ Removes all rooms from the minimap with the ID given.
 ### Adding Custom Pickups
 
 ```lua
-MinimapAPI:AddPickup(id, IconID, EntityType, number variant, number subtype, function, icongroup, number priority)
+MinimapAPI:AddPickup(id, Icon, EntityType, number variant, number subtype, function, icongroup, number priority)
 --or
 MinimapAPI:AddPickup{
 	ID = --any
-	IconID = --IconID
+	Icon = --Icon
 	Type = --EntityType
 	Variant = --number variant
 	SubType = --number subtype
@@ -106,8 +106,8 @@ MinimapAPI:AddPickup{
 Adds a custom pickup to the pickup list. The API will automatically detect any pickup with the attributes given above in the current room and display the associated IconID on the minimap.
 
 * ID is any value that is used to identify this pickup.
-* IconID is the id of any icon that is used to display the pickup on the minimap (See `MinimapAPI.AddIcon` and IconIDs section under Data)
-  * IconID can also be a table of the form `{sprite=...,anim=...,frame=...,Color=(optional)...}`. This will add the icon to the list and apply it to the pickup straight away. If sprite isn't provided, the default small minimap sprite will be used instead. If anim and frame aren't provided, the API will not perform any functions on the sprite, requiring you to animate it. Color is multiplied onto the sprite, and is optional.
+* Icon is the id of any icon that is used to display the pickup on the minimap (See `MinimapAPI.AddIcon` and IconIDs section under Data)
+  * Icon can also be a table of the form `{sprite=...,anim=...,frame=...,Color=(optional)...}`. This will add the icon to the list and apply it to the pickup straight away. If sprite isn't provided, the default small minimap sprite will be used instead. If anim and frame aren't provided, the API will not perform any functions on the sprite, requiring you to animate it. Color is multiplied onto the sprite, and is optional.
 * EntityType is the type of the pickup.
 * variant is the variant of the pickup. If nil or -1, all variants are accepted.
 * subtype is the subtype of the pickup. If nil or -1, all subtypes are accepted.
