@@ -41,6 +41,8 @@ MinimapAPI:AddIcon("PillWhiteBlack", MinimapAPI.CustomIcons, "CustomIconPillWhit
 MinimapAPI:AddIcon("PillWhiteYellow", MinimapAPI.CustomIcons, "CustomIconPillWhiteYellow", 0)
 
 MinimapAPI:AddIcon("DoublePenny", MinimapAPI.CustomIcons, "CustomIconCoinDouble", 0)
+MinimapAPI:AddIcon("Nickel", MinimapAPI.CustomIcons, "CustomIconNickel", 0)
+MinimapAPI:AddIcon("Dime", MinimapAPI.CustomIcons, "CustomIconDime", 0)
 MinimapAPI:AddIcon("GoldenKey", MinimapAPI.CustomIcons, "CustomIconGoldKey", 0)
 MinimapAPI:AddIcon("GoldenBomb", MinimapAPI.CustomIcons, "CustomIconGoldBomb", 0)
 MinimapAPI:AddIcon("SlotBloodDonation", MinimapAPI.CustomIcons, "CustomIconSlotBlood", 0)
@@ -72,6 +74,8 @@ MinimapAPI:AddPickup("PillWhiteBlack","PillWhiteBlack",5,70,PillColor.PILL_WHITE
 MinimapAPI:AddPickup("PillWhiteYellow","PillWhiteYellow",5,70,PillColor.PILL_WHITE_YELLOW,nil,"pills",6100)
 
 MinimapAPI:AddPickup("DoublePenny","DoublePenny",5,20,4,nil,"coins",3100)
+MinimapAPI:AddPickup("Nickel","Nickel",5,20,2,nil,"coins",3100)
+MinimapAPI:AddPickup("Dime","Dime",5,20,3,nil,"coins",3100)
 MinimapAPI:AddPickup("GoldenKey","GoldenKey",5,30,2,nil,"keys",5100)
 MinimapAPI:AddPickup("GoldenBomb","GoldenBomb",5,40,4,nil,"bombs",4100)
 MinimapAPI:AddPickup("SlotBloodDonation","SlotBloodDonation",6,2,-1,nil,"slots",100)

@@ -154,13 +154,6 @@ function MinimapAPI:GetSpriteLarge()
 	return minimaplarge
 end
 
--- function MinimapAPI:GetUniquePickupID()
-	-- local x = 1
-	-- while true do
-		-- local v = MinimapAPI.
-	-- end
--- end
-
 local defaultCustomPickupPriority = 12999 --more than vanilla, less than other potential custom pickups
 function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup, priority)
 	local newRoom={}
@@ -528,28 +521,6 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 	end
 end
 
-function MinimapAPI:getDiscoveredBounds()
-	local minx
-	local maxx
-	local miny
-	local maxy
-	for i = 1, #(roommapdata) do
-		local v = roommapdata[i]
-		if (v.DisplayFlags or 0) > 0 then
-			local minxval = v.Position.X
-			if not minx or (minxval < minx) then minx = minxval	end
-			local maxxval = v.Position.X + MinimapAPI:GetRoomShapeGridSize(v.Shape).X
-			if not maxx or (maxxval > maxx) then maxx = maxxval	end
-			
-			local minyval = v.Position.Y
-			if not miny or (minyval < miny) then miny = minyval	end
-			local maxyval = v.Position.Y + MinimapAPI:GetRoomShapeGridSize(v.Shape).Y
-			if not maxy or (maxyval > maxy) then maxy = maxyval	end
-		end
-	end
-	return {minx,maxx,miny,maxy}
-end
-
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 	updatePlayerPos()
 end)
@@ -576,6 +547,28 @@ local function updateMinimapIcon(spr, t)
 	if t.Color then
 		spr.Color = t.Color or defaultColor
 	end
+end
+
+function MinimapAPI:GetDiscoveredBounds()
+	local minx
+	local maxx
+	local miny
+	local maxy
+	for i = 1, #(roommapdata) do
+		local v = roommapdata[i]
+		if (v.DisplayFlags or 0) > 0 then
+			local minxval = v.Position.X
+			if not minx or (minxval < minx) then minx = minxval	end
+			local maxxval = v.Position.X + MinimapAPI:GetRoomShapeGridSize(v.Shape).X
+			if not maxx or (maxxval > maxx) then maxx = maxxval	end
+			
+			local minyval = v.Position.Y
+			if not miny or (minyval < miny) then miny = minyval	end
+			local maxyval = v.Position.Y + MinimapAPI:GetRoomShapeGridSize(v.Shape).Y
+			if not maxy or (maxyval > maxy) then maxy = maxyval	end
+		end
+	end
+	return {minx,maxx,miny,maxy}
 end
 
 local function renderUnboundedMinimap(size)
@@ -676,7 +669,7 @@ local function renderUnboundedMinimap(size)
 					if v.LockedIcons and #v.LockedIcons > 0 then
 						local locs = MinimapAPI:GetRoomShapeIconPositions(v.Shape, #v.LockedIcons)
 						if size ~= "small" then
-							locs = MinimapAPI:GetRoomShapeIconPositions(v.Shape, #v.LockedIcons)
+							locs = MinimapAPI:GetLargeRoomShapeIconPositions(v.Shape, #v.LockedIcons)
 						end
 						renderIcons(v.LockedIcons, locs)
 					end
@@ -834,9 +827,9 @@ local function renderBoundedMinimap()
 end
 
 local function renderMinimapIcons()
-	local gameLvl= Game():GetLevel()
-	local curseIconPos=Vector( screen_size.X - MinimapAPI.Config.PositionX, MinimapAPI.Config.PositionY + 5)
-	local bounds= MinimapAPI:getDiscoveredBounds()
+	local gameLvl = Game():GetLevel()
+	local curseIconPos = Vector( screen_size.X - MinimapAPI.Config.PositionX, MinimapAPI.Config.PositionY + 5)
+	local bounds = MinimapAPI:GetDiscoveredBounds()
 	
 	if MinimapAPI:IsLarge() then curseIconPos= curseIconPos + Vector(- (bounds[2]-bounds[1])* largeRoomPixelSize.X, 0) 
 	elseif MinimapAPI.Config.DisplayMode == 1 then curseIconPos= curseIconPos + Vector( - (bounds[2]-bounds[1])*roomPixelSize.X, 0) 
@@ -1142,7 +1135,7 @@ if ModConfigMenu then
 
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Experimental",
+		"Visual",
 		{
 			Type = ModConfigMenuOptionType.NUMBER,
 			CurrentSetting = function()
