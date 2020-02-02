@@ -30,9 +30,7 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 * Disable Room and Pickup icons seperately
 * Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
 * Draw new pickup icons (where applicable):
-  * Nickels
-  * Dimes
-  * Trapdoor
+  * Trapdoor (Grid Entity icons not implemented)
   * (Broken Shovel)
 * Hovering over a room will display a list of its contents *(Thanks JSG!)*
 
@@ -88,32 +86,14 @@ MinimapAPI:RemoveRoomByID(id)
 
 Removes all rooms from the minimap with the ID given.
 
-### Adding custom pickups and icons
+### Adding Custom Pickups
 
 ```lua
-MinimapAPI:AddCustomIcon(id, Sprite, string animationName, number frame, (optional) Color color)
-```
-
-* id is for identifying this icon. You would input the same ID into a function parameter that takes IconID.
-* Adds a custom icon to the icon list, using the above parameters.
-* If Sprite isn't provided, MinimapAPI will use the small minimap sprite.
-* animationName is required.
-* If frame isn't provided, 0 is used as the default.
-
-* If you want to control the icon via your mod (such as animating it, changing animation frames, rotation etc), only give the sprite parameter and leave all the others blank or nil. The API will not attempt to change the sprite if this is the case.
-
-```lua
-MinimapAPI:RemoveCustomIcon(id)
-```
-
-Remove a custom icon with the ID given.
-
-```lua
-MinimapAPI:AddCustomPickup(id, IconID, EntityType, number variant, number subtype, function, icongroup, number priority)
+MinimapAPI:AddPickup(id, Icon, EntityType, number variant, number subtype, function, icongroup, number priority)
 --or
-MinimapAPI:AddCustomPickup{
+MinimapAPI:AddPickup{
 	ID = --any
-	IconID = --IconID
+	Icon = --Icon
 	Type = --EntityType
 	Variant = --number variant
 	SubType = --number subtype
@@ -126,13 +106,33 @@ MinimapAPI:AddCustomPickup{
 Adds a custom pickup to the pickup list. The API will automatically detect any pickup with the attributes given above in the current room and display the associated IconID on the minimap.
 
 * ID is any value that is used to identify this pickup.
-* IconID is the id of any icon that is used to display the pickup on the minimap (See IconIDs section under Data)
+* Icon is the id of any icon that is used to display the pickup on the minimap (See `MinimapAPI.AddIcon` and IconIDs section under Data)
+  * Icon can also be a table of the form `{sprite=...,anim=...,frame=...,Color=(optional)...}`. This will add the icon to the list and apply it to the pickup straight away. If sprite isn't provided, the default small minimap sprite will be used instead. If anim and frame aren't provided, the API will not perform any functions on the sprite, requiring you to animate it. Color is multiplied onto the sprite, and is optional.
 * EntityType is the type of the pickup.
 * variant is the variant of the pickup. If nil or -1, all variants are accepted.
 * subtype is the subtype of the pickup. If nil or -1, all subtypes are accepted.
 * function is a function that takes the pickup as an argument and returns true if it can be displayed on the map, false otherwise. (Useful for pickups that have been collected but still exist) If nil, then the pickup will always be accepted if it matches the type, variant and subtype.
 * IconGroup (typically a string, but can be any value). If two or more icons are of the same icon group, and both want to be displayed, only the one with the highest priority will be shown. (For a list, see IconGroups under Data)
 * Priority is a number. Icons with higher priorities will be displayed over other icons. Default = 11000
+
+### Adding Custom Icons
+
+```lua
+MinimapAPI:AddIcon(id, Sprite, string animationName, number frame, (optional) Color color)
+```
+* Adds a custom icon to the icon list, using the above parameters.
+* id is for identifying this icon. You would input this into the Icon parameter of `MinimapAPI:AddPickup`.
+* If Sprite isn't provided, MinimapAPI will use the small minimap sprite.
+* If animationName and frame aren't provided, the API will not perform any functions on Sprite, requiring you to animate it.
+* If frame isn't provided, 0 is used as the default.
+
+* If you want to control the icon via your mod (such as animating it, changing animation frames, rotation etc), only give the sprite parameter and leave all the others blank or nil. The API will not attempt to change the sprite if this is the case.
+
+```lua
+MinimapAPI:RemoveIcon(id)
+```
+
+Remove a custom icon with the ID given.
 
 ### Get...
 
@@ -203,7 +203,7 @@ IconID | Animation Name
 "Card" | "IconCard"
 "Slot" | "IconSlot"
 
-### Built in Pickups
+### Vanilla Pickups
 ID | IconID | IconGroup | Priority
 -- | ------ | --------- | --------
 "WhiteHeart" | "WhiteHeart" | "hearts" | 10900
@@ -231,3 +231,4 @@ ID | IconID | IconGroup | Priority
 "Battery" | "Battery" | "batteries" | 2000
 "Card" | "Card" | "cards" | 1000
 "Slot" | "Slot" | "slots" | 0
+* Custom pickups such as nickel or bomb beggar are not listed.
