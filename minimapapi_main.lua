@@ -154,17 +154,27 @@ function MinimapAPI:GetSpriteLarge()
 	return minimaplarge
 end
 
-local defaultCustomPickupPriority = 11000 --more than vanilla, less than other potential custom pickups
-function MinimapAPI:AddCustomPickup(id, iconid, typ, variant, subtype, call, icongroup, priority)
+-- function MinimapAPI:GetUniquePickupID()
+	-- local x = 1
+	-- while true do
+		-- local v = MinimapAPI.
+	-- end
+-- end
+
+local defaultCustomPickupPriority = 12999 --more than vanilla, less than other potential custom pickups
+function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup, priority)
 	local newRoom={}
 	if type(id) == "table" and iconid == nil then
 		local t = id
 		if t.ID then
-			MinimapAPI:RemoveCustomPickup(t.ID)
+			MinimapAPI:RemovePickup(t.ID)
+		end
+		if type(t.Icon) == "table" then
+			t.Icon = MinimapAPI:AddIcon(t.Icon.ID or t.ID, t.Icon.sprite, t.Icon.anim, t.Icon.frame, t.Icon.color).ID
 		end
 		newRoom = {
 			ID = t.ID,
-			IconID = t.IconID,
+			IconID = t.Icon,
 			Type = t.Type,
 			Variant = t.Variant or -1,
 			SubType = t.SubType or -1,
@@ -174,7 +184,10 @@ function MinimapAPI:AddCustomPickup(id, iconid, typ, variant, subtype, call, ico
 		}
 	else
 		if id then
-			MinimapAPI:RemoveCustomPickup(id)
+			MinimapAPI:RemovePickup(id)
+		end
+		if type(iconid) == "table" then
+			iconid = MinimapAPI:AddIcon(iconid.ID or id, iconid.sprite, iconid.anim, iconid.frame, iconid.color).ID
 		end
 		newRoom = {
 			ID = id,
@@ -192,7 +205,7 @@ function MinimapAPI:AddCustomPickup(id, iconid, typ, variant, subtype, call, ico
 	return newRoom
 end
 
-function MinimapAPI:RemoveCustomPickup(id)
+function MinimapAPI:RemovePickup(id)
 	for i = #MinimapAPI.PickupList, 1, -1 do
 		local v = MinimapAPI.PickupList[i]
 		if v.ID == id then
@@ -201,8 +214,8 @@ function MinimapAPI:RemoveCustomPickup(id)
 	end
 end
 
-function MinimapAPI:AddCustomIcon(id, sprite, anim, frame, color)
-	MinimapAPI:RemoveCustomIcon(id)
+function MinimapAPI:AddIcon(id, sprite, anim, frame, color)
+	MinimapAPI:RemoveIcon(id)
 	local x = {
 		ID = id,
 		sprite = sprite,
@@ -214,7 +227,7 @@ function MinimapAPI:AddCustomIcon(id, sprite, anim, frame, color)
 	return x
 end
 
-function MinimapAPI:RemoveCustomIcon(id)
+function MinimapAPI:RemoveIcon(id)
 	for i = #MinimapAPI.IconList, 1, -1 do
 		local v = MinimapAPI.IconList[i]
 		if v.ID == id then
