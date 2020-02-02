@@ -120,11 +120,10 @@ Adds a custom pickup to the pickup list. The API will automatically detect any p
 ```lua
 MinimapAPI:AddIcon(id, Sprite, string animationName, number frame, (optional) Color color)
 ```
-
-* id is for identifying this icon. You would input the same ID into a function parameter that takes IconID.
 * Adds a custom icon to the icon list, using the above parameters.
+* id is for identifying this icon. You would input this into the Icon parameter of `MinimapAPI:AddPickup`.
 * If Sprite isn't provided, MinimapAPI will use the small minimap sprite.
-* animationName is required.
+* If animationName and frame aren't provided, the API will not perform any functions on Sprite, requiring you to animate it.
 * If frame isn't provided, 0 is used as the default.
 
 * If you want to control the icon via your mod (such as animating it, changing animation frames, rotation etc), only give the sprite parameter and leave all the others blank or nil. The API will not attempt to change the sprite if this is the case.
@@ -204,7 +203,7 @@ IconID | Animation Name
 "Card" | "IconCard"
 "Slot" | "IconSlot"
 
-### Built in Pickups
+### Vanilla Pickups
 ID | IconID | IconGroup | Priority
 -- | ------ | --------- | --------
 "WhiteHeart" | "WhiteHeart" | "hearts" | 10900
@@ -232,3 +231,4 @@ ID | IconID | IconGroup | Priority
 "Battery" | "Battery" | "batteries" | 2000
 "Card" | "Card" | "cards" | 1000
 "Slot" | "Slot" | "slots" | 0
+* Custom pickups such as nickel or bomb beggar are not listed.
