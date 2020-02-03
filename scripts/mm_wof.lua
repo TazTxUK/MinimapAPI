@@ -73,5 +73,20 @@ function miniMAPI:IsDoorSlotAllowed(room,DoorSlot)
 	return false
 end
 
+-- Returns wheather or not a doorslot can be used in the specified room.
+function miniMAPI:DiscoverAdjacent(room)
+	for i,v in ipairs(miniMAPI.RoomShapeAdjacentRoomCoords[room.Shape]) do
+		if #v > 0 then
+			local offroom = miniMAPI:GetRoom(room.Position + Vector(v[1],v[2]))
+			if offroom then
+				if not offroom.Descriptor then
+					offroom.DisplayFlags = (offroom.DisplayFlags or 0) | 1
+				end
+			end
+		end
+	end
+	return false
+end
+
 -- TODO
 function miniMAPI:GetRandomFreePos(roomID) end
