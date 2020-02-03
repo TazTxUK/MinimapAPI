@@ -397,6 +397,12 @@ local maproomfunctions = {
 			self.Clear = self.Descriptor.Clear
 		end
 	end,
+	EnableVanillaUpdate = function(self,df)
+		if self.Descriptor then
+			self.DisplayFlags = nil
+			self.Clear = nil
+		end
+	end,
 }
 
 local maproommeta = {
