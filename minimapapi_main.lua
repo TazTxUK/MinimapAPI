@@ -25,6 +25,10 @@ function MinimapAPI:GetUnknownRoomTypeIconID(t)
 	return MinimapAPI.UnknownRoomTypeIconIDs[t]
 end
 
+function MinimapAPI:SetVanillaBehavior(bool)
+	disableVanillaBehavior=bool
+end
+
 function MinimapAPI:GetRoomShapeIconPositions(rs, iconcount)
 	iconcount = iconcount or math.huge
 	local r
@@ -56,6 +60,10 @@ function MinimapAPI:GridVectorToIndex(v)
 	return v.Y * 13 + v.X
 end
 
+function MinimapAPI:RoomDistance(room1,room2)
+	return room1.Position:__sub(room2.Position):Length()
+end
+
 function MinimapAPI:GetFrameBR()
 	return Vector(MinimapAPI.Config.MapFrameWidth, MinimapAPI.Config.MapFrameHeight)
 end
@@ -71,6 +79,8 @@ local roommapdata = {}
 local currentroom
 local playerMapPos = Vector(0, 0)
 local frozenPlayerPos
+local disableVanillaBehavior = false
+
 
 local mapdisplaylarge = false
 local mapheldframes = 0
@@ -516,6 +526,7 @@ local function updatePlayerPos()
 end
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_LEVEL,	function(self)
+	if disableVanillaBehavior then return end
 	MinimapAPI:LoadDefaultMap()
 	updatePlayerPos()
 end)
@@ -542,6 +553,7 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 end
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
+	if disableVanillaBehavior then return end
 	updatePlayerPos()
 end)
 
