@@ -60,7 +60,7 @@ end
 
 -- Returns the room relative to the doorslot position of the defined roomID
 function miniMAPI:GetRelativeToDoorPos(room,DoorSlot) 
-	if not miniMAPI:IsDoorSlotAllowed(roomID,DoorSlot) then return nil end
+	if not miniMAPI:IsDoorSlotAllowed(room,DoorSlot) then return nil end
 	local doorSlotOffset= miniMAPI.RoomShapeAdjacentRoomCoords[room.Shape][DoorSlot+1]
 	return miniMAPI:GetRoom(Vector(room.Position.X+doorSlotOffset[1],room.Position.Y+doorSlotOffset[2]))
 end
