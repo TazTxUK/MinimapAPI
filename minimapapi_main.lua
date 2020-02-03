@@ -1220,6 +1220,7 @@ MinimapAPI:AddCallback(
 						Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO)
 					}
 				end
+				playerMapPos= Vector(saved.playerMapPosX,saved.playerMapPosY)
 			end
 		end
 	end
@@ -1231,6 +1232,8 @@ MinimapAPI:AddCallback(
 	function()
 		local saved = {}
 		saved.Config = MinimapAPI.Config
+		saved.playerMapPosX=playerMapPos.X
+		saved.playerMapPosY=playerMapPos.Y
 		saved.LevelData = {}
 		for i, v in ipairs(roommapdata) do
 			saved.LevelData[#saved.LevelData + 1] = {
