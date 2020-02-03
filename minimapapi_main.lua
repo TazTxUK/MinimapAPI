@@ -383,7 +383,20 @@ local maproomfunctions = {
 	end,
 	IsClear = function(self)
 		return self.Clear or false
-	end
+	end,
+	SetDisplayFlags = function(self,df)
+		if self.Descriptor then
+			self.Descriptor.DisplayFlags = df
+		else
+			self.DisplayFlags = df
+		end
+	end,
+	DisableVanillaUpdate = function(self,df)
+		if self.Descriptor then
+			self.DisplayFlags = self.Descriptor.DisplayFlags
+			self.Clear = self.Descriptor.Clear
+		end
+	end,
 }
 
 local maproommeta = {
