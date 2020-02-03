@@ -25,10 +25,6 @@ function MinimapAPI:GetUnknownRoomTypeIconID(t)
 	return MinimapAPI.UnknownRoomTypeIconIDs[t]
 end
 
-function MinimapAPI:SetVanillaBehavior(bool)
-	disableVanillaBehavior=bool
-end
-
 function MinimapAPI:GetRoomShapeIconPositions(rs, iconcount)
 	iconcount = iconcount or math.huge
 	local r
@@ -79,7 +75,6 @@ local roommapdata = {}
 local currentroom
 local playerMapPos = Vector(0, 0)
 local frozenPlayerPos
-local disableVanillaBehavior = false
 
 
 local mapdisplaylarge = false
@@ -518,7 +513,7 @@ end
 
 local function updatePlayerPos()
 	local currentroom = Game():GetLevel():GetCurrentRoomDesc()
-	if currentroom then
+	if currentroom.GridIndex>=0 then
 		playerMapPos = MinimapAPI:GridIndexToVector(currentroom.GridIndex)
 		custom_playerpos = false
 		MinimapAPI:RunPlayerPosCallbacks()
