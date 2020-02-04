@@ -7,7 +7,7 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 * Dynamically resizable minimap
 * Over 30 new unique custom icons for pickups, slot machines and beggars
 * Highly configurable: Turn on/off parts of the minimap, like shadows or icons
-* Smooth minimap movement (This must be enabled in the config under Experimental)
+* Smooth minimap movement (1.0 is instant, 0.1 is very slow)
 * New map mode: Small full map (display all rooms in small form!)
 
 ### API Features
@@ -21,12 +21,10 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 ## Backlog / Todo-List
 ### Planned Features:
 * New Setting: Map Transparency
-* Split the Mod config settings in categories
 * Display mode: Vanilla Borderless
 * Add Map Curse Icons (restock, curses)
   * Change position of the Map Curse icons (left, bottom[vanilla])
 * Function - getRandomFreePos() : Returns a X,Y Position, where no room is present but thats adjcent to an existing room (useful for Red Key-like features)
-* Function disable vanilla mapping behaviors like "build map on transition", "update current room"...
 * Disable Room and Pickup icons seperately
 * Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
 * Draw new pickup icons (where applicable):
@@ -35,12 +33,10 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 * Hovering over a room will display a list of its contents *(Thanks JSG!)*
 
 ### Known issues:
-* Curse of the Lost questionmark isnt handles by the API in any way
+* Curse of the Lost questionmark isnt drawn
+* Fix that 1 stretchy row (reminder for taz)
 
 ### Needs rework:
-* rework the "Post Render" functions to be less redundant (for @wofsauge)
-* more intuitive names for most functions
-* overload functions that take tables
 * Some comments for the functions with a small explaination on what they are used for, what arguments they require, which of them are optional and what the function returns
 
 ## API Documentation
@@ -137,22 +133,24 @@ Remove a custom icon with the ID given.
 ### Get...
 
 ```lua
+MinimapAPI:GetCurrentRoom()
+```
+Returns the current room the player is theoretically in (according to their position on the minimap)
+
+```lua
 MinimapAPI:GetRoom(Vector position)
 ```
-
 Returns the room at the given position.
 
 ```lua
 MinimapAPI:GetRoomByID(id)
 ```
-
 Returns one room in the level with the given ID.
 *So don't add more than one room with the same ID.*
 
 ```lua
 MinimapAPI:GetPlayerPosition()
 ```
-
 Returns the player's map vector position relative to (0,0)
 
 ## Data
