@@ -656,6 +656,9 @@ local function renderUnboundedMinimap(size)
 			else
 				v.RenderOffset = v.TargetRenderOffset
 			end
+			if v.RenderOffset:DistanceSquared(v.TargetRenderOffset) <= 1 then
+				v.RenderOffset = v.TargetRenderOffset
+			end
 		end
 
 		if MinimapAPI.Config.ShowShadows then
