@@ -35,6 +35,7 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 ### Known issues:
 * Curse of the Lost questionmark isnt drawn
 * Fix that 1 stretchy row (reminder for taz)
+* Starting a Rerun breaks the map logic entirely
 
 ### Needs rework:
 * Some comments for the functions with a small explaination on what they are used for, what arguments they require, which of them are optional and what the function returns
