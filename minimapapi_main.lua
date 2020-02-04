@@ -1232,7 +1232,7 @@ MinimapAPI:AddCallback(
 			for i,v in pairs(saved.Config) do
 				MinimapAPI.Config[i] = v
 			end
-			if is_save then
+			if is_save and saved.LevelData then
 				local vanillarooms = Game():GetLevel():GetRooms()
 				MinimapAPI:ClearMap()
 				for i, v in ipairs(saved.LevelData) do
@@ -1258,26 +1258,28 @@ MinimapAPI:AddCallback(
 -- SAVING GAME
 MinimapAPI:AddCallback(
 	ModCallbacks.MC_PRE_GAME_EXIT,
-	function()
+	function(self, menuexit)
 		local saved = {}
 		saved.Config = MinimapAPI.Config
 		saved.playerMapPosX=playerMapPos.X
 		saved.playerMapPosY=playerMapPos.Y
-		saved.LevelData = {}
-		for i, v in ipairs(roommapdata) do
-			saved.LevelData[#saved.LevelData + 1] = {
-				PositionX = v.Position.X,
-				PositionY = v.Position.Y,
-				ID = type(v.ID) ~= "userdata" and v.ID,
-				Shape = v.Shape,
-				ItemIcons = v.ItemIcons,
-				PermanentIcons = v.PermanentIcons,
-				LockedIcons = v.LockedIcons,
-				DescriptorListIndex = v.Descriptor and v.Descriptor.ListIndex,
-				DisplayFlags = rawget(v, "DisplayFlags"),
-				Clear = rawget(v, "Clear"),
-				Color = v.Color and {R = v.Color.R, G = v.Color.G, B = v.Color.B, A = v.Color.A, RO = v.Color.RO, GO = v.Color.GO, BO = v.Color.BO}
-			}
+		if menuexit then
+			saved.LevelData = {}
+			for i, v in ipairs(roommapdata) do
+				saved.LevelData[#saved.LevelData + 1] = {
+					PositionX = v.Position.X,
+					PositionY = v.Position.Y,
+					ID = type(v.ID) ~= "userdata" and v.ID,
+					Shape = v.Shape,
+					ItemIcons = v.ItemIcons,
+					PermanentIcons = v.PermanentIcons,
+					LockedIcons = v.LockedIcons,
+					DescriptorListIndex = v.Descriptor and v.Descriptor.ListIndex,
+					DisplayFlags = rawget(v, "DisplayFlags"),
+					Clear = rawget(v, "Clear"),
+					Color = v.Color and {R = v.Color.R, G = v.Color.G, B = v.Color.B, A = v.Color.A, RO = v.Color.RO, GO = v.Color.GO, BO = v.Color.BO}
+				}
+			end
 		end
 		MinimapAPI:SaveData(json.encode(saved))
 	end
