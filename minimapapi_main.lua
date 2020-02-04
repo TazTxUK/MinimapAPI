@@ -25,6 +25,21 @@ function MinimapAPI:GetUnknownRoomTypeIconID(t)
 	return MinimapAPI.UnknownRoomTypeIconIDs[t]
 end
 
+function MinimapAPI:IsAmbushBoss()
+	local ls = Game():GetLevel():GetStage()
+	if ls == LevelStage.STAGE1_2 then
+		return true
+	elseif ls == LevelStage.STAGE2_2 then
+		return true
+	elseif ls == LevelStage.STAGE3_2 then
+		return true
+	elseif ls == LevelStage.STAGE4_2 then
+		return true
+	else
+		return false
+	end
+end
+
 function MinimapAPI:GetRoomShapeIconPositions(rs, iconcount)
 	iconcount = iconcount or math.huge
 	local r
@@ -329,8 +344,13 @@ function MinimapAPI:LoadDefaultMap()
 			LockedIcons = {MinimapAPI:GetUnknownRoomTypeIconID(v.Data.Type)},
 			ItemIcons = {},
 			Position = MinimapAPI:GridIndexToVector(v.GridIndex),
-			Descriptor = v
+			Descriptor = v,
 		}
+		if v.Data.Type == 11 then
+			if MinimapAPI:IsAmbushBoss() then
+				t.PermanentIcons[1] = "BossAmbushRoom"
+			end
+		end
 		if override_greed and Game():IsGreedMode() then
 			if v.Data.Type == RoomType.ROOM_TREASURE then
 				treasure_room_count = treasure_room_count + 1
