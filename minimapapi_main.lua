@@ -133,6 +133,10 @@ local minimaplarge = Sprite()
 minimaplarge:Load("gfx/ui/minimapapi_minimap2.anm2", true)
 local minimapicons = Sprite()
 minimapicons:Load("gfx/ui/minimapapi_mapitemicons.anm2", true)
+local minimapcustomsmall = Sprite()
+minimapcustomsmall:Load("gfx/ui/minimapapi/custom_minimap1.anm2", true)
+local minimapcustomlarge = Sprite()
+minimapcustomlarge:Load("gfx/ui/minimapapi/custom_minimap2.anm2", true)
 
 function MinimapAPI:GetLevel()
 	return roommapdata
@@ -680,16 +684,20 @@ local function renderUnboundedMinimap(size)
 			local displayflags = v:GetDisplayFlags()
 			if displayflags & 0x1 > 0 then
 				local anim
+				local spr = sprite
 				if iscurrent then
 					anim = "RoomCurrent"
 				elseif v:IsClear() then
 					anim = "RoomVisited"
+				elseif MinimapAPI.Config.DisplayExploredRooms and (v.VisitedCount or 0) > 0 then
+					spr = size == "small" and minimapcustomsmall or minimapcustomlarge
+					anim = "RoomSemivisited"
 				else
 					anim = "RoomUnvisited"
 				end
-				sprite:SetFrame(anim, MinimapAPI:GetRoomShapeFrame(v.Shape))
-				sprite.Color = v.Color or Color(1, 1, 1, 1, 0, 0, 0)
-				sprite:Render(offsetVec + v.RenderOffset, zvec, zvec)
+				spr:SetFrame(anim, MinimapAPI:GetRoomShapeFrame(v.Shape))
+				spr.Color = v.Color or Color(1, 1, 1, 1, 0, 0, 0)
+				spr:Render(offsetVec + v.RenderOffset, zvec, zvec)
 			end
 		end
 
@@ -818,12 +826,16 @@ local function renderBoundedMinimap()
 		for i, v in pairs(roommapdata) do
 			local iscurrent = MinimapAPI:PlayerInRoom(v)
 			local displayflags = v:GetDisplayFlags()
+			local spr = minimapsmall
 			if displayflags & 0x1 > 0 then
 				local anim
 				if iscurrent then
 					anim = "RoomCurrent"
 				elseif v:IsClear() then
 					anim = "RoomVisited"
+				elseif MinimapAPI.Config.DisplayExploredRooms and (v.VisitedCount or 0) > 0 then
+					spr = minimapcustomsmall
+					anim = "RoomSemivisited"
 				else
 					anim = "RoomUnvisited"
 				end
@@ -835,9 +847,9 @@ local function renderBoundedMinimap()
 				tlcutoff.X < actualRoomPixelSize.X and tlcutoff.Y < actualRoomPixelSize.Y then
 					brcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
 					tlcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
-					minimapsmall:SetFrame(anim, MinimapAPI:GetRoomShapeFrame(v.Shape))
-					minimapsmall.Color = v.Color or Color(1, 1, 1, 1, 0, 0, 0)
-					minimapsmall:Render(offsetVec + v.RenderOffset, tlcutoff, brcutoff)
+					spr:SetFrame(anim, MinimapAPI:GetRoomShapeFrame(v.Shape))
+					spr.Color = v.Color or Color(1, 1, 1, 1, 0, 0, 0)
+					spr:Render(offsetVec + v.RenderOffset, tlcutoff, brcutoff)
 				end
 			end
 		end
@@ -1079,6 +1091,23 @@ if ModConfigMenu then
 		}
 	)
 	
+	ModConfigMenu.AddSetting(
+		"Minimap API",
+		"Visual",
+		{
+			Type = ModConfigMenuOptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.DisplayExploredRooms
+			end,
+			Display = function()
+				return "Show Visited Uncleared Rooms: " .. (MinimapAPI.Config.DisplayExploredRooms and "True" or "False")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.DisplayExploredRooms = currentBool
+			end
+		}
+	)
+	
 	local hicstrings = {"Never","Bosses Only","Always"}
 	ModConfigMenu.AddSetting(
 		"Minimap API",
@@ -1287,3 +1316,4 @@ MinimapAPI:AddCallback(
 
 require("minimapapi_scripts")
 Isaac.ConsoleOutput("Minimap API loaded!\n")
+
