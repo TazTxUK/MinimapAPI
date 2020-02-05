@@ -11,8 +11,8 @@ MinimapAPI.Config = {
 	["PositionY"] = 4, 					--Default = 4
 	["DisplayMode"] = 2,				--Default = 2
 	["ShowLevelFlags"] = true,			--Default = true
-	["SmoothSlidingSpeed"] = 0.5,			--Default = 1		(1 is instantaneous, 0.1 is extremely slow)
+	["SmoothSlidingSpeed"] = 0.5,		--Default = 0.5		(1 is instantaneous, 0.1 is extremely slow)
 	["HideInCombat"] = 1,				--Default = 1
 	["OverrideVoid"] = false,			--Default = false
-	["DisplayExploredRooms"] = false,	--Default = false
+	["DisplayExploredRooms"] = true,	--Default = true
 }
