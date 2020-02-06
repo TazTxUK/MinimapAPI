@@ -40,5 +40,5 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 ### Needs rework:
 * Some comments for the functions with a small explaination on what they are used for, what arguments they require, which of them are optional and what the function returns
 
-##Documentation
+## Documentation
 [Click here](https://github.com/TazTxUK/MinimapAPI/wiki)
