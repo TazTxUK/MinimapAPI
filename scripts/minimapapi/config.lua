@@ -15,4 +15,7 @@ MinimapAPI.Config = {
 	["HideInCombat"] = 1,				--Default = 1
 	["OverrideVoid"] = false,			--Default = false
 	["DisplayExploredRooms"] = true,	--Default = true
+	["AllowToggleLargeMap"] = false,	--Default = false
+	["AllowToggleSmallMap"] = true,		--Default = false
+	["AllowToggleBoundedMap"] = true,	--Default = false
 }

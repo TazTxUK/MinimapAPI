@@ -266,7 +266,7 @@ function MinimapAPI:EnablePickupDetection()
 end
 
 function MinimapAPI:IsLarge()
-	return mapheldframes > 7
+	return mapheldframes > 7 or MinimapAPI.Config.DisplayMode == 3
 end
 
 function MinimapAPI:PlayerInRoom(roomdata)
@@ -599,9 +599,19 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_UPDATE, function(self)
 		mapheldframes = mapheldframes + 1
 	elseif mapheldframes > 0 then
 		if mapheldframes < 8 then
-			MinimapAPI.Config.DisplayMode = MinimapAPI.Config.DisplayMode + 1
-			if MinimapAPI.Config.DisplayMode > 2 then
-				MinimapAPI.Config.DisplayMode = 1
+			local modes = {
+				[1] = MinimapAPI.Config.AllowToggleSmallMap,
+				[2] = MinimapAPI.Config.AllowToggleBoundedMap,
+				[3] = MinimapAPI.Config.AllowToggleLargeMap,
+			}
+			for i=1,3 do
+				MinimapAPI.Config.DisplayMode = MinimapAPI.Config.DisplayMode + 1
+				if MinimapAPI.Config.DisplayMode > 3 then
+					MinimapAPI.Config.DisplayMode = 1
+				end
+				if modes[MinimapAPI.Config.DisplayMode] then
+					break
+				end
 			end
 		end
 		mapheldframes = 0
@@ -1109,6 +1119,57 @@ if ModConfigMenu then
 		}
 	)
 	
+	ModConfigMenu.AddSetting(
+		"Minimap API",
+		"Visual",
+		{
+			Type = ModConfigMenuOptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.AllowToggleLargeMap
+			end,
+			Display = function()
+				return "Allow Toggle Large Map: " .. (MinimapAPI.Config.AllowToggleLargeMap and "True" or "False")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.AllowToggleLargeMap = currentBool
+			end
+		}
+	)
+	
+	ModConfigMenu.AddSetting(
+		"Minimap API",
+		"Visual",
+		{
+			Type = ModConfigMenuOptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.AllowToggleSmallMap
+			end,
+			Display = function()
+				return "Allow Toggle Small Map: " .. (MinimapAPI.Config.AllowToggleSmallMap and "True" or "False")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.AllowToggleSmallMap = currentBool
+			end
+		}
+	)
+	
+	ModConfigMenu.AddSetting(
+		"Minimap API",
+		"Visual",
+		{
+			Type = ModConfigMenuOptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.AllowToggleBoundedMap
+			end,
+			Display = function()
+				return "Allow Toggle Bounded Map: " .. (MinimapAPI.Config.AllowToggleBoundedMap and "True" or "False")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.AllowToggleBoundedMap = currentBool
+			end
+		}
+	)
+	
 	local hicstrings = {"Never","Bosses Only","Always"}
 	ModConfigMenu.AddSetting(
 		"Minimap API",
@@ -1129,28 +1190,28 @@ if ModConfigMenu then
 		}
 	)
 
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.NUMBER,
-			CurrentSetting = function()
-				return MinimapAPI.Config.DisplayMode
-			end,
-			Minimum = 1,
-			Maximum = 2,
-			Display = function()
-				return "Display Mode: " ..
-					({
-						"Borderless",
-						"Bordered"
-					})[MinimapAPI.Config.DisplayMode]
-			end,
-			OnChange = function(currentNum)
-				MinimapAPI.Config.DisplayMode = currentNum
-			end
-		}
-	)
+	-- ModConfigMenu.AddSetting(
+		-- "Minimap API",
+		-- "Visual",
+		-- {
+			-- Type = ModConfigMenuOptionType.NUMBER,
+			-- CurrentSetting = function()
+				-- return MinimapAPI.Config.DisplayMode
+			-- end,
+			-- Minimum = 1,
+			-- Maximum = 2,
+			-- Display = function()
+				-- return "Display Mode: " ..
+					-- ({
+						-- "Borderless",
+						-- "Bordered"
+					-- })[MinimapAPI.Config.DisplayMode]
+			-- end,
+			-- OnChange = function(currentNum)
+				-- MinimapAPI.Config.DisplayMode = currentNum
+			-- end
+		-- }
+	-- )
 
 	ModConfigMenu.AddSetting(
 		"Minimap API",
