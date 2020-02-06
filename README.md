@@ -17,6 +17,8 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 * Automatic pickup detection
 * Custom color rooms
 
+### Documentation
+Go to the wiki section or [click here](https://github.com/TazTxUK/MinimapAPI/wiki)
 
 ## Backlog / Todo-List
 ### Planned Features:
@@ -39,6 +41,3 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 
 ### Needs rework:
 * Some comments for the functions with a small explaination on what they are used for, what arguments they require, which of them are optional and what the function returns
-
-## Documentation
-[Click here](https://github.com/TazTxUK/MinimapAPI/wiki)
