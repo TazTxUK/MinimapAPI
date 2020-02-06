@@ -1331,6 +1331,3 @@ MinimapAPI:AddCallback(
 	end
 )
 
-require("minimapapi_scripts")
-Isaac.ConsoleOutput("Minimap API loaded!\n")
-
