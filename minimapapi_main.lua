@@ -440,7 +440,6 @@ local maproommeta = {
 }
 
 function MinimapAPI:AddRoom(t)
-	assert(type(t) == "table", "bad argument #1 to 'AddRoom', expected table")
 	local defaultPosition = Vector(12, -1)
 	if not t.AllowRoomOverlap then
 		MinimapAPI:RemoveRoom(t.Position or defaultPosition)
@@ -912,9 +911,11 @@ local function renderMinimapIcons()
 	local curseIconPos = Vector( screen_size.X - MinimapAPI.Config.PositionX, MinimapAPI.Config.PositionY + 5)
 	local bounds = MinimapAPI:GetDiscoveredBounds()
 	
-	if MinimapAPI:IsLarge() then curseIconPos= curseIconPos + Vector(- (bounds[2]-bounds[1])* largeRoomPixelSize.X, 0) 
+	if #bounds == 0 then return end
+	
+	if MinimapAPI:IsLarge() then curseIconPos= curseIconPos + Vector(- (bounds[2]-bounds[1])* largeRoomPixelSize.X, 0)
 	elseif MinimapAPI.Config.DisplayMode == 1 then curseIconPos= curseIconPos + Vector( - (bounds[2]-bounds[1])*roomPixelSize.X, 0) 
-	elseif MinimapAPI.Config.DisplayMode == 2 then curseIconPos= curseIconPos +Vector( - MinimapAPI.Config.MapFrameWidth - 8, 0) end
+	elseif MinimapAPI.Config.DisplayMode == 2 then curseIconPos= curseIconPos + Vector( - MinimapAPI.Config.MapFrameWidth - 8, 0) end
 
 	if true then
 		local offset=Vector(0,0)
@@ -1252,33 +1253,69 @@ if ModConfigMenu then
 	)
 end
 
+MinimapAPI.DisableSaving = false
+
+function MinimapAPI:LoadSaveTable(saved)
+	for i,v in pairs(saved.Config) do
+		MinimapAPI.Config[i] = v
+	end
+	if is_save and saved.LevelData then
+		local vanillarooms = Game():GetLevel():GetRooms()
+		MinimapAPI:ClearMap()
+		for i, v in ipairs(saved.LevelData) do
+			MinimapAPI:AddRoom {
+				Position = Vector(v.PositionX, v.PositionY),
+				ID = v.ID,
+				Shape = v.Shape,
+				ItemIcons = v.ItemIcons,
+				PermanentIcons = v.PermanentIcons,
+				LockedIcons = v.LockedIcons,
+				Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
+				DisplayFlags = v.DisplayFlags,
+				Clear = v.Clear,
+				Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO)
+			}
+		end
+		playerMapPos= Vector(saved.playerMapPosX,saved.playerMapPosY)
+	end
+end
+
+function MinimapAPI:GetSaveTable()
+	local saved = {}
+	saved.Config = MinimapAPI.Config
+	saved.playerMapPosX=playerMapPos.X
+	saved.playerMapPosY=playerMapPos.Y
+	if menuexit then
+		saved.LevelData = {}
+		for i, v in ipairs(roommapdata) do
+			saved.LevelData[#saved.LevelData + 1] = {
+				PositionX = v.Position.X,
+				PositionY = v.Position.Y,
+				ID = type(v.ID) ~= "userdata" and v.ID,
+				Shape = v.Shape,
+				ItemIcons = v.ItemIcons,
+				PermanentIcons = v.PermanentIcons,
+				LockedIcons = v.LockedIcons,
+				DescriptorListIndex = v.Descriptor and v.Descriptor.ListIndex,
+				DisplayFlags = rawget(v, "DisplayFlags"),
+				Clear = rawget(v, "Clear"),
+				Color = v.Color and {R = v.Color.R, G = v.Color.G, B = v.Color.B, A = v.Color.A, RO = v.Color.RO, GO = v.Color.GO, BO = v.Color.BO}
+			}
+		end
+	end
+	return saved
+end
+
 -- LOADING SAVED GAME
 MinimapAPI:AddCallback(
 	ModCallbacks.MC_POST_GAME_STARTED,
 	function(self, is_save)
 		if MinimapAPI:HasData() then
-			local saved = json.decode(Isaac.LoadModData(MinimapAPI))
-			for i,v in pairs(saved.Config) do
-				MinimapAPI.Config[i] = v
-			end
-			if is_save and saved.LevelData then
-				local vanillarooms = Game():GetLevel():GetRooms()
-				MinimapAPI:ClearMap()
-				for i, v in ipairs(saved.LevelData) do
-					MinimapAPI:AddRoom {
-						Position = Vector(v.PositionX, v.PositionY),
-						ID = v.ID,
-						Shape = v.Shape,
-						ItemIcons = v.ItemIcons,
-						PermanentIcons = v.PermanentIcons,
-						LockedIcons = v.LockedIcons,
-						Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
-						DisplayFlags = v.DisplayFlags,
-						Clear = v.Clear,
-						Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO)
-					}
-				end
-				playerMapPos= Vector(saved.playerMapPosX,saved.playerMapPosY)
+			if not MinimapAPI.DisableSaving then
+				local saved = json.decode(Isaac.LoadModData(MinimapAPI))
+				MinimapAPI:LoadSaveTable(saved)
+			else
+				MinimapAPI:LoadDefaultMap()
 			end
 		end
 	end
@@ -1288,29 +1325,9 @@ MinimapAPI:AddCallback(
 MinimapAPI:AddCallback(
 	ModCallbacks.MC_PRE_GAME_EXIT,
 	function(self, menuexit)
-		local saved = {}
-		saved.Config = MinimapAPI.Config
-		saved.playerMapPosX=playerMapPos.X
-		saved.playerMapPosY=playerMapPos.Y
-		if menuexit then
-			saved.LevelData = {}
-			for i, v in ipairs(roommapdata) do
-				saved.LevelData[#saved.LevelData + 1] = {
-					PositionX = v.Position.X,
-					PositionY = v.Position.Y,
-					ID = type(v.ID) ~= "userdata" and v.ID,
-					Shape = v.Shape,
-					ItemIcons = v.ItemIcons,
-					PermanentIcons = v.PermanentIcons,
-					LockedIcons = v.LockedIcons,
-					DescriptorListIndex = v.Descriptor and v.Descriptor.ListIndex,
-					DisplayFlags = rawget(v, "DisplayFlags"),
-					Clear = rawget(v, "Clear"),
-					Color = v.Color and {R = v.Color.R, G = v.Color.G, B = v.Color.B, A = v.Color.A, RO = v.Color.RO, GO = v.Color.GO, BO = v.Color.BO}
-				}
-			end
+		if not MinimapAPI.DisableSaving then
+			MinimapAPI:SaveData(json.encode(MinimapAPI:GetSaveTable()))
 		end
-		MinimapAPI:SaveData(json.encode(saved))
 	end
 )
 
