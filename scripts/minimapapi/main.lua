@@ -1256,27 +1256,29 @@ end
 MinimapAPI.DisableSaving = false
 
 function MinimapAPI:LoadSaveTable(saved,is_save)
-	for i,v in pairs(saved.Config) do
-		MinimapAPI.Config[i] = v
-	end
-	if is_save and saved.LevelData then
-		local vanillarooms = Game():GetLevel():GetRooms()
-		MinimapAPI:ClearMap()
-		for i, v in ipairs(saved.LevelData) do
-			MinimapAPI:AddRoom {
-				Position = Vector(v.PositionX, v.PositionY),
-				ID = v.ID,
-				Shape = v.Shape,
-				ItemIcons = v.ItemIcons,
-				PermanentIcons = v.PermanentIcons,
-				LockedIcons = v.LockedIcons,
-				Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
-				DisplayFlags = v.DisplayFlags,
-				Clear = v.Clear,
-				Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO)
-			}
+	if saved then
+		for i,v in pairs(saved.Config) do
+			MinimapAPI.Config[i] = v
 		end
-		playerMapPos= Vector(saved.playerMapPosX,saved.playerMapPosY)
+		if is_save and saved.LevelData then
+			local vanillarooms = Game():GetLevel():GetRooms()
+			MinimapAPI:ClearMap()
+			for i, v in ipairs(saved.LevelData) do
+				MinimapAPI:AddRoom {
+					Position = Vector(v.PositionX, v.PositionY),
+					ID = v.ID,
+					Shape = v.Shape,
+					ItemIcons = v.ItemIcons,
+					PermanentIcons = v.PermanentIcons,
+					LockedIcons = v.LockedIcons,
+					Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
+					DisplayFlags = v.DisplayFlags,
+					Clear = v.Clear,
+					Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO)
+				}
+			end
+			playerMapPos= Vector(saved.playerMapPosX,saved.playerMapPosY)
+		end
 	end
 end
 
