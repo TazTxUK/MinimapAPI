@@ -154,6 +154,120 @@ MinimapAPI:GetPlayerPosition()
 ```
 Returns the player's map vector position relative to (0,0)
 
+## Config
+```lua
+MinimapAPI.Config.Disable
+```
+* Mod Config Menu Option: **General / Disable Minimap**
+* Setting this to true will render the minimap completely invisible. Some variables that hold positions will not be updated.
+
+```lua
+MinimapAPI.Config.DisplayOnNoHUD
+```
+* Mod Config Menu Option: **General / Display with No HUD Seed**
+* Setting this to true will cause the map to draw even if the No HUD seed is enabled.
+
+```lua
+MinimapAPI.Config.OverrideLost
+```
+* Mod Config Menu Option: **General / Display During Curse**
+* Setting this to true will cause the map to draw even if Curse of the Lost is active.
+
+```lua
+MinimapAPI.Config.ShowIcons
+```
+* Mod Config Menu Option: **General / Show Icons**
+* Setting this to false will cause room type icons, pickup icons and locked icons not to be displayed at all.
+
+```lua
+MinimapAPI.Config.ShowShadows
+```
+* Mod Config Menu Option: **General / Show Shadows**
+* Setting this to false will cause room outlines to disappear.
+
+```lua
+MinimapAPI.Config.ShowShadows
+```
+* Mod Config Menu Option: **Visual / Show Shadows**
+* Setting this to false will cause room outlines to disappear.
+
+```lua
+MinimapAPI.Config.ShowCurrentRoomItems
+```
+* Mod Config Menu Option: **Visual / Show Current Room Items**
+* Setting this to true will cause pickup icons to show up in the current room, where they would normally not.
+
+```lua
+MinimapAPI.Config.MapFrameWidth
+```
+* Mod Config Menu Option: **Visual / Map Frame Width**
+* This adjusts the width of the bounded map's frame.
+
+```lua
+MinimapAPI.Config.MapFrameHeight
+```
+* Mod Config Menu Option: **Visual / Map Frame Height**
+* This adjusts the height of the bounded map's frame.
+
+```lua
+MinimapAPI.Config.PositionX
+```
+* Mod Config Menu Option: **Visual / Position X**
+* This adjusts the distance of the map from the RIGHT side of the screen
+
+```lua
+MinimapAPI.Config.PositionY
+```
+* Mod Config Menu Option: **Visual / Position Y**
+* This adjusts the distance of the map from the TOP side of the screen
+
+```lua
+MinimapAPI.Config.DisplayMode
+```
+* Mod Config Menu Option: **Visual / Display Mode**
+* 0 = NULL
+* 1 = Small Full Map
+* 2 = Bounded Map
+
+```lua
+MinimapAPI.Config.ShowLevelFlags
+```
+* Mod Config Menu Option: **Visual / Show Level Flags**
+* Setting this to false will cause the blue map, compass and other such icons to not be rendered.
+
+```lua
+MinimapAPI.Config.SmoothSlidingSpeed
+```
+* Mod Config Menu Option: **Visual / Smooth Movement Speed**
+* Changes the speed of the map when it is moving to focus on a different room.
+* 0 = Rooms will never move from their default position (0,0) (NOT RECOMMENDED)
+* 0.1 - 0.4 = Slow
+* 0.5 = Default
+* 0.6 - 0.9 = Fast
+* 1 = Instantaneous (No smooth movement)
+* Any value outside the range 0-1 will cause the map to bug out.
+
+```lua
+MinimapAPI.Config.HideInCombat
+```
+Mod Config Menu Option: **Visual / Hide Map In Combat**
+If the room is not cleared, hide the map.
+0 = Never
+1 = Bosses Only
+2 = Always
+
+```lua
+MinimapAPI.Config.OverrideVoid
+```
+* Mod Config Menu Option: **Not Accessible**
+* If this is set to true, then Delirium's 2x2 room will be displayed as it really is instead of the fake 1x1 that the API uses by default. The floor must be reloaded for this to have an effect.
+
+```lua
+MinimapAPI.Config.DisplayExploredRooms
+```
+* Mod Config Menu Option: **Visual / Show Visited Uncleared Rooms**
+* If this is set to true, then rooms that were entered but not cleared show as a checkerboard pattern room.
+
 ## Data
 ### IconIDs
 IconID | Animation Name
