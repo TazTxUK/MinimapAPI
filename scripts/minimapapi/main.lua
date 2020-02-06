@@ -738,7 +738,7 @@ local function renderUnboundedMinimap(size)
 
 				if displayflags & 0x4 > 0 then
 					local iconcount = #v.PermanentIcons
-					if not incurrent then
+					if not incurrent and MinimapAPI.Config.ShowPickupIcons then
 						iconcount = iconcount + #v.ItemIcons
 					end
 
@@ -748,7 +748,7 @@ local function renderUnboundedMinimap(size)
 					end
 					
 					renderIcons(v.PermanentIcons, locs)
-					if not incurrent then
+					if not incurrent and MinimapAPI.Config.ShowPickupIcons then
 						renderIcons(v.ItemIcons, locs)
 					end
 				elseif displayflags & 0x2 > 0 then
@@ -895,14 +895,14 @@ local function renderBoundedMinimap()
 
 				if displayflags & 0x4 > 0 then
 					local iconcount = #v.PermanentIcons
-					if not incurrent then
+					if not incurrent and MinimapAPI.Config.ShowPickupIcons then
 						iconcount = iconcount + #v.ItemIcons
 					end
 
 					local locs = MinimapAPI:GetRoomShapeIconPositions(v.Shape, iconcount)
 
 					renderIcons(v.PermanentIcons, locs)
-					if not incurrent then
+					if not incurrent and MinimapAPI.Config.ShowPickupIcons then
 						renderIcons(v.ItemIcons, locs)
 					end
 				elseif displayflags & 0x2 > 0 then
@@ -1047,6 +1047,23 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowIcons = currentBool
+			end
+		}
+	)
+	
+	ModConfigMenu.AddSetting(
+		"Minimap API",
+		"General",
+		{
+			Type = ModConfigMenuOptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.ShowPickupIcons
+			end,
+			Display = function()
+				return "Show Pickup Icons: " .. (MinimapAPI.Config.ShowPickupIcons and "True" or "False")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.ShowPickupIcons = currentBool
 			end
 		}
 	)

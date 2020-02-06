@@ -3,6 +3,7 @@ MinimapAPI.Config = {
 	["DisplayOnNoHUD"] = false, 		--Default = false
 	["OverrideLost"] = false, 			--Default = false
 	["ShowIcons"] = true, 				--Default = true
+	["ShowPickupIcons"] = true, 		--Default = true
 	["ShowShadows"] = true, 			--Default = true
 	["ShowCurrentRoomItems"] = false,	--Default = false
 	["MapFrameWidth"] = 50, 			--Default = 50
