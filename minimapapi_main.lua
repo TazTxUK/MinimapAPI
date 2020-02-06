@@ -1255,7 +1255,7 @@ end
 
 MinimapAPI.DisableSaving = false
 
-function MinimapAPI:LoadSaveTable(saved)
+function MinimapAPI:LoadSaveTable(saved,is_save)
 	for i,v in pairs(saved.Config) do
 		MinimapAPI.Config[i] = v
 	end
@@ -1280,7 +1280,7 @@ function MinimapAPI:LoadSaveTable(saved)
 	end
 end
 
-function MinimapAPI:GetSaveTable()
+function MinimapAPI:GetSaveTable(menuexit)
 	local saved = {}
 	saved.Config = MinimapAPI.Config
 	saved.playerMapPosX=playerMapPos.X
@@ -1313,7 +1313,7 @@ MinimapAPI:AddCallback(
 		if MinimapAPI:HasData() then
 			if not MinimapAPI.DisableSaving then
 				local saved = json.decode(Isaac.LoadModData(MinimapAPI))
-				MinimapAPI:LoadSaveTable(saved)
+				MinimapAPI:LoadSaveTable(saved,is_save)
 			else
 				MinimapAPI:LoadDefaultMap()
 			end
@@ -1326,7 +1326,7 @@ MinimapAPI:AddCallback(
 	ModCallbacks.MC_PRE_GAME_EXIT,
 	function(self, menuexit)
 		if not MinimapAPI.DisableSaving then
-			MinimapAPI:SaveData(json.encode(MinimapAPI:GetSaveTable()))
+			MinimapAPI:SaveData(json.encode(MinimapAPI:GetSaveTable(menuexit)))
 		end
 	end
 )
