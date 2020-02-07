@@ -555,11 +555,13 @@ end
 
 local function updatePlayerPos()
 	local currentroom = Game():GetLevel():GetCurrentRoomDesc()
-	if currentroom.GridIndex>=0 then
+	if currentroom.GridIndex == 1 then
+		playerMapPos = Vector(-32768,-32768)
+	else
 		playerMapPos = MinimapAPI:GridIndexToVector(currentroom.GridIndex)
-		custom_playerpos = false
-		MinimapAPI:RunPlayerPosCallbacks()
 	end
+	custom_playerpos = false
+	MinimapAPI:RunPlayerPosCallbacks()
 end
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_LEVEL,	function(self)
