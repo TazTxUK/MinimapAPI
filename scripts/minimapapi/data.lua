@@ -178,6 +178,13 @@ MinimapAPI.UnknownRoomTypeIconIDs = {
 
 local function notCollected(pickup) return not pickup:GetSprite():IsPlaying("Collect") end
 local function chestNotCollected(pickup) return pickup.SubType ~= 0 end
+local function slotNotDead(pickup) return not (pickup:GetSprite():IsPlaying("Death") or pickup:GetSprite():IsPlaying("Broken")) end
+local function dresserNotDead(pickup) return not (pickup:GetSprite():IsFinished("Broken")) end
+
+MinimapAPI.PickupNotCollected = notCollected
+MinimapAPI.PickupChestNotCollected = chestNotCollected
+MinimapAPI.PickupSlotMachineNotBroken = slotNotDead
+MinimapAPI.PickupDresserNotDead = dresserNotDead
 
 MinimapAPI.PickupList = {
 	{ID="WhiteHeart",IconID="WhiteHeart",Type=5,Variant=10,SubType=4,Call=notCollected,IconGroup="hearts",Priority=10900},
@@ -192,19 +199,21 @@ MinimapAPI.PickupList = {
 	{ID="HalfHeart",IconID="HalfHeart",Type=5,Variant=10,SubType=2,Call=notCollected,IconGroup="hearts",Priority=10000},
 	{ID="Item",IconID="Item",Type=5,Variant=100,SubType=-1,Call=function(pickup) return pickup.SubType ~= 0 end,IconGroup="collectibles",Priority=9000},
 	{ID="Trinket",IconID="Trinket",Type=5,Variant=350,SubType=-1,IconGroup="collectibles",Priority=8000},
-	{ID="EternalChest",IconID="EternalChest",Type=5,Variant=53,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7500},
-	{ID="GoldChest",IconID="GoldChest",Type=5,Variant=60,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7400},
-	{ID="RedChest",IconID="RedChest",Type=5,Variant=360,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7300},
-	{ID="Chest",IconID="Chest",Type=5,Variant=50,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7200},
-	{ID="StoneChest",IconID="StoneChest",Type=5,Variant=51,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=7100},
-	{ID="SpikedChest",IconID="SpikedChest",Type=5,Variant=52,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=7000},
+	{ID="EternalChest",IconID="EternalChest",Type=5,Variant=53,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7600},
+	{ID="GoldChest",IconID="GoldChest",Type=5,Variant=60,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7500},
+	{ID="RedChest",IconID="RedChest",Type=5,Variant=360,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7400},
+	{ID="Chest",IconID="Chest",Type=5,Variant=50,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7300},
+	{ID="StoneChest",IconID="StoneChest",Type=5,Variant=51,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=7200},
+	{ID="SpikedChest",IconID="SpikedChest",Type=5,Variant=52,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=7100},
+	{ID="MimicChest",IconID="SpikedChest",Type=5,Variant=54,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=7000},
+	{ID="GrabBag",IconID="Sack",Type=5,Variant=69,SubType=-1,Call=notCollected,IconGroup="grabbags",Priority=6500},
 	{ID="Pill",IconID="Pill",Type=5,Variant=70,SubType=-1,Call=notCollected,IconGroup="pills",Priority=6000},
 	{ID="Key",IconID="Key",Type=5,Variant=30,SubType=-1,Call=notCollected,IconGroup="keys",Priority=5000},
 	{ID="Bomb",IconID="Bomb",Type=5,Variant=40,SubType=-1,Call=notCollected,IconGroup="bombs",Priority=4000},
 	{ID="Coin",IconID="Coin",Type=5,Variant=20,SubType=-1,Call=notCollected,IconGroup="coins",Priority=3000},
 	{ID="Battery",IconID="Battery",Type=5,Variant=90,SubType=-1,Call=notCollected,IconGroup="batteries",Priority=2000},
 	{ID="Card",IconID="Card",Type=5,Variant=300,SubType=-1,Call=notCollected,IconGroup="cards",Priority=1000},
-	{ID="Slot",IconID="Slot",Type=6,Variant=-1,SubType=-1,Call=notCollected,IconGroup="slots",Priority=0},
+	{ID="Slot",IconID="Slot",Type=6,Variant=-1,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=0},
 }
 
 MinimapAPI.IconList = {
@@ -254,4 +263,5 @@ MinimapAPI.IconList = {
 	{ID="Battery",anim="IconBattery",frame=0},
 	{ID="Card",anim="IconCard",frame=0},
 	{ID="Slot",anim="IconSlot",frame=0},
+	{ID="Sack",anim="IconSack",frame=0},
 }

@@ -1340,7 +1340,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 		for i,v in pairs(saved.Config) do
 			MinimapAPI.Config[i] = v
 		end
-		if is_save and saved.LevelData then
+		if is_save and saved.LevelData and saved.Seed == Game():GetSeeds():GetStartSeed() then
 			local vanillarooms = Game():GetLevel():GetRooms()
 			MinimapAPI:ClearMap()
 			for i, v in ipairs(saved.LevelData) do
@@ -1357,7 +1357,9 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 					Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO)
 				}
 			end
-			playerMapPos= Vector(saved.playerMapPosX,saved.playerMapPosY)
+			playerMapPos = Vector(saved.playerMapPosX,saved.playerMapPosY)
+		else
+			MinimapAPI:LoadDefaultMap()
 		end
 	end
 end
@@ -1367,6 +1369,7 @@ function MinimapAPI:GetSaveTable(menuexit)
 	saved.Config = MinimapAPI.Config
 	saved.playerMapPosX=playerMapPos.X
 	saved.playerMapPosY=playerMapPos.Y
+	saved.Seed = Game():GetSeeds():GetStartSeed()
 	if menuexit then
 		saved.LevelData = {}
 		for i, v in ipairs(roommapdata) do
