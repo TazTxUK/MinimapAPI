@@ -35,6 +35,7 @@ Go to the wiki section or [click here](https://github.com/TazTxUK/MinimapAPI/wik
 
 ### Known issues:
 * Curse of the Lost questionmark isnt drawn
+* See [Issues](https://github.com/TazTxUK/MinimapAPI/issues)
 
 ### Needs rework:
 * Some comments for the functions with a small explaination on what they are used for, what arguments they require, which of them are optional and what the function returns
