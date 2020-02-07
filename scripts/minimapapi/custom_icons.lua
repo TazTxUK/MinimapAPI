@@ -40,13 +40,17 @@ MinimapAPI:AddIcon("PillBlackYellow", MinimapAPI.CustomIcons, "CustomIconPillBla
 MinimapAPI:AddIcon("PillWhiteBlack", MinimapAPI.CustomIcons, "CustomIconPillWhiteBlack", 0)
 MinimapAPI:AddIcon("PillWhiteYellow", MinimapAPI.CustomIcons, "CustomIconPillWhiteYellow", 0)
 
+MinimapAPI:AddIcon("DoubleHeart", MinimapAPI.CustomIcons, "CustomIconDoubleHeart", 0)
 MinimapAPI:AddIcon("DoublePenny", MinimapAPI.CustomIcons, "CustomIconCoinDouble", 0)
 MinimapAPI:AddIcon("Nickel", MinimapAPI.CustomIcons, "CustomIconNickel", 0)
 MinimapAPI:AddIcon("Dime", MinimapAPI.CustomIcons, "CustomIconDime", 0)
 MinimapAPI:AddIcon("LuckyPenny", MinimapAPI.CustomIcons, "CustomIconLuckyPenny", 0)
 MinimapAPI:AddIcon("StickyNickel", MinimapAPI.CustomIcons, "CustomIconNickelSticky", 0)
 MinimapAPI:AddIcon("GoldenKey", MinimapAPI.CustomIcons, "CustomIconGoldKey", 0)
+MinimapAPI:AddIcon("KeyRing", MinimapAPI.CustomIcons, "CustomIconKeyRing", 0)
+MinimapAPI:AddIcon("ChargedKey", MinimapAPI.CustomIcons, "CustomIconChargedKey", 0)
 MinimapAPI:AddIcon("GoldenBomb", MinimapAPI.CustomIcons, "CustomIconGoldBomb", 0)
+MinimapAPI:AddIcon("DoubleBomb", MinimapAPI.CustomIcons, "CustomIconDoubleBomb", 0)
 MinimapAPI:AddIcon("SlotBloodDonation", MinimapAPI.CustomIcons, "CustomIconSlotBlood", 0)
 MinimapAPI:AddIcon("SlotFortune", MinimapAPI.CustomIcons, "CustomIconSlotFortune", 0)
 MinimapAPI:AddIcon("DonationMachine", MinimapAPI.CustomIcons, "CustomIconDonation", 0)
@@ -55,6 +59,18 @@ MinimapAPI:AddIcon("GreedDonationMachine", MinimapAPI.CustomIcons, "CustomIconGr
 MinimapAPI:AddIcon("Dresser", MinimapAPI.CustomIcons, "CustomIconDresser", 0)
 MinimapAPI:AddIcon("Trophy", MinimapAPI.CustomIcons, "CustomIconTrophy", 0)
 MinimapAPI:AddIcon("CheckeredFlag", MinimapAPI.CustomIcons, "CustomIconFlag", 0)
+MinimapAPI:AddIcon("Shovel", MinimapAPI.CustomIcons, "CustomIconShovel", 0)
+
+MinimapAPI:AddIcon("TarotCard", MinimapAPI.CustomIcons, "CustomIconTarotCard", 0)
+MinimapAPI:AddIcon("RedCard", MinimapAPI.CustomIcons, "CustomIconRedCard", 0)
+MinimapAPI:AddIcon("RuneRight", MinimapAPI.CustomIcons, "CustomIconRuneRight", 0)
+MinimapAPI:AddIcon("CreditCard", MinimapAPI.CustomIcons, "CustomIconCreditCard", 0)
+MinimapAPI:AddIcon("GetOutOfJail", MinimapAPI.CustomIcons, "CustomIconGetOutOfJail", 0)
+MinimapAPI:AddIcon("CardAgainstHumanity", MinimapAPI.CustomIcons, "CustomIconCardAgainstHumanity", 0)
+MinimapAPI:AddIcon("HolyCard", MinimapAPI.CustomIcons, "CustomIconHolyCard", 0)
+MinimapAPI:AddIcon("MomsContract", MinimapAPI.CustomIcons, "CustomIconMomsContract", 0)
+MinimapAPI:AddIcon("DiceShard", MinimapAPI.CustomIcons, "CustomIconDiceShard", 0)
+
 
 MinimapAPI:AddIcon("Beggar", MinimapAPI.CustomIcons, "CustomIconBeggar", 0)
 MinimapAPI:AddIcon("Devilbeggar", MinimapAPI.CustomIcons, "CustomIconDevilBeggar", 0)
@@ -75,13 +91,33 @@ MinimapAPI:AddPickup("PillBlackYellow","PillBlackYellow",5,70,PillColor.PILL_BLA
 MinimapAPI:AddPickup("PillWhiteBlack","PillWhiteBlack",5,70,PillColor.PILL_WHITE_BLACK,MinimapAPI.PickupNotCollected,"pills",6100)
 MinimapAPI:AddPickup("PillWhiteYellow","PillWhiteYellow",5,70,PillColor.PILL_WHITE_YELLOW,MinimapAPI.PickupNotCollected,"pills",6100)
 
+MinimapAPI:AddPickup("DoubleHeart","DoubleHeart",5,10,5,MinimapAPI.PickupNotCollected,"hearts",4100)
 MinimapAPI:AddPickup("DoublePenny","DoublePenny",5,20,4,MinimapAPI.PickupNotCollected,"coins",3200)
 MinimapAPI:AddPickup("Nickel","Nickel",5,20,2,MinimapAPI.PickupNotCollected,"coins",3400)
 MinimapAPI:AddPickup("StickyNickel","StickyNickel",5,20,6,MinimapAPI.PickupNotCollected,"coins",3300)
 MinimapAPI:AddPickup("Dime","Dime",5,20,3,MinimapAPI.PickupNotCollected,"coins",3600)
 MinimapAPI:AddPickup("LuckyPenny","LuckyPenny",5,20,5,MinimapAPI.PickupNotCollected,"coins",3500)
 MinimapAPI:AddPickup("GoldenKey","GoldenKey",5,30,2,MinimapAPI.PickupNotCollected,"keys",5100)
+MinimapAPI:AddPickup("KeyRing","KeyRing",5,30,3,MinimapAPI.PickupNotCollected,"keys",5100)
+MinimapAPI:AddPickup("ChargedKey","ChargedKey",5,30,4,MinimapAPI.PickupNotCollected,"keys",5100)
+MinimapAPI:AddPickup("DoubleBomb","DoubleBomb",5,40,2,MinimapAPI.PickupNotCollected,"bombs",4150)
 MinimapAPI:AddPickup("GoldenBomb","GoldenBomb",5,40,4,MinimapAPI.PickupNotCollected,"bombs",4100)
+
+
+MinimapAPI:AddPickup("TarotCard","TarotCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",4000)
+for i=23,31 do 
+  MinimapAPI:AddPickup("RedCard"..i,"RedCard",5,300,i,MinimapAPI.PickupNotCollected,"cards",4100)
+end
+MinimapAPI:AddPickup("ChaosCard","RedCard",5,300,42,MinimapAPI.PickupNotCollected,"cards",4100)--Chaos Card
+MinimapAPI:AddPickup("RulesCard","RedCard",5,300,44,MinimapAPI.PickupNotCollected,"cards",4100)--Rules Card
+MinimapAPI:AddPickup("SuicideKing","RedCard",5,300,46,MinimapAPI.PickupNotCollected,"cards",4100)--Suicide King
+MinimapAPI:AddPickup("QuestionmarkCard","RedCard",5,300,48,MinimapAPI.PickupNotCollected,"cards",4100)--?Card 
+MinimapAPI:AddPickup("CreditCard","CreditCard",5,300,43,MinimapAPI.PickupNotCollected,"cards",4100)
+MinimapAPI:AddPickup("GetOutOfJail","GetOutOfJail",5,300,47,MinimapAPI.PickupNotCollected,"cards",4100)
+MinimapAPI:AddPickup("CardAgainstHumanity","CardAgainstHumanity",5,300,35,MinimapAPI.PickupNotCollected,"cards",4100)
+MinimapAPI:AddPickup("HolyCard","HolyCard",5,300,51,MinimapAPI.PickupNotCollected,"cards",4100)
+MinimapAPI:AddPickup("MomsContract","MomsContract",5,300,50,MinimapAPI.PickupNotCollected,"cards",4100)
+MinimapAPI:AddPickup("DiceShard","DiceShard",5,300,49,MinimapAPI.PickupNotCollected,"cards",4100)
 
 MinimapAPI:AddPickup("SlotBloodDonation","SlotBloodDonation",6,2,-1,MinimapAPI.PickupSlotMachineNotBroken,"slots",100)
 MinimapAPI:AddPickup("SlotFortune","SlotFortune",6,3,-1,MinimapAPI.PickupSlotMachineNotBroken,"slots",100)
@@ -91,6 +127,7 @@ MinimapAPI:AddPickup("GreedDonationMachine","GreedDonationMachine",6,11,-1,Minim
 MinimapAPI:AddPickup("Dresser","Dresser",6,12,-1,MinimapAPI.PickupDresserNotDead,"slots",100)
 MinimapAPI:AddPickup("Trophy","CheckeredFlag",5,370,-1,nil,"trophies",12000)
 MinimapAPI:AddPickup("BigChest","CheckeredFlag",5,340,-1,nil,"trophies",12000)
+MinimapAPI:AddPickup("Shovel","Shovel",5,110,-1,nil,"trophies",12000)
 
 MinimapAPI:AddPickup("Beggar","Beggar",6,4,-1,nil,"beggars",200)
 MinimapAPI:AddPickup("Devilbeggar","Devilbeggar",6,5,-1,nil,"beggars",100)
