@@ -7,7 +7,7 @@ MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_DEVIL] = "DevilRoom"
 --RUNES
 
 MinimapAPI:AddIcon("Rune", MinimapAPI.CustomIcons, "CustomIconRune", 0)
-local cardpriority = 1100
+local runepriority =5100
 for i,v in pairs(Card) do
 	if i:sub(1,5) == "RUNE_" then
 		local runetype = i:sub(6,-1)
@@ -19,9 +19,9 @@ for i,v in pairs(Card) do
 			SubType = v,
 			Call = nil,
 			IconGroup = "runes",
-			Priority = cardpriority,
+			Priority = runepriority,
 		}
-		cardpriority = cardpriority + 10
+		runepriority = runepriority + 10
 	end
 end
 
