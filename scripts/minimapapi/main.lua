@@ -555,7 +555,7 @@ end
 
 local function updatePlayerPos()
 	local currentroom = Game():GetLevel():GetCurrentRoomDesc()
-	if currentroom.GridIndex == 1 then
+	if currentroom.GridIndex == -1 then
 		playerMapPos = Vector(-32768,-32768)
 	else
 		playerMapPos = MinimapAPI:GridIndexToVector(currentroom.GridIndex)
