@@ -114,7 +114,7 @@ MinimapAPI:AddPickup("SuicideKing","RedCard",5,300,46,MinimapAPI.PickupNotCollec
 MinimapAPI:AddPickup("QuestionmarkCard","RedCard",5,300,48,MinimapAPI.PickupNotCollected,"cards",4100)--?Card 
 MinimapAPI:AddPickup("CreditCard","CreditCard",5,300,43,MinimapAPI.PickupNotCollected,"cards",4100)
 MinimapAPI:AddPickup("GetOutOfJail","GetOutOfJail",5,300,47,MinimapAPI.PickupNotCollected,"cards",4100)
-MinimapAPI:AddPickup("CardAgainstHumanity","CardAgainstHumanity",5,300,35,MinimapAPI.PickupNotCollected,"cards",4100)
+MinimapAPI:AddPickup("CardAgainstHumanity","CardAgainstHumanity",5,300,45,MinimapAPI.PickupNotCollected,"cards",4100)
 MinimapAPI:AddPickup("HolyCard","HolyCard",5,300,51,MinimapAPI.PickupNotCollected,"cards",4100)
 MinimapAPI:AddPickup("MomsContract","MomsContract",5,300,50,MinimapAPI.PickupNotCollected,"cards",4100)
 MinimapAPI:AddPickup("DiceShard","DiceShard",5,300,49,MinimapAPI.PickupNotCollected,"cards",4100)
