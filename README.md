@@ -15,6 +15,7 @@ When downloading, please make sure to delete your save*.dat files (if you downlo
 * Custom pickups
 * Custom icons
 * Automatic pickup detection
+* Automatic display flag management
 * Custom color rooms
 
 ### Documentation
@@ -24,9 +25,6 @@ Go to the wiki section or [click here](https://github.com/TazTxUK/MinimapAPI/wik
 ### Planned Features:
 * Add Map Curse Icons (restock, curses)
   * Change position of the Map Curse icons (left, bottom[vanilla])
-* Function - getRandomFreePos() : Returns a X,Y Position, where no room is present but thats adjcent to an existing room (useful for Red Key-like features)
-* Add room discovery system
-* Free positions should not include larger rooms' bottom right corner
 * Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
 * Draw new pickup icons (where applicable):
   * Trapdoor (Grid Entity icons not implemented)
