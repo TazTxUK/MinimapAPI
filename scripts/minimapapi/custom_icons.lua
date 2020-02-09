@@ -4,27 +4,6 @@ MinimapAPI.CustomIcons:Load("gfx/ui/minimapapi/custom_icons.anm2",true)
 MinimapAPI:AddIcon("DevilRoom", MinimapAPI.CustomIcons, "CustomIconDevilRoom", 0)
 MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_DEVIL] = "DevilRoom"
 
---RUNES
-
-MinimapAPI:AddIcon("Rune", MinimapAPI.CustomIcons, "CustomIconRune", 0)
-local runepriority =5100
-for i,v in pairs(Card) do
-	if i:sub(1,5) == "RUNE_" then
-		local runetype = i:sub(6,-1)
-		MinimapAPI:AddPickup{
-			ID = "Rune"..runetype:sub(1,1):upper()..runetype:sub(2,-1):lower(),
-			Icon = "Rune",
-			Type = 5,
-			Variant = 300,
-			SubType = v,
-			Call = nil,
-			IconGroup = "runes",
-			Priority = runepriority,
-		}
-		runepriority = runepriority + 10
-	end
-end
-
 --PILLS
 
 MinimapAPI:AddIcon("PillBlueBlue", MinimapAPI.CustomIcons, "CustomIconPillBlueBlue", 0)
@@ -70,7 +49,7 @@ MinimapAPI:AddIcon("CardAgainstHumanity", MinimapAPI.CustomIcons, "CustomIconCar
 MinimapAPI:AddIcon("HolyCard", MinimapAPI.CustomIcons, "CustomIconHolyCard", 0)
 MinimapAPI:AddIcon("MomsContract", MinimapAPI.CustomIcons, "CustomIconMomsContract", 0)
 MinimapAPI:AddIcon("DiceShard", MinimapAPI.CustomIcons, "CustomIconDiceShard", 0)
-
+MinimapAPI:AddIcon("Rune", MinimapAPI.CustomIcons, "CustomIconRune", 0)
 
 MinimapAPI:AddIcon("Beggar", MinimapAPI.CustomIcons, "CustomIconBeggar", 0)
 MinimapAPI:AddIcon("Devilbeggar", MinimapAPI.CustomIcons, "CustomIconDevilBeggar", 0)
@@ -91,6 +70,7 @@ MinimapAPI:AddPickup("PillBlackYellow","PillBlackYellow",5,70,PillColor.PILL_BLA
 MinimapAPI:AddPickup("PillWhiteBlack","PillWhiteBlack",5,70,PillColor.PILL_WHITE_BLACK,MinimapAPI.PickupNotCollected,"pills",6100)
 MinimapAPI:AddPickup("PillWhiteYellow","PillWhiteYellow",5,70,PillColor.PILL_WHITE_YELLOW,MinimapAPI.PickupNotCollected,"pills",6100)
 
+
 MinimapAPI:AddPickup("DoubleHeart","DoubleHeart",5,10,5,MinimapAPI.PickupNotCollected,"hearts",4100)
 MinimapAPI:AddPickup("DoublePenny","DoublePenny",5,20,4,MinimapAPI.PickupNotCollected,"coins",3200)
 MinimapAPI:AddPickup("Nickel","Nickel",5,20,2,MinimapAPI.PickupNotCollected,"coins",3400)
@@ -106,7 +86,10 @@ MinimapAPI:AddPickup("GoldenBomb","GoldenBomb",5,40,4,MinimapAPI.PickupNotCollec
 
 MinimapAPI:AddPickup("TarotCard","TarotCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",4000)
 for i=23,31 do 
-  MinimapAPI:AddPickup("RedCard"..i,"RedCard",5,300,i,MinimapAPI.PickupNotCollected,"cards",4100)
+	MinimapAPI:AddPickup("RedCard"..i,"RedCard",5,300,i,MinimapAPI.PickupNotCollected,"cards",4100)
+end
+for i=32,40 do 
+	MinimapAPI:AddPickup("Rune"..i,"Rune",5,300,i,MinimapAPI.PickupNotCollected,"runes",4100)
 end
 MinimapAPI:AddPickup("ChaosCard","RedCard",5,300,42,MinimapAPI.PickupNotCollected,"cards",4100)--Chaos Card
 MinimapAPI:AddPickup("RulesCard","RedCard",5,300,44,MinimapAPI.PickupNotCollected,"cards",4100)--Rules Card
