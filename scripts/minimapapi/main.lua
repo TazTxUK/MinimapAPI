@@ -274,25 +274,21 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 				if not entityset[GetPtrHash(ent)] then
 					if ent.Type == v.Type then
 						local toPickup = ent:ToPickup()
-						if toPickup ~= nil then
-							if toPickup:IsShopItem() then
-								goto continue
-							end
-						end
-						if v.Variant == -1 or ent.Variant == v.Variant then
-							if v.SubType == -1 or ent.SubType == v.SubType then
-								if (not v.Call) or v.Call(ent) then
-									if v.IconGroup then
-										pickupgroupset[v.IconGroup] = true
+						if not toPickup or not toPickup:IsShopItem() then
+							if v.Variant == -1 or ent.Variant == v.Variant then
+								if v.SubType == -1 or ent.SubType == v.SubType then
+									if (not v.Call) or v.Call(ent) then
+										if v.IconGroup then
+											pickupgroupset[v.IconGroup] = true
+										end
+										table.insert(addIcons, v.IconID)
+										entityset[GetPtrHash(ent)] = true
+										break
 									end
-									table.insert(addIcons, v.IconID)
-									entityset[GetPtrHash(ent)] = true
-									break
 								end
 							end
 						end
 					end
-					::continue::
 				end
 			end
 		end
@@ -340,6 +336,9 @@ function MinimapAPI:LoadDefaultMap()
 			Descriptor = v,
 			AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[v.Data.Type] or 5
 		}
+		if v.Data.Shape == RoomShape.ROOMSHAPE_LTL then
+			t.Position = t.Position + Vector(1,0)
+		end
 		if v.Data.Type == RoomType.ROOM_SECRET or v.Data.Type == RoomType.ROOM_SUPERSECRET then
 			t.Hidden = true
 		end
@@ -427,7 +426,9 @@ local maproommeta = {
 function MinimapAPI:AddRoom(t)
 	local defaultPosition = Vector(12, -1)
 	if not t.AllowRoomOverlap then
-		MinimapAPI:RemoveRoom(t.Position or defaultPosition)
+		for i,v in ipairs(MinimapAPI.RoomShapePositions[t.Shape or RoomShape.ROOMSHAPE_1x1]) do
+			MinimapAPI:RemoveRoom((t.Position or defaultPosition)+v)
+		end
 	end
 	local x = {
 		Position = t.Position or defaultPosition,
@@ -546,7 +547,7 @@ end
 function MinimapAPI:UpdateMinimapCenterOffset(force)
 	local currentroom = MinimapAPI:GetCurrentRoom()
 	if currentroom and currentroom then
-		roomCenterOffset = playerMapPos + MinimapAPI:GetRoomShapeGridSize(currentroom.Shape) / 2
+		roomCenterOffset = playerMapPos - MinimapAPI.RoomShapeGridPivots[currentroom.Shape] + MinimapAPI:GetRoomShapeGridSize(currentroom.Shape) / 2
 	elseif force then
 		roomCenterOffset = playerMapPos + Vector(0.5, 0.5)
 	end
@@ -592,7 +593,7 @@ local function updatePlayerPos()
 	if currentroom.GridIndex == -1 then
 		playerMapPos = Vector(-32768,-32768)
 	else
-		playerMapPos = MinimapAPI:GridIndexToVector(currentroom.GridIndex)
+		playerMapPos = MinimapAPI:GridIndexToVector(currentroom.GridIndex) + MinimapAPI.RoomShapeGridPivots[currentroom.Data.Shape]
 	end
 	MinimapAPI:RunPlayerPosCallbacks()
 end
@@ -608,7 +609,7 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 	for i = 1, #(MinimapAPI.Level) do
 		local v = MinimapAPI.Level[i]
 		if (v.DisplayFlags or 0) > 0 then
-			local maxxval = v.Position.X + MinimapAPI:GetRoomShapeGridSize(v.Shape).X
+			local maxxval = v.Position.X - MinimapAPI.RoomShapeGridPivots[v.Shape].X + MinimapAPI:GetRoomShapeGridSize(v.Shape).X
 			if not maxx or (maxxval > maxx) then
 				maxx = maxxval
 			end
@@ -671,12 +672,12 @@ function MinimapAPI:GetDiscoveredBounds()
 		if (v.DisplayFlags or 0) > 0 then
 			local minxval = v.Position.X
 			if not minx or (minxval < minx) then minx = minxval	end
-			local maxxval = v.Position.X + MinimapAPI:GetRoomShapeGridSize(v.Shape).X
+			local maxxval = v.Position.X - MinimapAPI.RoomShapeGridPivots[v.Shape].X + MinimapAPI:GetRoomShapeGridSize(v.Shape).X
 			if not maxx or (maxxval > maxx) then maxx = maxxval	end
 			
 			local minyval = v.Position.Y
 			if not miny or (minyval < miny) then miny = minyval	end
-			local maxyval = v.Position.Y + MinimapAPI:GetRoomShapeGridSize(v.Shape).Y
+			local maxyval = v.Position.Y - MinimapAPI.RoomShapeGridPivots[v.Shape].Y + MinimapAPI:GetRoomShapeGridSize(v.Shape).Y
 			if not maxy or (maxyval > maxy) then maxy = maxyval	end
 		end
 	end
@@ -992,12 +993,18 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 	screen_size = MinimapAPI:GetScreenSize()
 	if MinimapAPI.Config.DisplayOnNoHUD or not Game():GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD) then
 		local currentroomdata = MinimapAPI:GetCurrentRoom()
+		local gamelevel = Game():GetLevel()
 		if currentroomdata and MinimapAPI:PickupDetectionEnabled() then
 			currentroomdata.ItemIcons = MinimapAPI:GetCurrentRoomPickupIDs()
+			currentroomdata.DisplayFlags = 5
+			currentroomdata.Clear = gamelevel:GetCurrentRoomDesc().Clear
+			currentroomdata.Visited = true
+			for _,adjroom in ipairs(currentroomdata:GetAdjacentRooms()) do
+				adjroom.DisplayFlags = adjroom.DisplayFlags | adjroom.AdjacentDisplayFlags
+			end
 		end
 		
 		--update map display flags
-		local gamelevel = Game():GetLevel()
 		if gamelevel:GetStateFlag(LevelStateFlag.STATE_MAP_EFFECT) then 
 			for i,v in ipairs(MinimapAPI.Level) do
 				if not v.Hidden then
@@ -1019,12 +1026,6 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 				end
 			end
 		end
-		for _,adjroom in ipairs(currentroomdata:GetAdjacentRooms()) do
-			adjroom.DisplayFlags = adjroom.DisplayFlags | adjroom.AdjacentDisplayFlags
-		end
-		currentroomdata.DisplayFlags = 5
-		currentroomdata.Clear = gamelevel:GetCurrentRoomDesc().Clear
-		currentroomdata.Visited = true
 		
 		if MinimapAPI.Level then
 			minimapsmall.Scale = Vector(1, 1)

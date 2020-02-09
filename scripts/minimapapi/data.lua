@@ -15,6 +15,21 @@ MinimapAPI.RoomShapeFrames = {
 	[RS.ROOMSHAPE_LBL] = 10,
 }
 
+MinimapAPI.RoomShapeGridPivots = {
+	[RS.ROOMSHAPE_1x1] = Vector(0,0),
+	[RS.ROOMSHAPE_1x2] = Vector(0,0),
+	[RS.ROOMSHAPE_2x1] = Vector(0,0),
+	[RS.ROOMSHAPE_2x2] = Vector(0,0),
+	[RS.ROOMSHAPE_IH] = Vector(0,0),
+	[RS.ROOMSHAPE_IIH] = Vector(0,0),
+	[RS.ROOMSHAPE_IV] = Vector(0,0),
+	[RS.ROOMSHAPE_IIV] = Vector(0,0),
+	[RS.ROOMSHAPE_LBR] = Vector(0,0),
+	[RS.ROOMSHAPE_LTL] = Vector(1,0),
+	[RS.ROOMSHAPE_LTR] = Vector(0,0),
+	[RS.ROOMSHAPE_LBL] = Vector(0,0),
+}
+
 MinimapAPI.RoomShapeGridSizes = {
 	[RS.ROOMSHAPE_1x1] = Vector(1,1),
 	[RS.ROOMSHAPE_1x2] = Vector(1,2),
@@ -41,7 +56,7 @@ MinimapAPI.RoomShapePositions = {
 	[RS.ROOMSHAPE_IV] = {Vector(0,0)},
 	[RS.ROOMSHAPE_IIV] = {Vector(0,0),Vector(0,1)},
 	[RS.ROOMSHAPE_LBR] = {Vector(0,0),Vector(1,0),Vector(0,1)},
-	[RS.ROOMSHAPE_LTL] = {Vector(1,0),Vector(0,1),Vector(1,1)},
+	[RS.ROOMSHAPE_LTL] = {Vector(0,0),Vector(-1,1),Vector(0,1)},
 	[RS.ROOMSHAPE_LTR] = {Vector(0,0),Vector(0,1),Vector(1,1)},
 	[RS.ROOMSHAPE_LBL] = {Vector(0,0),Vector(1,0),Vector(1,1)},
 }
@@ -57,7 +72,7 @@ MinimapAPI.RoomShapeIconPositions = {
 		[RS.ROOMSHAPE_IV] = {Vector(0,0)},
 		[RS.ROOMSHAPE_IIV] = {Vector(0,0.5)},
 		[RS.ROOMSHAPE_LBR] = {Vector(0,0),Vector(1,0),Vector(0,1)},
-		[RS.ROOMSHAPE_LTL] = {Vector(1,0),Vector(0,1),Vector(1,1)},
+		[RS.ROOMSHAPE_LTL] = {Vector(0,0),Vector(-1,1),Vector(0,1)},
 		[RS.ROOMSHAPE_LTR] = {Vector(0,0),Vector(0,1),Vector(1,1)},
 		[RS.ROOMSHAPE_LBL] = {Vector(0,0),Vector(1,0),Vector(1,1)},
 	},
@@ -71,7 +86,7 @@ MinimapAPI.RoomShapeIconPositions = {
 		[RS.ROOMSHAPE_IV] = {Vector(0,0)},
 		[RS.ROOMSHAPE_IIV] = {Vector(0,0),Vector(0,1)},
 		[RS.ROOMSHAPE_LBR] = {Vector(0,0),Vector(1,0),Vector(0,1)},
-		[RS.ROOMSHAPE_LTL] = {Vector(1,0),Vector(0,1),Vector(1,1)},
+		[RS.ROOMSHAPE_LTL] = {Vector(0,0),Vector(-1,1),Vector(0,1)},
 		[RS.ROOMSHAPE_LTR] = {Vector(0,0),Vector(0,1),Vector(1,1)},
 		[RS.ROOMSHAPE_LBL] = {Vector(0,0),Vector(1,0),Vector(1,1)},
 	},
@@ -88,7 +103,7 @@ MinimapAPI.LargeRoomShapeIconPositions = {
 		[RS.ROOMSHAPE_IV] = {Vector(0.25,0.25)},
 		[RS.ROOMSHAPE_IIV] = {Vector(0.25,0.75)},
 		[RS.ROOMSHAPE_LBR] = {Vector(0.25,0.25)},
-		[RS.ROOMSHAPE_LTL] = {Vector(1.25,1.25)},
+		[RS.ROOMSHAPE_LTL] = {Vector(0.25,1.25)},
 		[RS.ROOMSHAPE_LTR] = {Vector(0.25,1.25)},
 		[RS.ROOMSHAPE_LBL] = {Vector(1.25,0.25)},
 	},
@@ -102,7 +117,7 @@ MinimapAPI.LargeRoomShapeIconPositions = {
 		[RS.ROOMSHAPE_IV] = {Vector(0,0.25),Vector(0.5,0.25)},
 		[RS.ROOMSHAPE_IIV] = {Vector(0,0.75),Vector(0.5,0.75)},
 		[RS.ROOMSHAPE_LBR] = {Vector(0,0.25),Vector(0.5,0.25)},
-		[RS.ROOMSHAPE_LTL] = {Vector(1,1.25),Vector(1.5,1.25)},
+		[RS.ROOMSHAPE_LTL] = {Vector(0,1.25),Vector(0.5,1.25)},
 		[RS.ROOMSHAPE_LTR] = {Vector(0,1.25),Vector(0.5,1.25)},
 		[RS.ROOMSHAPE_LBL] = {Vector(1,0.25),Vector(1.5,0.25)},
 	},
@@ -116,7 +131,7 @@ MinimapAPI.LargeRoomShapeIconPositions = {
 		[RS.ROOMSHAPE_IV] = {Vector(0,0),Vector(0.5,0),Vector(0,0.5),Vector(0.5,0.5)},
 		[RS.ROOMSHAPE_IIV] = {Vector(0,0.5),Vector(0.5,1),Vector(0,1),Vector(0.5,1)},
 		[RS.ROOMSHAPE_LBR] = {Vector(0,0),Vector(0.5,0),Vector(0,0.5),Vector(0.5,0.5)},
-		[RS.ROOMSHAPE_LTL] = {Vector(0.9,0.9),Vector(1.4,0.9),Vector(0.9,1.4),Vector(1.4,1.4)},
+		[RS.ROOMSHAPE_LTL] = {Vector(-0.1,0.9),Vector(0.4,0.9),Vector(-0.1,1.4),Vector(0.4,1.4)},
 		[RS.ROOMSHAPE_LTR] = {Vector(0,1),Vector(0.5,1),Vector(0,1.5),Vector(0.5,1.5)},
 		[RS.ROOMSHAPE_LBL] = {Vector(0.9,0),Vector(1.4,0),Vector(0.9,0.5),Vector(1.4,0.5)},
 	},
@@ -283,7 +298,6 @@ MinimapAPI.IconList = {
 
 MinimapAPI.RoomShapeAdjacentCoords = {
 
--- L0 		UP0		R0		D0		L1		UP1		R1		D1
 	{Vector(-1, 0), Vector(0, -1), Vector(1, 0), Vector(0, 1)}, -- ROOMSHAPE_1x1 
 	{Vector(-1, 0),Vector(1, 0)}, -- ROOMSHAPE_IH  
 	{Vector(0, -1),Vector(0, 1)}, -- ROOMSHAPE_IV  
@@ -292,7 +306,7 @@ MinimapAPI.RoomShapeAdjacentCoords = {
 	{Vector(-1, 0),Vector(0, -1),Vector(2, 0),Vector(0, 1),Vector(-1, 0),Vector(1, -1),Vector(2, 0),Vector(1, 1)}, -- ROOMSHAPE_2x1  
 	{Vector(-1, 0),Vector(2,0)}, -- ROOMSHAPE_IIH  
 	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_2x2  
-	{Vector(-1,0),Vector(-1,0),Vector(1,0),Vector(-1,2),Vector(-2,1),Vector(0,-1),Vector(1,2),Vector(0,2)}, -- ROOMSHAPE_LTL
+	{Vector(-1,0),Vector(1,0),Vector(-1,2),Vector(-2,1),Vector(0,-1),Vector(1,1),Vector(0,2)}, -- ROOMSHAPE_LTL
 	{Vector(-1,0),Vector(0,-1),Vector(1,0),Vector(0,2),Vector(-1,1),Vector(1,0),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LTR  
 	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,1),Vector(0,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LBL  
 	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(1,1),Vector(1,1)} -- ROOMSHAPE_LBR  
@@ -310,7 +324,7 @@ MinimapAPI.RoomShapeDoorCoords = {
 	{Vector(-1, 0),Vector(0, -1),Vector(2, 0),Vector(0, 1),Vector(-1, 0),Vector(1, -1),Vector(2, 0),Vector(1, 1)}, -- ROOMSHAPE_2x1  
 	{Vector(-1, 0),nil,Vector(2,0),nil,nil,nil,nil,nil}, -- ROOMSHAPE_IIH  
 	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_2x2  
-	{Vector(-1,0),Vector(-1,0),Vector(1,0),Vector(-1,2),Vector(-2,1),Vector(0,-1),Vector(1,2),Vector(0,2)}, -- ROOMSHAPE_LTL
+	{Vector(-1,0),Vector(-1,0),Vector(1,0),Vector(-1,2),Vector(-2,1),Vector(0,-1),Vector(1,1),Vector(0,2)}, -- ROOMSHAPE_LTL
 	{Vector(-1,0),Vector(0,-1),Vector(1,0),Vector(0,2),Vector(-1,1),Vector(1,0),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LTR  
 	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,1),Vector(0,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LBL  
 	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(1,1),Vector(1,1)} -- ROOMSHAPE_LBR  
