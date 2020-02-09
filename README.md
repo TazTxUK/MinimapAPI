@@ -22,16 +22,18 @@ Go to the wiki section or [click here](https://github.com/TazTxUK/MinimapAPI/wik
 
 ## Backlog / Todo-List
 ### Planned Features:
-* New Setting: Map Transparency
-* Display mode: Vanilla Borderless
 * Add Map Curse Icons (restock, curses)
   * Change position of the Map Curse icons (left, bottom[vanilla])
 * Function - getRandomFreePos() : Returns a X,Y Position, where no room is present but thats adjcent to an existing room (useful for Red Key-like features)
-* Disable Room and Pickup icons seperately
+* Add room discovery system
+* Free positions should not include larger rooms' bottom right corner
 * Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
 * Draw new pickup icons (where applicable):
   * Trapdoor (Grid Entity icons not implemented)
+* New Setting: Map Transparency
+* Display mode: Vanilla Borderless
 * Hovering over a room will display a list of its contents *(Thanks JSG!)*
+
 
 ### Known issues:
 * Curse of the Lost questionmark isnt drawn
