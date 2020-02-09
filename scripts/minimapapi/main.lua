@@ -258,7 +258,7 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 	for _, ent in ipairs(ents) do
 		local success = false
 		local hash = GetPtrHash(ent)
-		if entityHashIcons[ent] == nil then
+		if ent:GetData().MinimapAPIPickupID == nil then
 			for i, v in pairs(MinimapAPI.PickupList) do
 				if ent.Type == v.Type then
 					local toPickup = ent:ToPickup()
@@ -284,7 +284,6 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 						pickupgroupset[pickupicon.IconGroup] = true
 					end
 					table.insert(addIcons, pickupicon.IconID)
-					break
 				end
 			end
 		end
@@ -621,8 +620,6 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 end
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
-	entityHashIcons = {}
-	MinimapAPI.PickupDetectionEntityHashIcons = entityHashIcons
 	updatePlayerPos()
 end)
 
