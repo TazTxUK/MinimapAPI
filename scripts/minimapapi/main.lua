@@ -173,14 +173,11 @@ function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup
 	local newRoom
 	if type(id) == "table" and iconid == nil then
 		local t = id
-		if t.ID then
-			MinimapAPI:RemovePickup(t.ID)
-		end
+		id = t.ID
 		if type(t.Icon) == "table" then
 			t.Icon = MinimapAPI:AddIcon(t.Icon.ID or t.ID, t.Icon.sprite, t.Icon.anim, t.Icon.frame, t.Icon.color).ID
 		end
 		newRoom = {
-			ID = t.ID,
 			IconID = t.Icon,
 			Type = t.Type,
 			Variant = t.Variant or -1,
@@ -190,14 +187,10 @@ function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup
 			Priority = t.Priority or defaultCustomPickupPriority
 		}
 	else
-		if id then
-			MinimapAPI:RemovePickup(id)
-		end
 		if type(iconid) == "table" then
 			iconid = MinimapAPI:AddIcon(iconid.ID or id, iconid.sprite, iconid.anim, iconid.frame, iconid.color).ID
 		end
 		newRoom = {
-			ID = id,
 			IconID = iconid,
 			Type = typ,
 			Variant = variant or -1,
@@ -207,18 +200,13 @@ function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup
 			Priority = priority or defaultCustomPickupPriority
 		}
 	end
-	MinimapAPI.PickupList[#MinimapAPI.PickupList + 1] = newRoom
+	MinimapAPI.PickupList[id] = newRoom
 	table.sort(MinimapAPI.PickupList, function(a, b) return a.Priority > b.Priority	end	)
 	return newRoom
 end
 
 function MinimapAPI:RemovePickup(id)
-	for i = #MinimapAPI.PickupList, 1, -1 do
-		local v = MinimapAPI.PickupList[i]
-		if v.ID == id then
-			table.remove(MinimapAPI.PickupList, i)
-		end
-	end
+	MinimapAPI.PickupList[id] = nil
 end
 
 function MinimapAPI:AddIcon(id, sprite, anim, frame, color)
@@ -264,31 +252,39 @@ function MinimapAPI:PlayerInRoom(roomdata)
 end
 
 function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current room ONLY
-	local addIcons = {}
-	local pickupgroupset = {}
-	local entityset = {}
 	local ents = Isaac.GetRoomEntities()
-	for i, v in ipairs(MinimapAPI.PickupList) do
-		if not pickupgroupset[v.IconGroup] then
-			for _, ent in ipairs(ents) do
-				if not entityset[GetPtrHash(ent)] then
-					if ent.Type == v.Type then
-						local toPickup = ent:ToPickup()
-						if not toPickup or not toPickup:IsShopItem() then
-							if v.Variant == -1 or ent.Variant == v.Variant then
-								if v.SubType == -1 or ent.SubType == v.SubType then
-									if (not v.Call) or v.Call(ent) then
-										if v.IconGroup then
-											pickupgroupset[v.IconGroup] = true
-										end
-										table.insert(addIcons, v.IconID)
-										entityset[GetPtrHash(ent)] = true
-										break
-									end
-								end
+	local pickupgroupset = {}
+	local addIcons = {}
+	for _, ent in ipairs(ents) do
+		local success = false
+		local hash = GetPtrHash(ent)
+		if entityHashIcons[ent] == nil then
+			for i, v in pairs(MinimapAPI.PickupList) do
+				if ent.Type == v.Type then
+					local toPickup = ent:ToPickup()
+					if (not toPickup) or (not toPickup:IsShopItem()) then
+						if v.Variant == -1 or ent.Variant == v.Variant then
+							if v.SubType == -1 or ent.SubType == v.SubType then
+								ent:GetData().MinimapAPIPickupID = i
+								success = true
 							end
 						end
 					end
+				end
+			end
+			if not success then
+				ent:GetData().MinimapAPIPickupID = false
+			end
+		end
+		local pickupicon = MinimapAPI.PickupList[ent:GetData().MinimapAPIPickupID]
+		if pickupicon then
+			if not pickupgroupset[pickupicon.IconGroup] then
+				if (not pickupicon.Call) or pickupicon.Call(ent) then
+					if pickupicon.IconGroup then
+						pickupgroupset[pickupicon.IconGroup] = true
+					end
+					table.insert(addIcons, pickupicon.IconID)
+					break
 				end
 			end
 		end
@@ -625,6 +621,8 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 end
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
+	entityHashIcons = {}
+	MinimapAPI.PickupDetectionEntityHashIcons = entityHashIcons
 	updatePlayerPos()
 end)
 
