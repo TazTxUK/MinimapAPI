@@ -60,7 +60,6 @@ function MinimapAPI:GetLargeRoomShapeIconPositions(rs, iconcount)
 	else
 		return MinimapAPI.LargeRoomShapeIconPositions[3][rs]
 	end
-	return r
 end
 
 function MinimapAPI:GridIndexToVector(grid_index)
@@ -85,21 +84,15 @@ end
 
 --minimap api
 local rooms
-local roomcount
-local currentroom
 local playerMapPos = Vector(0, 0)
-local frozenPlayerPos
 MinimapAPI.Level = {}
 
-local mapdisplaylarge = false
 local mapheldframes = 0
 
 local callbacks_playerpos = {}
-local custom_playerpos = false
 local disabled_itemdet = false
 
 local override_greed = true
-local override_void = true
 
 --draw
 local roomCenterOffset = Vector(0, 0)
@@ -115,8 +108,6 @@ local outlinePixelSize = Vector(16, 16)
 local largeRoomAnimPivot = Vector(-4, -4)
 local largeRoomSize = Vector(17, 15)
 local largeRoomPixelSize = Vector(18, 16)
-local largeIconPixelSize = Vector(16, 16)
-local largeOutlinePixelSize = Vector(32, 32)
 local unboundedMapOffset = Vector(0, 0)
 local largeIconOffset = Vector(-2, -2)
 
@@ -179,7 +170,7 @@ end
 
 local defaultCustomPickupPriority = 12999 --more than vanilla, less than other potential custom pickups
 function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup, priority)
-	local newRoom={}
+	local newRoom
 	if type(id) == "table" and iconid == nil then
 		local t = id
 		if t.ID then
@@ -314,7 +305,6 @@ function MinimapAPI:RunPlayerPosCallbacks()
 		local s, ret = pcall(v.call, MinimapAPI:GetCurrentRoom(), playerMapPos)
 		if s then
 			if ret then
-				custom_playerpos = true
 				playerMapPos = ret
 				return ret
 			end
@@ -375,7 +365,7 @@ function MinimapAPI:LoadDefaultMap()
 				for i,v in ipairs(MinimapAPI.Level) do
 					if v.Shape == RoomShape.ROOMSHAPE_2x2 and v.Descriptor.Data.Type == RoomType.ROOM_BOSS then
 						if MinimapAPI:GetRelativeToDoorPos(v,0) or MinimapAPI:GetRelativeToDoorPos(v,1) then
-							
+							--
 						elseif MinimapAPI:GetRelativeToDoorPos(v,DoorSlot.UP1) or MinimapAPI:GetRelativeToDoorPos(v,DoorSlot.RIGHT0) then
 							v.DisplayPosition = v.Position + Vector(1,0)
 						elseif MinimapAPI:GetRelativeToDoorPos(v,DoorSlot.RIGHT1) or MinimapAPI:GetRelativeToDoorPos(v,DoorSlot.DOWN1) then
@@ -421,18 +411,6 @@ local maproomfunctions = {
 			self.DisplayFlags = df
 		end
 	end,
-	-- DisableVanillaUpdate = function(self,df)
-		-- if self.Descriptor then
-			-- self.DisplayFlags = self.Descriptor.DisplayFlags
-			-- self.Clear = self.Descriptor.Clear
-		-- end
-	-- end,
-	-- EnableVanillaUpdate = function(self,df)
-		-- if self.Descriptor then
-			-- self.DisplayFlags = nil
-			-- self.Clear = nil
-		-- end
-	-- end,
 	GetAdjacentRooms = function(room)
 		local x = {}
 		for i,v in ipairs(MinimapAPI.RoomShapeAdjacentCoords[room.Shape]) do
@@ -576,7 +554,6 @@ end
 
 function MinimapAPI:SetPlayerPosition(position)
 	playerMapPos = Vector(position.X, position.Y)
-	custom_playerpos = true
 end
 
 function MinimapAPI:IsModTable(modtable)
@@ -617,12 +594,10 @@ local function updatePlayerPos()
 	else
 		playerMapPos = MinimapAPI:GridIndexToVector(currentroom.GridIndex)
 	end
-	custom_playerpos = false
 	MinimapAPI:RunPlayerPosCallbacks()
 end
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_LEVEL,	function(self)
-	if disableVanillaBehavior then return end
 	MinimapAPI:LoadDefaultMap()
 	updatePlayerPos()
 end)
@@ -649,7 +624,6 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 end
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
-	if disableVanillaBehavior then return end
 	updatePlayerPos()
 end)
 
@@ -717,7 +691,6 @@ local function renderUnboundedMinimap(size)
 		local renderAnimPivot = size == "small" and roomAnimPivot or largeRoomAnimPivot
 		local sprite = size == "small" and minimapsmall or minimaplarge
 
-		--local renderOutlinePixelSize = size=="small" and outlinePixelSize or largeOutlinePixelSize        -- unused
 		for i, v in ipairs(MinimapAPI.Level) do
 			local roomOffset = (v.DisplayPosition or v.Position) + unboundedMapOffset
 			roomOffset.X = roomOffset.X * renderRoomSize.X
@@ -805,7 +778,6 @@ local function renderUnboundedMinimap(size)
 					if size ~= "small" then
 						locs = MinimapAPI:GetLargeRoomShapeIconPositions(v.Shape, iconcount)
 					end
-					
 					renderIcons(v.PermanentIcons, locs)
 					if not incurrent and MinimapAPI.Config.ShowPickupIcons then
 						renderIcons(v.ItemIcons, locs)
@@ -1294,29 +1266,6 @@ if ModConfigMenu then
 			end
 		}
 	)
-
-	-- ModConfigMenu.AddSetting(
-		-- "Minimap API",
-		-- "Visual",
-		-- {
-			-- Type = ModConfigMenuOptionType.NUMBER,
-			-- CurrentSetting = function()
-				-- return MinimapAPI.Config.DisplayMode
-			-- end,
-			-- Minimum = 1,
-			-- Maximum = 2,
-			-- Display = function()
-				-- return "Display Mode: " ..
-					-- ({
-						-- "Borderless",
-						-- "Bordered"
-					-- })[MinimapAPI.Config.DisplayMode]
-			-- end,
-			-- OnChange = function(currentNum)
-				-- MinimapAPI.Config.DisplayMode = currentNum
-			-- end
-		-- }
-	-- )
 
 	ModConfigMenu.AddSetting(
 		"Minimap API",
