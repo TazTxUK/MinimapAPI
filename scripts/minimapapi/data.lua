@@ -176,6 +176,20 @@ MinimapAPI.UnknownRoomTypeIconIDs = {
     nil,
 }
 
+local RT = RoomType
+MinimapAPI.RoomTypeDisplayFlagsAdjacent = {
+	[RT.ROOM_SHOP] = 3,
+	[RT.ROOM_MINIBOSS] = 1,
+	[RT.ROOM_SECRET] = 0,
+	[RT.ROOM_SUPERSECRET] = 0,
+	[RT.ROOM_LIBRARY] = 3,
+	[RT.ROOM_SACRIFICE] = 1,
+	[RT.ROOM_ISAACS] = 3,
+	[RT.ROOM_BARREN] = 3,
+	[RT.ROOM_CHEST] = 3,
+	[RT.ROOM_DICE] = 3,
+}
+
 local function notCollected(pickup) return not pickup:GetSprite():IsPlaying("Collect") end
 local function chestNotCollected(pickup) return pickup.SubType ~= 0 end
 local function slotNotDead(pickup) return not (pickup:GetSprite():IsPlaying("Death") or pickup:GetSprite():IsPlaying("Broken")) end
@@ -265,4 +279,56 @@ MinimapAPI.IconList = {
 	{ID="Card",anim="IconCard",frame=0},
 	{ID="Slot",anim="IconSlot",frame=0},
 	{ID="Sack",anim="IconSack",frame=0},
+}
+
+MinimapAPI.RoomShapeAdjacentCoords = {
+
+-- L0 		UP0		R0		D0		L1		UP1		R1		D1
+	{Vector(-1, 0), Vector(0, -1), Vector(1, 0), Vector(0, 1)}, -- ROOMSHAPE_1x1 
+	{Vector(-1, 0),Vector(1, 0)}, -- ROOMSHAPE_IH  
+	{Vector(0, -1),Vector(0, 1)}, -- ROOMSHAPE_IV  
+	{Vector(-1, 0), Vector(0, -1), Vector(1, 0), Vector(0, 2), Vector(-1, 1), Vector(1, 1)}, -- ROOMSHAPE_1x2  
+	{Vector(0, -1), Vector(0, 2)}, -- ROOMSHAPE_IIV  
+	{Vector(-1, 0),Vector(0, -1),Vector(2, 0),Vector(0, 1),Vector(-1, 0),Vector(1, -1),Vector(2, 0),Vector(1, 1)}, -- ROOMSHAPE_2x1  
+	{Vector(-1, 0),Vector(2,0)}, -- ROOMSHAPE_IIH  
+	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_2x2  
+	{Vector(-1,0),Vector(-1,0),Vector(1,0),Vector(-1,2),Vector(-2,1),Vector(0,-1),Vector(1,2),Vector(0,2)}, -- ROOMSHAPE_LTL
+	{Vector(-1,0),Vector(0,-1),Vector(1,0),Vector(0,2),Vector(-1,1),Vector(1,0),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LTR  
+	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,1),Vector(0,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LBL  
+	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(1,1),Vector(1,1)} -- ROOMSHAPE_LBR  
+
+}
+
+MinimapAPI.RoomShapeDoorCoords = {
+
+-- L0 		UP0		R0		D0		L1		UP1		R1		D1
+	{Vector(-1, 0), Vector(0, -1), Vector(1, 0), Vector(0, 1),nil,nil,nil,nil}, -- ROOMSHAPE_1x1 
+	{Vector(-1, 0),nil,Vector(1, 0),nil,nil,nil,nil,nil}, -- ROOMSHAPE_IH  
+	{nil,Vector(0, -1),nil,Vector(0, 1),nil,nil,nil,nil}, -- ROOMSHAPE_IV  
+	{Vector(-1, 0), Vector(0, -1), Vector(1, 0), Vector(0, 2), Vector(-1, 1),nil, Vector(1, 1),nil}, -- ROOMSHAPE_1x2  
+	{nil,Vector(0, -1),nil, Vector(0, 2),nil,nil,nil,nil}, -- ROOMSHAPE_IIV  
+	{Vector(-1, 0),Vector(0, -1),Vector(2, 0),Vector(0, 1),Vector(-1, 0),Vector(1, -1),Vector(2, 0),Vector(1, 1)}, -- ROOMSHAPE_2x1  
+	{Vector(-1, 0),nil,Vector(2,0),nil,nil,nil,nil,nil}, -- ROOMSHAPE_IIH  
+	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_2x2  
+	{Vector(-1,0),Vector(-1,0),Vector(1,0),Vector(-1,2),Vector(-2,1),Vector(0,-1),Vector(1,2),Vector(0,2)}, -- ROOMSHAPE_LTL
+	{Vector(-1,0),Vector(0,-1),Vector(1,0),Vector(0,2),Vector(-1,1),Vector(1,0),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LTR  
+	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,1),Vector(0,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LBL  
+	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(1,1),Vector(1,1)} -- ROOMSHAPE_LBR  
+
+}
+
+-- Available doorslot ids per roomshape
+MinimapAPI.RoomShapeDoorSlots ={
+	{0,1,2,3}, -- ROOMSHAPE_1x1 
+	{0,2}, -- ROOMSHAPE_IH  
+	{1,3}, -- ROOMSHAPE_IV  
+	{0,1,2,3,4,6}, -- ROOMSHAPE_1x2  
+	{1,3}, -- ROOMSHAPE_IIV  
+	{0,1,2,3,5,7}, -- ROOMSHAPE_2x1  
+	{0,2}, -- ROOMSHAPE_IIH  
+	{0,1,2,3,4,5,6,7}, -- ROOMSHAPE_2x2  
+	{0,1,2,3,4,5,6,7}, -- ROOMSHAPE_LTL  
+	{0,1,2,3,4,5,6,7}, -- ROOMSHAPE_LTR  
+	{0,1,2,3,4,5,6,7}, -- ROOMSHAPE_LBL  
+	{0,1,2,3,4,5,6,7} -- ROOMSHAPE_LBR  
 }

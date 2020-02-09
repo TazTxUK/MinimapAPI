@@ -86,11 +86,10 @@ end
 --minimap api
 local rooms
 local roomcount
-local roommapdata = {}
 local currentroom
 local playerMapPos = Vector(0, 0)
 local frozenPlayerPos
-
+MinimapAPI.Level = {}
 
 local mapdisplaylarge = false
 local mapheldframes = 0
@@ -139,7 +138,7 @@ local minimapcustomlarge = Sprite()
 minimapcustomlarge:Load("gfx/ui/minimapapi/custom_minimap2.anm2", true)
 
 function MinimapAPI:GetLevel()
-	return roommapdata
+	return MinimapAPI.Level
 end
 
 function MinimapAPI:ShallowCopy(t)
@@ -338,7 +337,7 @@ end
 
 function MinimapAPI:LoadDefaultMap()
 	rooms = Game():GetLevel():GetRooms()
-	roommapdata = {}
+	MinimapAPI.Level = {}
 	local treasure_room_count = 0
 	for i = 0, #rooms - 1 do
 		local v = rooms:Get(i)
@@ -349,7 +348,11 @@ function MinimapAPI:LoadDefaultMap()
 			ItemIcons = {},
 			Position = MinimapAPI:GridIndexToVector(v.GridIndex),
 			Descriptor = v,
+			AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[v.Data.Type] or 5
 		}
+		if v.Data.Type == RoomType.ROOM_SECRET or v.Data.Type == RoomType.ROOM_SUPERSECRET then
+			t.Hidden = true
+		end
 		if v.Data.Type == 11 then
 			if MinimapAPI:IsAmbushBoss() then
 				t.PermanentIcons[1] = "BossAmbushRoom"
@@ -369,7 +372,7 @@ function MinimapAPI:LoadDefaultMap()
 	if not MinimapAPI.Config.OverrideVoid then
 		if not Game():IsGreedMode() then
 			if Game():GetLevel():GetStage() == LevelStage.STAGE7 then
-				for i,v in ipairs(roommapdata) do
+				for i,v in ipairs(MinimapAPI.Level) do
 					if v.Shape == RoomShape.ROOMSHAPE_2x2 and v.Descriptor.Data.Type == RoomType.ROOM_BOSS then
 						if MinimapAPI:GetRelativeToDoorPos(v,0) or MinimapAPI:GetRelativeToDoorPos(v,1) then
 							
@@ -389,7 +392,7 @@ function MinimapAPI:LoadDefaultMap()
 end
 
 function MinimapAPI:ClearMap()
-	roommapdata = {}
+	MinimapAPI.Level = {}
 end
 
 local maproomfunctions = {
@@ -401,6 +404,9 @@ local maproomfunctions = {
 	end,
 	IsIconVisible = function(self)
 		return (self.DisplayFlags or 0) & 4 > 0
+	end,
+	IsVisited = function(self)
+		return self.Visited or false
 	end,
 	GetDisplayFlags = function(self)
 		return self.DisplayFlags or 0
@@ -415,28 +421,29 @@ local maproomfunctions = {
 			self.DisplayFlags = df
 		end
 	end,
-	DisableVanillaUpdate = function(self,df)
-		if self.Descriptor then
-			self.DisplayFlags = self.Descriptor.DisplayFlags
-			self.Clear = self.Descriptor.Clear
+	-- DisableVanillaUpdate = function(self,df)
+		-- if self.Descriptor then
+			-- self.DisplayFlags = self.Descriptor.DisplayFlags
+			-- self.Clear = self.Descriptor.Clear
+		-- end
+	-- end,
+	-- EnableVanillaUpdate = function(self,df)
+		-- if self.Descriptor then
+			-- self.DisplayFlags = nil
+			-- self.Clear = nil
+		-- end
+	-- end,
+	GetAdjacentRooms = function(room)
+		local x = {}
+		for i,v in ipairs(MinimapAPI.RoomShapeAdjacentCoords[room.Shape]) do
+			x[#x + 1] = MinimapAPI:GetRoomAtPosition(room.Position + v)
 		end
-	end,
-	EnableVanillaUpdate = function(self,df)
-		if self.Descriptor then
-			self.DisplayFlags = nil
-			self.Clear = nil
-		end
-	end,
+		return x
+	end
 }
 
 local maproommeta = {
-	__index = function(self, key)
-		local desc = rawget(self, "Descriptor")
-		if desc and desc[key] then
-			return desc[key]
-		end
-		return maproomfunctions[key]
-	end
+	__index = maproomfunctions
 }
 
 function MinimapAPI:AddRoom(t)
@@ -454,20 +461,23 @@ function MinimapAPI:AddRoom(t)
 		Descriptor = t.Descriptor or nil,
 		Color = t.Color or nil,
 		RenderOffset = nil,
-		DisplayFlags = t.DisplayFlags or nil,
-		Clear = t.Clear or nil
+		DisplayFlags = t.DisplayFlags or 0,
+		Clear = t.Clear or false,
+		Visited = t.Visited or false,
+		AdjacentDisplayFlags = t.AdjacentDisplayFlags or 5,
+		Hidden = t.Hidden or nil,
 	}
 	setmetatable(x, maproommeta)
-	roommapdata[#roommapdata + 1] = x
+	MinimapAPI.Level[#MinimapAPI.Level + 1] = x
 	return x
 end
 
 function MinimapAPI:RemoveRoom(pos)
 	assert(MinimapAPI:InstanceOf(pos, Vector), "bad argument #1 to 'RemoveRoom', expected Vector")
 	local success = false
-	for i, v in ipairs(roommapdata) do
+	for i, v in ipairs(MinimapAPI.Level) do
 		if v.Position.X == pos.X and v.Position.Y == pos.Y then
-			table.remove(roommapdata, i)
+			table.remove(MinimapAPI.Level, i)
 			success = true
 			break
 		end
@@ -476,10 +486,10 @@ function MinimapAPI:RemoveRoom(pos)
 end
 
 function MinimapAPI:RemoveRoomByID(id)
-	for i = #roommapdata, 1, -1 do
-		local v = roommapdata[i]
+	for i = #MinimapAPI.Level, 1, -1 do
+		local v = MinimapAPI.Level[i]
 		if v.ID == id then
-			table.remove(roommapdata, i)
+			table.remove(MinimapAPI.Level, i)
 		end
 	end
 end
@@ -487,7 +497,7 @@ end
 function MinimapAPI:GetRoom(pos)
 	assert(MinimapAPI:InstanceOf(pos, Vector), "bad argument #1 to 'GetRoom', expected Vector")
 	local success
-	for i, v in ipairs(roommapdata) do
+	for i, v in ipairs(MinimapAPI.Level) do
 		if v.Position.X == pos.X and v.Position.Y == pos.Y then
 			success = v
 			break
@@ -496,12 +506,59 @@ function MinimapAPI:GetRoom(pos)
 	return success
 end
 
+function MinimapAPI:GetRoomAtPosition(position)
+	assert(MinimapAPI:InstanceOf(position, Vector), "bad argument #1 to 'GetRoomAtPosition', expected Vector")
+	for i, v in ipairs(MinimapAPI.Level) do
+		for _,pos in ipairs(MinimapAPI.RoomShapePositions[v.Shape]) do
+			local p = v.Position + pos
+			if p.X == position.X and p.Y == position.Y then
+				return v
+			end
+		end
+	end
+end
+
 function MinimapAPI:GetRoomByID(ID)
-	for i, v in ipairs(roommapdata) do
+	for i, v in ipairs(MinimapAPI.Level) do
 		if v.ID == ID then
 			return v
 		end
 	end
+end
+
+local function isRoomAdj(room1,room2)
+	for i,v in ipairs(MinimapAPI.RoomShapeAdjacentCoords[room1.Shape]) do
+		local offsetpos = room1.Position + v
+		if offsetpos.X == room2.Position.X and offsetpos.Y == room2.Position.Y then
+			return true
+		end
+	end
+	return false
+end
+
+function MinimapAPI:IsRoomAdjacent(room1, room2) 
+	return isRoomAdj(room1, room2) and isRoomAdj(room2, room1)
+end
+
+function MinimapAPI:GetPositionRelativeToDoor(room, doorslot) 
+	local p = MinimapAPI.RoomShapeDoorCoords[room.Shape][doorslot]
+	if p then
+		return p + room.Position
+	else
+		return nil
+	end
+end
+
+function MinimapAPI:IsPositionFree(position)
+	for _,room in ipairs(MinimapAPI.Level) do
+		for _,pos in ipairs(MinimapAPI.RoomShapePositions[room.Shape]) do
+			local p = pos + room.Position
+			if p.X == position.X and p.Y == position.Y then
+				return false
+			end
+		end
+	end
+	return true
 end
 
 function MinimapAPI:GetPlayerPosition()
@@ -573,8 +630,8 @@ end)
 function MinimapAPI:UpdateUnboundedMapOffset()
 	local maxx
 	local miny
-	for i = 1, #(roommapdata) do
-		local v = roommapdata[i]
+	for i = 1, #(MinimapAPI.Level) do
+		local v = MinimapAPI.Level[i]
 		if (v.DisplayFlags or 0) > 0 then
 			local maxxval = v.Position.X + MinimapAPI:GetRoomShapeGridSize(v.Shape).X
 			if not maxx or (maxxval > maxx) then
@@ -635,8 +692,8 @@ function MinimapAPI:GetDiscoveredBounds()
 	local maxx
 	local miny
 	local maxy
-	for i = 1, #(roommapdata) do
-		local v = roommapdata[i]
+	for i = 1, #(MinimapAPI.Level) do
+		local v = MinimapAPI.Level[i]
 		if (v.DisplayFlags or 0) > 0 then
 			local minxval = v.Position.X
 			if not minx or (minxval < minx) then minx = minxval	end
@@ -661,7 +718,7 @@ local function renderUnboundedMinimap(size)
 		local sprite = size == "small" and minimapsmall or minimaplarge
 
 		--local renderOutlinePixelSize = size=="small" and outlinePixelSize or largeOutlinePixelSize        -- unused
-		for i, v in ipairs(roommapdata) do
+		for i, v in ipairs(MinimapAPI.Level) do
 			local roomOffset = (v.DisplayPosition or v.Position) + unboundedMapOffset
 			roomOffset.X = roomOffset.X * renderRoomSize.X
 			roomOffset.Y = roomOffset.Y * renderRoomSize.Y
@@ -677,7 +734,7 @@ local function renderUnboundedMinimap(size)
 		end
 
 		if MinimapAPI.Config.ShowShadows then
-			for i, v in pairs(roommapdata) do
+			for i, v in pairs(MinimapAPI.Level) do
 				local displayflags = v:GetDisplayFlags()
 				if displayflags > 0 then
 					for n, pos in ipairs(MinimapAPI:GetRoomShapePositions(v.Shape)) do
@@ -690,7 +747,7 @@ local function renderUnboundedMinimap(size)
 			end
 		end
 
-		for i, v in pairs(roommapdata) do
+		for i, v in pairs(MinimapAPI.Level) do
 			local iscurrent = MinimapAPI:PlayerInRoom(v)
 			local displayflags = v:GetDisplayFlags()
 			if displayflags & 0x1 > 0 then
@@ -700,7 +757,7 @@ local function renderUnboundedMinimap(size)
 					anim = "RoomCurrent"
 				elseif v:IsClear() then
 					anim = "RoomVisited"
-				elseif MinimapAPI.Config.DisplayExploredRooms and (v.VisitedCount or 0) > 0 then
+				elseif MinimapAPI.Config.DisplayExploredRooms and v:IsVisited() then
 					spr = size == "small" and minimapcustomsmall or minimapcustomlarge
 					anim = "RoomSemivisited"
 				else
@@ -715,7 +772,7 @@ local function renderUnboundedMinimap(size)
 		sprite.Color = Color(1, 1, 1, 1, 0, 0, 0)
 
 		if MinimapAPI.Config.ShowIcons then
-			for i, v in pairs(roommapdata) do
+			for i, v in pairs(MinimapAPI.Level) do
 				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI.Config.ShowCurrentRoomItems
 				local displayflags = v:GetDisplayFlags()
 				local k = 1
@@ -801,7 +858,7 @@ local function renderBoundedMinimap()
 	if MinimapAPI.Config.OverrideLost or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
 		MinimapAPI:UpdateMinimapCenterOffset()
 	
-		for i, v in ipairs(roommapdata) do
+		for i, v in ipairs(MinimapAPI.Level) do
 			local roomOffset = (v.DisplayPosition or v.Position) - roomCenterOffset
 			roomOffset.X = roomOffset.X * roomSize.X
 			roomOffset.Y = roomOffset.Y * roomSize.Y
@@ -814,7 +871,7 @@ local function renderBoundedMinimap()
 		end
 
 		if MinimapAPI.Config.ShowShadows then
-			for i, v in pairs(roommapdata) do
+			for i, v in pairs(MinimapAPI.Level) do
 				local displayflags = v:GetDisplayFlags()
 				if displayflags > 0 then
 					for n, pos in ipairs(MinimapAPI:GetRoomShapePositions(v.Shape)) do
@@ -834,7 +891,7 @@ local function renderBoundedMinimap()
 			end
 		end
 
-		for i, v in pairs(roommapdata) do
+		for i, v in pairs(MinimapAPI.Level) do
 			local iscurrent = MinimapAPI:PlayerInRoom(v)
 			local displayflags = v:GetDisplayFlags()
 			local spr = minimapsmall
@@ -844,7 +901,7 @@ local function renderBoundedMinimap()
 					anim = "RoomCurrent"
 				elseif v:IsClear() then
 					anim = "RoomVisited"
-				elseif MinimapAPI.Config.DisplayExploredRooms and (v.VisitedCount or 0) > 0 then
+				elseif MinimapAPI.Config.DisplayExploredRooms and v:IsVisited() then
 					spr = minimapcustomsmall
 					anim = "RoomSemivisited"
 				else
@@ -868,7 +925,7 @@ local function renderBoundedMinimap()
 		minimapsmall.Color = Color(1, 1, 1, 1, 0, 0, 0)
 
 		if MinimapAPI.Config.ShowIcons then
-			for i, v in pairs(roommapdata) do
+			for i, v in pairs(MinimapAPI.Level) do
 				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI.Config.ShowCurrentRoomItems
 				local displayflags = v.DisplayFlags or 0
 				local k = 1
@@ -949,40 +1006,69 @@ local function renderMinimapIcons()
 end
 
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
-		if MinimapAPI.Config.Disable then return end
-		if MinimapAPI.Config.HideInCombat == 2 then
-			local r = Game():GetRoom()
-			if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
-				return
-			end
-		elseif MinimapAPI.Config.HideInCombat == 3 then
-			if not Game():GetRoom():IsClear() then
-				return
+	if MinimapAPI.Config.Disable then return end
+	if MinimapAPI.Config.HideInCombat == 2 then
+		local r = Game():GetRoom()
+		if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
+			return
+		end
+	elseif MinimapAPI.Config.HideInCombat == 3 then
+		if not Game():GetRoom():IsClear() then
+			return
+		end
+	end
+	screen_size = MinimapAPI:GetScreenSize()
+	if MinimapAPI.Config.DisplayOnNoHUD or not Game():GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD) then
+		local currentroomdata = MinimapAPI:GetCurrentRoom()
+		if currentroomdata and MinimapAPI:PickupDetectionEnabled() then
+			currentroomdata.ItemIcons = MinimapAPI:GetCurrentRoomPickupIDs()
+		end
+		
+		--update map display flags
+		local gamelevel = Game():GetLevel()
+		if gamelevel:GetStateFlag(LevelStateFlag.STATE_MAP_EFFECT) then 
+			for i,v in ipairs(MinimapAPI.Level) do
+				if not v.Hidden then
+					v.DisplayFlags = v.DisplayFlags | 1
+				end
 			end
 		end
-		screen_size = MinimapAPI:GetScreenSize()
-		if MinimapAPI.Config.DisplayOnNoHUD or not Game():GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD) then
-			local currentroomdata = MinimapAPI:GetCurrentRoom()
-			if currentroomdata and MinimapAPI:PickupDetectionEnabled() then
-				currentroomdata.ItemIcons = MinimapAPI:GetCurrentRoomPickupIDs()
+		if gamelevel:GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT) then 
+			for i,v in ipairs(MinimapAPI.Level) do
+				if v.Hidden then
+					v.DisplayFlags = v.DisplayFlags | 6
+				end
 			end
-
-			if roommapdata then
-				minimapsmall.Scale = Vector(1, 1)
-				if MinimapAPI:IsLarge() then
-					renderUnboundedMinimap("huge")
-				elseif MinimapAPI.Config.DisplayMode == 1 then
-					renderUnboundedMinimap("small")
-				elseif MinimapAPI.Config.DisplayMode == 2 then
-					renderBoundedMinimap()
+		end
+		if gamelevel:GetStateFlag(LevelStateFlag.STATE_COMPASS_EFFECT) then 
+			for i,v in ipairs(MinimapAPI.Level) do
+				if not v.Hidden and #v.PermanentIcons > 0 then
+					v.DisplayFlags = v.DisplayFlags | 6
 				end
-				if MinimapAPI.Config.ShowLevelFlags then
-					renderMinimapIcons()
-				end
+			end
+		end
+		for _,adjroom in ipairs(currentroomdata:GetAdjacentRooms()) do
+			adjroom.DisplayFlags = adjroom.DisplayFlags | adjroom.AdjacentDisplayFlags
+		end
+		currentroomdata.DisplayFlags = 5
+		currentroomdata.Clear = gamelevel:GetCurrentRoomDesc().Clear
+		currentroomdata.Visited = true
+		
+		if MinimapAPI.Level then
+			minimapsmall.Scale = Vector(1, 1)
+			if MinimapAPI:IsLarge() then
+				renderUnboundedMinimap("huge")
+			elseif MinimapAPI.Config.DisplayMode == 1 then
+				renderUnboundedMinimap("small")
+			elseif MinimapAPI.Config.DisplayMode == 2 then
+				renderBoundedMinimap()
+			end
+			if MinimapAPI.Config.ShowLevelFlags then
+				renderMinimapIcons()
 			end
 		end
 	end
-)
+end)
 
 if ModConfigMenu then
 	ModConfigMenu.AddSetting(
@@ -1354,10 +1440,15 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 					Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
 					DisplayFlags = v.DisplayFlags,
 					Clear = v.Clear,
-					Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO)
+					Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO),
+					AdjacentDisplayFlags = v.AdjacentDisplayFlags,
+					Visited = v.Visited,
+					Hidden = v.Hidden,
 				}
 			end
-			playerMapPos = Vector(saved.playerMapPosX,saved.playerMapPosY)
+			if saved.playerMapPosX and saved.playerMapPosY then
+				playerMapPos = Vector(saved.playerMapPosX,saved.playerMapPosY)
+			end
 		else
 			MinimapAPI:LoadDefaultMap()
 		end
@@ -1367,12 +1458,12 @@ end
 function MinimapAPI:GetSaveTable(menuexit)
 	local saved = {}
 	saved.Config = MinimapAPI.Config
-	saved.playerMapPosX=playerMapPos.X
-	saved.playerMapPosY=playerMapPos.Y
 	saved.Seed = Game():GetSeeds():GetStartSeed()
 	if menuexit then
+		saved.playerMapPosX = playerMapPos.X
+		saved.playerMapPosY = playerMapPos.Y
 		saved.LevelData = {}
-		for i, v in ipairs(roommapdata) do
+		for i, v in ipairs(MinimapAPI.Level) do
 			saved.LevelData[#saved.LevelData + 1] = {
 				PositionX = v.Position.X,
 				PositionY = v.Position.Y,
@@ -1384,7 +1475,10 @@ function MinimapAPI:GetSaveTable(menuexit)
 				DescriptorListIndex = v.Descriptor and v.Descriptor.ListIndex,
 				DisplayFlags = rawget(v, "DisplayFlags"),
 				Clear = rawget(v, "Clear"),
-				Color = v.Color and {R = v.Color.R, G = v.Color.G, B = v.Color.B, A = v.Color.A, RO = v.Color.RO, GO = v.Color.GO, BO = v.Color.BO}
+				Color = v.Color and {R = v.Color.R, G = v.Color.G, B = v.Color.B, A = v.Color.A, RO = v.Color.RO, GO = v.Color.GO, BO = v.Color.BO},
+				AdjacentDisplayFlags = v.AdjacentDisplayFlags,
+				Visited = v.Visited,
+				Hidden = v.Hidden,
 			}
 		end
 	end

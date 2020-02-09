@@ -7,7 +7,6 @@ if _VERSION == "Lua 5.3" then
 	require("scripts.minimapapi.config")
 	require("scripts.minimapapi.main")
 	require("scripts.minimapapi.custom_icons")
-	require("scripts.minimapapi.wof")
 	Isaac.ConsoleOutput("Minimap API loaded, branch: "..MinimapAPI.Version.."\n")
 else
 	MinimapAPI = RegisterMod("Minimap API",2)
