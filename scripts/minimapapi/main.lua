@@ -364,13 +364,13 @@ function MinimapAPI:LoadDefaultMap()
 			if Game():GetLevel():GetStage() == LevelStage.STAGE7 then
 				for i,v in ipairs(MinimapAPI.Level) do
 					if v.Shape == RoomShape.ROOMSHAPE_2x2 and v.Descriptor.Data.Type == RoomType.ROOM_BOSS then
-						if MinimapAPI:GetRelativeToDoorPos(v,0) or MinimapAPI:GetRelativeToDoorPos(v,1) then
+						if MinimapAPI:GetPositionRelativeToDoor(v,0) or MinimapAPI:GetPositionRelativeToDoor(v,1) then
 							--
-						elseif MinimapAPI:GetRelativeToDoorPos(v,DoorSlot.UP1) or MinimapAPI:GetRelativeToDoorPos(v,DoorSlot.RIGHT0) then
+						elseif MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP1) or MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT0) then
 							v.DisplayPosition = v.Position + Vector(1,0)
-						elseif MinimapAPI:GetRelativeToDoorPos(v,DoorSlot.RIGHT1) or MinimapAPI:GetRelativeToDoorPos(v,DoorSlot.DOWN1) then
+						elseif MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT1) or MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.DOWN1) then
 							v.DisplayPosition = v.Position + Vector(1,1)
-						elseif MinimapAPI:GetRelativeToDoorPos(v,DoorSlot.LEFT1) or MinimapAPI:GetRelativeToDoorPos(v,DoorSlot.DOWN0) then
+						elseif MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.LEFT1) or MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.DOWN0) then
 							v.DisplayPosition = v.Position + Vector(0,1)
 						end
 						v.Shape = RoomShape.ROOMSHAPE_1x1
