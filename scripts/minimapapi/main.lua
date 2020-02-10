@@ -276,19 +276,28 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 				ent:GetData().MinimapAPIPickupID = false
 			end
 		end
-		local pickupicon = MinimapAPI.PickupList[ent:GetData().MinimapAPIPickupID]
+		
+		local id = ent:GetData().MinimapAPIPickupID
+		local pickupicon = MinimapAPI.PickupList[id]
 		if pickupicon then
-			if not pickupgroupset[pickupicon.IconGroup] then
+			if MinimapAPI.Config.PickupNoGrouping or not pickupgroupset[pickupicon.IconGroup] then
 				if (not pickupicon.Call) or pickupicon.Call(ent) then
 					if pickupicon.IconGroup then
 						pickupgroupset[pickupicon.IconGroup] = true
 					end
-					table.insert(addIcons, pickupicon.IconID)
+					table.insert(addIcons, id)
 				end
 			end
 		end
 	end
-	return addIcons
+	if not MinimapAPI.Config.PickupFirstComeFirstServe then
+		table.sort(addIcons, function(a,b) return MinimapAPI.PickupList[a].Priority > MinimapAPI.PickupList[b].Priority end)
+	end
+	local r = {}
+	for i,v in ipairs(addIcons) do
+		r[i] = MinimapAPI.PickupList[v].IconID
+	end
+	return r
 end
 
 function MinimapAPI:RunPlayerPosCallbacks()
@@ -715,7 +724,8 @@ local function renderUnboundedMinimap(size)
 				end
 			end
 		end
-
+		
+		local defaultRoomColor = Color(MinimapAPI.Config.DefaultRoomColorR, MinimapAPI.Config.DefaultRoomColorG, MinimapAPI.Config.DefaultRoomColorB, 1, 0, 0, 0)
 		for i, v in pairs(MinimapAPI.Level) do
 			local iscurrent = MinimapAPI:PlayerInRoom(v)
 			local displayflags = v:GetDisplayFlags()
@@ -733,7 +743,7 @@ local function renderUnboundedMinimap(size)
 					anim = "RoomUnvisited"
 				end
 				spr:SetFrame(anim, MinimapAPI:GetRoomShapeFrame(v.Shape))
-				spr.Color = v.Color or Color(1, 1, 1, 1, 0, 0, 0)
+				spr.Color = v.Color or defaultRoomColor
 				spr:Render(offsetVec + v.RenderOffset, zvec, zvec)
 			end
 		end
@@ -858,7 +868,8 @@ local function renderBoundedMinimap()
 				end
 			end
 		end
-
+	
+		local defaultRoomColor = Color(MinimapAPI.Config.DefaultRoomColorR, MinimapAPI.Config.DefaultRoomColorG, MinimapAPI.Config.DefaultRoomColorB, 1, 0, 0, 0)
 		for i, v in pairs(MinimapAPI.Level) do
 			local iscurrent = MinimapAPI:PlayerInRoom(v)
 			local displayflags = v:GetDisplayFlags()
@@ -884,7 +895,7 @@ local function renderBoundedMinimap()
 					brcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
 					tlcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
 					spr:SetFrame(anim, MinimapAPI:GetRoomShapeFrame(v.Shape))
-					spr.Color = v.Color or Color(1, 1, 1, 1, 0, 0, 0)
+					spr.Color = v.Color or defaultRoomColor
 					spr:Render(offsetVec + v.RenderOffset, tlcutoff, brcutoff)
 				end
 			end
@@ -1037,332 +1048,6 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 		end
 	end
 end)
-
-if ModConfigMenu then
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"General",
-		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.Disable
-			end,
-			Display = function()
-				return "Disable Minimap: " .. (MinimapAPI.Config.Disable and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.Disable = currentBool
-			end
-		}
-	)
-
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"General",
-		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.OverrideLost
-			end,
-			Display = function()
-				return "Display During Curse: " .. (MinimapAPI.Config.OverrideLost and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.OverrideLost = currentBool
-			end
-		}
-	)
-
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"General",
-		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.DisplayOnNoHUD
-			end,
-			Display = function()
-				return "Display with No HUD Seed: " .. (MinimapAPI.Config.DisplayOnNoHUD and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.DisplayOnNoHUD = currentBool
-			end
-		}
-	)
-
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"General",
-		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.ShowIcons
-			end,
-			Display = function()
-				return "Show Icons: " .. (MinimapAPI.Config.ShowIcons and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.ShowIcons = currentBool
-			end
-		}
-	)
-	
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"General",
-		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.ShowPickupIcons
-			end,
-			Display = function()
-				return "Show Pickup Icons: " .. (MinimapAPI.Config.ShowPickupIcons and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.ShowPickupIcons = currentBool
-			end
-		}
-	)
-
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.ShowShadows
-			end,
-			Display = function()
-				return "Show Shadows: " .. (MinimapAPI.Config.ShowShadows and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.ShowShadows = currentBool
-			end
-		}
-	)
-
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.ShowLevelFlags
-			end,
-			Display = function()
-				return "Show Level Flags: " .. (MinimapAPI.Config.ShowLevelFlags and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.ShowLevelFlags = currentBool
-			end
-		}
-	)
-
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.ShowCurrentRoomItems
-			end,
-			Display = function()
-				return "Show Current Room Items: " .. (MinimapAPI.Config.ShowCurrentRoomItems and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.ShowCurrentRoomItems = currentBool
-			end
-		}
-	)
-	
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.DisplayExploredRooms
-			end,
-			Display = function()
-				return "Show Visited Uncleared Rooms: " .. (MinimapAPI.Config.DisplayExploredRooms and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.DisplayExploredRooms = currentBool
-			end
-		}
-	)
-	
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.AllowToggleLargeMap
-			end,
-			Display = function()
-				return "Allow Toggle Large Map: " .. (MinimapAPI.Config.AllowToggleLargeMap and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.AllowToggleLargeMap = currentBool
-			end
-		}
-	)
-	
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.AllowToggleSmallMap
-			end,
-			Display = function()
-				return "Allow Toggle Small Map: " .. (MinimapAPI.Config.AllowToggleSmallMap and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.AllowToggleSmallMap = currentBool
-			end
-		}
-	)
-	
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.AllowToggleBoundedMap
-			end,
-			Display = function()
-				return "Allow Toggle Bounded Map: " .. (MinimapAPI.Config.AllowToggleBoundedMap and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.AllowToggleBoundedMap = currentBool
-			end
-		}
-	)
-	
-	local hicstrings = {"Never","Bosses Only","Always"}
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.NUMBER,
-			CurrentSetting = function()
-				return MinimapAPI.Config.HideInCombat
-			end,
-			Minimum = 1,
-			Maximum = 3,
-			Display = function()
-				return "Hide Map in Combat: " .. hicstrings[MinimapAPI.Config.HideInCombat]
-			end,
-			OnChange = function(currentNum)
-				MinimapAPI.Config.HideInCombat = currentNum
-			end
-		}
-	)
-
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.NUMBER,
-			CurrentSetting = function()
-				return MinimapAPI.Config.MapFrameWidth
-			end,
-			Minimum = 10,
-			Maximum = 100,
-			ModifyBy = 5,
-			Display = function()
-				return "Border Width: " .. MinimapAPI.Config.MapFrameWidth
-			end,
-			OnChange = function(currentNum)
-				MinimapAPI.Config.MapFrameWidth = currentNum
-			end
-		}
-	)
-
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.NUMBER,
-			CurrentSetting = function()
-				return MinimapAPI.Config.MapFrameHeight
-			end,
-			Minimum = 10,
-			Maximum = 100,
-			ModifyBy = 5,
-			Display = function()
-				return "Border Height: " .. MinimapAPI.Config.MapFrameHeight
-			end,
-			OnChange = function(currentNum)
-				MinimapAPI.Config.MapFrameHeight = currentNum
-			end
-		}
-	)
-
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.NUMBER,
-			CurrentSetting = function()
-				return MinimapAPI.Config.PositionX
-			end,
-			Minimum = 0,
-			Maximum = 40,
-			ModifyBy = 2,
-			Display = function()
-				return "Position X: " .. MinimapAPI.Config.PositionX
-			end,
-			OnChange = function(currentNum)
-				MinimapAPI.Config.PositionX = currentNum
-			end
-		}
-	)
-
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.NUMBER,
-			CurrentSetting = function()
-				return MinimapAPI.Config.PositionY
-			end,
-			Minimum = 0,
-			Maximum = 40,
-			ModifyBy = 2,
-			Display = function()
-				return "Position Y: " .. MinimapAPI.Config.PositionY
-			end,
-			OnChange = function(currentNum)
-				MinimapAPI.Config.PositionY = currentNum
-			end
-		}
-	)
-
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Visual",
-		{
-			Type = ModConfigMenuOptionType.NUMBER,
-			CurrentSetting = function()
-				return MinimapAPI.Config.SmoothSlidingSpeed
-			end,
-			Minimum = 0.25,
-			Maximum = 1,
-			ModifyBy = 0.25,
-			Display = function()
-				return "Smooth Movement Speed: " .. MinimapAPI.Config.SmoothSlidingSpeed
-			end,
-			OnChange = function(currentNum)
-				MinimapAPI.Config.SmoothSlidingSpeed = currentNum
-			end
-		}
-	)
-end
 
 MinimapAPI.DisableSaving = false
 

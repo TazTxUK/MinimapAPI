@@ -1,22 +1,29 @@
 MinimapAPI.Config = {
-	["Disable"] = false, 				--Default = false
-	["DisplayOnNoHUD"] = false, 		--Default = false
-	["OverrideLost"] = false, 			--Default = false
-	["ShowIcons"] = true, 				--Default = true
-	["ShowPickupIcons"] = true, 		--Default = true
-	["ShowShadows"] = true, 			--Default = true
-	["ShowCurrentRoomItems"] = false,	--Default = false
-	["MapFrameWidth"] = 50, 			--Default = 50
-	["MapFrameHeight"] = 45,			--Default = 45
-	["PositionX"] = 4, 					--Default = 4
-	["PositionY"] = 4, 					--Default = 4
-	["DisplayMode"] = 2,				--Default = 2
-	["ShowLevelFlags"] = true,			--Default = true
-	["SmoothSlidingSpeed"] = 0.3,		--Default = 0.3		(1 is instantaneous, 0.1 is extremely slow)
-	["HideInCombat"] = 1,				--Default = 1
-	["OverrideVoid"] = false,			--Default = false
-	["DisplayExploredRooms"] = true,	--Default = true
-	["AllowToggleLargeMap"] = false,	--Default = false
-	["AllowToggleSmallMap"] = true,		--Default = false
-	["AllowToggleBoundedMap"] = true,	--Default = false
+	["Disable"] = false,
+	["DisplayOnNoHUD"] = false,
+	["OverrideLost"] = false,
+	["ShowIcons"] = true,
+	["ShowPickupIcons"] = true,
+	["ShowShadows"] = true,
+	["ShowCurrentRoomItems"] = false,
+	["MapFrameWidth"] = 55,
+	["MapFrameHeight"] = 50,
+	["PositionX"] = 4, 
+	["PositionY"] = 4,
+	["DisplayMode"] = 2,
+	["ShowLevelFlags"] = true,
+	["SmoothSlidingSpeed"] = 0.3,
+	["HideInCombat"] = 1,
+	["OverrideVoid"] = false,
+	["DisplayExploredRooms"] = true,
+	["AllowToggleLargeMap"] = false,
+	["AllowToggleSmallMap"] = true,
+	["AllowToggleBoundedMap"] = true,
+	["PickupFirstComeFirstServe"] = false,
+	["PickupNoGrouping"] = false,
+	["DefaultRoomColorR"] = 1,
+	["DefaultRoomColorG"] = 1,
+	["DefaultRoomColorB"] = 1,
+	
+	["ConfigPreset"] = 1,
 }
