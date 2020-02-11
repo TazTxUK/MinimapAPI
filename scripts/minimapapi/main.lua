@@ -632,6 +632,22 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 	updatePlayerPos()
 end)
 
+function MinimapAPI:ShowMap()
+	for i,v in ipairs(MinimapAPI.Level) do
+		if v.Hidden then
+			v.DisplayFlags = 6
+		else
+			v.DisplayFlags = 5
+		end
+	end
+end
+
+MinimapAPI:AddCallback( ModCallbacks.MC_USE_CARD, function(self, card)
+	if card == Card.CARD_WORLD or card == Card.CARD_SUN then
+		MinimapAPI:ShowMap()
+	end
+end)
+
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_UPDATE, function(self)
 	if Input.IsActionPressed(ButtonAction.ACTION_MAP, 0) then
 		mapheldframes = mapheldframes + 1

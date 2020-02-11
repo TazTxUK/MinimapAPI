@@ -3,16 +3,14 @@ if ModConfigMenu then
 	local configPresets = {
 		"Default",
 		"Vanilla",
-		"Taz",
-		"Wofsauge",
-		"Zamiel",
+		"Beta",
+		"Racing",
 	}
 	local configPresetTexts = {
 		"Default config options.",
 		"A close recreation of the original AB+ map.",
-		"Taz's config preset.",
 		"The original look of Wofsauge's miniMAPI.",
-		"The config of Racing+ developer Zamiel.",
+		"For speedrunners.",
 	}
 	local configPresetFuncs = {
 		function() --default
@@ -20,19 +18,19 @@ if ModConfigMenu then
 			MinimapAPI.Config.ShowPickupIcons = true
 			MinimapAPI.Config.ShowShadows = true
 			MinimapAPI.Config.ShowCurrentRoomItems = false
-			MinimapAPI.Config.MapFrameWidth = 55
-			MinimapAPI.Config.MapFrameHeight = 50
+			MinimapAPI.Config.MapFrameWidth = 75
+			MinimapAPI.Config.MapFrameHeight = 60
 			MinimapAPI.Config.PositionX = 4 
 			MinimapAPI.Config.PositionY = 4
 			MinimapAPI.Config.DisplayMode = 1
-			MinimapAPI.Config.ShowLevelFlags = true
+			MinimapAPI.Config.ShowLevelFlags = false
 			MinimapAPI.Config.SmoothSlidingSpeed = 0.3
 			MinimapAPI.Config.HideInCombat = 1
 			MinimapAPI.Config.OverrideVoid = false
 			MinimapAPI.Config.DisplayExploredRooms = true
-			MinimapAPI.Config.AllowToggleLargeMap = false
+			MinimapAPI.Config.AllowToggleLargeMap = true
 			MinimapAPI.Config.AllowToggleSmallMap = true
-			MinimapAPI.Config.AllowToggleBoundedMap = true
+			MinimapAPI.Config.AllowToggleBoundedMap = false
 			MinimapAPI.Config.PickupFirstComeFirstServe = false
 			MinimapAPI.Config.PickupNoGrouping = false
 		end,
@@ -57,27 +55,6 @@ if ModConfigMenu then
 			MinimapAPI.Config.PickupFirstComeFirstServe = false
 			MinimapAPI.Config.PickupNoGrouping = false
 		end,
-		function() --taz
-			MinimapAPI.Config.ShowIcons = true
-			MinimapAPI.Config.ShowPickupIcons = true
-			MinimapAPI.Config.ShowShadows = true
-			MinimapAPI.Config.ShowCurrentRoomItems = false
-			MinimapAPI.Config.MapFrameWidth = 75
-			MinimapAPI.Config.MapFrameHeight = 60
-			MinimapAPI.Config.PositionX = 4 
-			MinimapAPI.Config.PositionY = 4
-			MinimapAPI.Config.DisplayMode = 1
-			MinimapAPI.Config.ShowLevelFlags = false
-			MinimapAPI.Config.SmoothSlidingSpeed = 0.3
-			MinimapAPI.Config.HideInCombat = 1
-			MinimapAPI.Config.OverrideVoid = false
-			MinimapAPI.Config.DisplayExploredRooms = true
-			MinimapAPI.Config.AllowToggleLargeMap = true
-			MinimapAPI.Config.AllowToggleSmallMap = true
-			MinimapAPI.Config.AllowToggleBoundedMap = false
-			MinimapAPI.Config.PickupFirstComeFirstServe = false
-			MinimapAPI.Config.PickupNoGrouping = false
-		end,
 		function() --wofsauge
 			MinimapAPI.Config.ShowIcons = true
 			MinimapAPI.Config.ShowPickupIcons = true
@@ -99,24 +76,24 @@ if ModConfigMenu then
 			MinimapAPI.Config.PickupFirstComeFirstServe = true
 			MinimapAPI.Config.PickupNoGrouping = false
 		end,
-		function() --zamiel
+		function() --racing
 			MinimapAPI.Config.ShowIcons = true
 			MinimapAPI.Config.ShowPickupIcons = true
 			MinimapAPI.Config.ShowShadows = true
 			MinimapAPI.Config.ShowCurrentRoomItems = true
-			MinimapAPI.Config.MapFrameWidth = 60
-			MinimapAPI.Config.MapFrameHeight = 55
+			MinimapAPI.Config.MapFrameWidth = 70
+			MinimapAPI.Config.MapFrameHeight = 65
 			MinimapAPI.Config.PositionX = 4 
 			MinimapAPI.Config.PositionY = 4
-			MinimapAPI.Config.DisplayMode = 2
+			MinimapAPI.Config.DisplayMode = 1
 			MinimapAPI.Config.ShowLevelFlags = false
 			MinimapAPI.Config.SmoothSlidingSpeed = 1
 			MinimapAPI.Config.HideInCombat = 1
 			MinimapAPI.Config.OverrideVoid = false
 			MinimapAPI.Config.DisplayExploredRooms = true
 			MinimapAPI.Config.AllowToggleLargeMap = true
-			MinimapAPI.Config.AllowToggleSmallMap = false
-			MinimapAPI.Config.AllowToggleBoundedMap = true
+			MinimapAPI.Config.AllowToggleSmallMap = true
+			MinimapAPI.Config.AllowToggleBoundedMap = false
 			MinimapAPI.Config.PickupFirstComeFirstServe = false
 			MinimapAPI.Config.PickupNoGrouping = true
 		end,
@@ -323,7 +300,7 @@ if ModConfigMenu then
 				return MinimapAPI.Config.MapFrameWidth
 			end,
 			Minimum = 10,
-			Maximum = 100,
+			Maximum = 200,
 			ModifyBy = 5,
 			Display = function()
 				return "Bounded Map Width: " .. MinimapAPI.Config.MapFrameWidth
@@ -343,7 +320,7 @@ if ModConfigMenu then
 				return MinimapAPI.Config.MapFrameHeight
 			end,
 			Minimum = 10,
-			Maximum = 100,
+			Maximum = 200,
 			ModifyBy = 5,
 			Display = function()
 				return "Bounded Map Height: " .. MinimapAPI.Config.MapFrameHeight
@@ -363,7 +340,7 @@ if ModConfigMenu then
 				return MinimapAPI.Config.PositionX
 			end,
 			Minimum = 0,
-			Maximum = 40,
+			Maximum = 80,
 			ModifyBy = 2,
 			Display = function()
 				return "Position X: " .. MinimapAPI.Config.PositionX
@@ -383,7 +360,7 @@ if ModConfigMenu then
 				return MinimapAPI.Config.PositionY
 			end,
 			Minimum = 0,
-			Maximum = 40,
+			Maximum = 80,
 			ModifyBy = 2,
 			Display = function()
 				return "Position Y: " .. MinimapAPI.Config.PositionY
