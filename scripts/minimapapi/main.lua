@@ -449,6 +449,7 @@ function MinimapAPI:AddRoom(t)
 		Visited = t.Visited or false,
 		AdjacentDisplayFlags = t.AdjacentDisplayFlags or 5,
 		Hidden = t.Hidden or nil,
+		NoUpdate = t.NoUpdate or nil,
 	}
 	setmetatable(x, maproommeta)
 	MinimapAPI.Level[#MinimapAPI.Level + 1] = x
@@ -1020,12 +1021,16 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 		local player = Isaac.GetPlayer(0)
 		local hasSpelunkerHat = player:HasCollectible(CollectibleType.COLLECTIBLE_SPELUNKER_HAT) and not MinimapAPI.DisableSpelunkerHat
 		if currentroomdata and MinimapAPI:PickupDetectionEnabled() then
-			currentroomdata.ItemIcons = MinimapAPI:GetCurrentRoomPickupIDs()
-			currentroomdata.DisplayFlags = 5
-			currentroomdata.Clear = gamelevel:GetCurrentRoomDesc().Clear
-			currentroomdata.Visited = true
+			if not currentroomdata.NoUpdate then
+				currentroomdata.ItemIcons = MinimapAPI:GetCurrentRoomPickupIDs()
+				currentroomdata.DisplayFlags = 5
+				currentroomdata.Clear = gamelevel:GetCurrentRoomDesc().Clear
+				currentroomdata.Visited = true
+			end
 			for _,adjroom in ipairs(currentroomdata:GetAdjacentRooms()) do
-				adjroom.DisplayFlags = adjroom.DisplayFlags | (hasSpelunkerHat and 5 or adjroom.AdjacentDisplayFlags)
+				if not adjroom.NoUpdate then
+					adjroom.DisplayFlags = adjroom.DisplayFlags | (hasSpelunkerHat and 5 or adjroom.AdjacentDisplayFlags)
+				end
 			end
 		end
 		
@@ -1093,6 +1098,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 					AdjacentDisplayFlags = v.AdjacentDisplayFlags,
 					Visited = v.Visited,
 					Hidden = v.Hidden,
+					NoUpdate = v.NoUpdate,
 				}
 			end
 			if saved.playerMapPosX and saved.playerMapPosY then
@@ -1128,6 +1134,7 @@ function MinimapAPI:GetSaveTable(menuexit)
 				AdjacentDisplayFlags = v.AdjacentDisplayFlags,
 				Visited = v.Visited,
 				Hidden = v.Hidden,
+				NoUpdate = v.NoUpdate,
 			}
 		end
 	end
