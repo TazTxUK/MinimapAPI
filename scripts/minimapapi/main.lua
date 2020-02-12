@@ -1000,6 +1000,7 @@ local function renderMinimapIcons()
 	end
 end
 
+MinimapAPI.DisableSpelunkerHat = false
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 	if MinimapAPI.Config.Disable then return end
 	if MinimapAPI.Config.HideInCombat == 2 then
@@ -1016,13 +1017,15 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 	if MinimapAPI.Config.DisplayOnNoHUD or not Game():GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD) then
 		local currentroomdata = MinimapAPI:GetCurrentRoom()
 		local gamelevel = Game():GetLevel()
+		local player = Isaac.GetPlayer(0)
+		local hasSpelunkerHat = player:HasCollectible(CollectibleType.COLLECTIBLE_SPELUNKER_HAT) and not MinimapAPI.DisableSpelunkerHat
 		if currentroomdata and MinimapAPI:PickupDetectionEnabled() then
 			currentroomdata.ItemIcons = MinimapAPI:GetCurrentRoomPickupIDs()
 			currentroomdata.DisplayFlags = 5
 			currentroomdata.Clear = gamelevel:GetCurrentRoomDesc().Clear
 			currentroomdata.Visited = true
 			for _,adjroom in ipairs(currentroomdata:GetAdjacentRooms()) do
-				adjroom.DisplayFlags = adjroom.DisplayFlags | adjroom.AdjacentDisplayFlags
+				adjroom.DisplayFlags = adjroom.DisplayFlags | (hasSpelunkerHat and 5 or adjroom.AdjacentDisplayFlags)
 			end
 		end
 		
