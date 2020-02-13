@@ -61,6 +61,21 @@ MinimapAPI.RoomShapePositions = {
 	[RS.ROOMSHAPE_LBL] = {Vector(0,0),Vector(1,0),Vector(1,1)},
 }
 
+MinimapAPI.RoomShapeRectangles = {
+	[RS.ROOMSHAPE_1x1] = {Vector(0,0),Vector(1,1)},
+	[RS.ROOMSHAPE_1x2] = {Vector(0,0),Vector(1,2)},
+	[RS.ROOMSHAPE_2x1] = {Vector(0,0),Vector(2,1)},
+	[RS.ROOMSHAPE_2x2] = {Vector(0,0),Vector(2,2)},
+	[RS.ROOMSHAPE_IH] = {Vector(0,0),Vector(1,1)},
+	[RS.ROOMSHAPE_IIH] = {Vector(0,0),Vector(2,1)},
+	[RS.ROOMSHAPE_IV] = {Vector(0,0),Vector(1,1)},
+	[RS.ROOMSHAPE_IIV] = {Vector(0,0),Vector(1,2)},
+	[RS.ROOMSHAPE_LBR] = {Vector(0,0),Vector(1,2), Vector(1,0), Vector(2,1)},
+	[RS.ROOMSHAPE_LTL] = {Vector(0,0),Vector(1,2), Vector(-1,1), Vector(0,2)},
+	[RS.ROOMSHAPE_LTR] = {Vector(0,0),Vector(1,2), Vector(1,1), Vector(2,2)},
+	[RS.ROOMSHAPE_LBL] = {Vector(0,0),Vector(2,1), Vector(1,1), Vector(2,2)},
+}
+
 MinimapAPI.RoomShapeIconPositions = {
 	[1] = { -- iconcount <= 1
 		[RS.ROOMSHAPE_1x1] = {Vector(0,0)},

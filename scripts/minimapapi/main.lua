@@ -1,5 +1,21 @@
 local json = require("json")
 
+local function assertLevel(bool,msg,lvl)
+	if not bool then
+		error(msg,lvl)
+	end
+end
+
+local function getType(obj)
+	local mt = getmetatable(obj)
+	if mt and mt.__type then
+		return mt.__type
+	end
+	return type(obj)
+end
+
+local errorBadArgument = "Bad argument %s to '%s': expected %s, got %s"
+
 --Returns screen size as Vector
 function MinimapAPI:GetScreenSize()
 	return (Isaac.WorldToScreen(Vector(320, 280)) - Game():GetRoom():GetRenderScrollOffset() - Game().ScreenShakeOffset) * 2
@@ -231,6 +247,18 @@ function MinimapAPI:RemoveIcon(id)
 	end
 end
 
+-- TODO: Add Room Shape
+-- MinimapAPI.CustomRoomShapes = {}
+-- function MinimapAPI:AddRoomShape(id, t)
+	-- assertLevel(id ~= nil, string.format(errorBadArgument, "#1", "AddRoomShape", "any", "nil"), 3)
+	-- assertLevel(getType(t) == "table", string.format(errorBadArgument, "#2", "AddRoomShape", "table", getType(t)), 3)
+	-- MinimapAPI.CustomRoomShapes[id] = {
+		-- Anim = t.Anim,
+		-- Positions = t.Positions or {Vector(0,0)},
+	-- }
+	
+-- end
+
 function MinimapAPI:PickupDetectionEnabled()
 	return not disabled_itemdet
 end
@@ -446,7 +474,8 @@ local maproomfunctions = {
 }
 
 local maproommeta = {
-	__index = maproomfunctions
+	__index = maproomfunctions,
+	__type = "MinimapAPI.Room"
 }
 
 function MinimapAPI:AddRoom(t)
@@ -548,7 +577,7 @@ function MinimapAPI:IsRoomAdjacent(room1, room2)
 end
 
 function MinimapAPI:GetPositionRelativeToDoor(room, doorslot) 
-	local p = MinimapAPI.RoomShapeDoorCoords[room.Shape][doorslot]
+	local p = MinimapAPI.RoomShapeDoorCoords[room.Shape][doorslot+1]
 	if p then
 		return p + room.Position
 	else
@@ -782,8 +811,8 @@ local function renderUnboundedMinimap(size)
 			local iscurrent = MinimapAPI:PlayerInRoom(v)
 			local displayflags = v:GetDisplayFlags()
 			if displayflags & 0x1 > 0 then
+				local frame = MinimapAPI:GetRoomShapeFrame(v.Shape)
 				local anim
-				local spr = sprite
 				if iscurrent then
 					anim = "RoomCurrent"
 				elseif v:IsClear() then
@@ -794,9 +823,19 @@ local function renderUnboundedMinimap(size)
 				else
 					anim = "RoomUnvisited"
 				end
-				spr:SetFrame(anim, MinimapAPI:GetRoomShapeFrame(v.Shape))
-				spr.Color = v.Color or defaultRoomColor
-				spr:Render(offsetVec + v.RenderOffset, zvec, zvec)
+				if type(frame) == "table" then
+					local fr0 = frame[size == "small" and "small" or "large"]
+					local fr1 = fr0[anim] or fr0["RoomUnvisited"]
+					local spr = fr1.sprite or sprite
+					updateMinimapIcon(spr, fr1)
+					spr:Render(offsetVec + v.RenderOffset, zvec, zvec)
+				else
+					local spr = sprite
+					
+					spr:SetFrame(anim, frame)
+					spr.Color = v.Color or defaultRoomColor
+					spr:Render(offsetVec + v.RenderOffset, zvec, zvec)
+				end
 			end
 		end
 
@@ -927,6 +966,7 @@ local function renderBoundedMinimap()
 			local displayflags = v:GetDisplayFlags()
 			local spr = minimapsmall
 			if displayflags & 0x1 > 0 then
+				local frame 
 				local anim
 				if iscurrent then
 					anim = "RoomCurrent"
@@ -937,6 +977,12 @@ local function renderBoundedMinimap()
 					anim = "RoomSemivisited"
 				else
 					anim = "RoomUnvisited"
+				end
+				if type(frame) == "table" then
+					local fr0 = frame.small
+					local fr1 = fr0[anim] or fr0["RoomUnvisited"]
+					spr = fr1.sprite or spr
+					updateMinimapIcon(spr, fr1)
 				end
 				local rms = MinimapAPI:GetRoomShapeGridSize(v.Shape)
 				local actualRoomPixelSize = Vector(roomPixelSize.X * rms.X, roomPixelSize.Y * rms.Y) - roomAnimPivot
