@@ -966,7 +966,7 @@ local function renderBoundedMinimap()
 			local displayflags = v:GetDisplayFlags()
 			local spr = minimapsmall
 			if displayflags & 0x1 > 0 then
-				local frame 
+				local frame = MinimapAPI:GetRoomShapeFrame(v.Shape)
 				local anim
 				if iscurrent then
 					anim = "RoomCurrent"
@@ -983,6 +983,9 @@ local function renderBoundedMinimap()
 					local fr1 = fr0[anim] or fr0["RoomUnvisited"]
 					spr = fr1.sprite or spr
 					updateMinimapIcon(spr, fr1)
+				else
+					spr:SetFrame(anim, frame)
+					spr.Color = v.Color or defaultRoomColor
 				end
 				local rms = MinimapAPI:GetRoomShapeGridSize(v.Shape)
 				local actualRoomPixelSize = Vector(roomPixelSize.X * rms.X, roomPixelSize.Y * rms.Y) - roomAnimPivot
@@ -992,8 +995,6 @@ local function renderBoundedMinimap()
 				tlcutoff.X < actualRoomPixelSize.X and tlcutoff.Y < actualRoomPixelSize.Y then
 					brcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
 					tlcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
-					spr:SetFrame(anim, MinimapAPI:GetRoomShapeFrame(v.Shape))
-					spr.Color = v.Color or defaultRoomColor
 					spr:Render(offsetVec + v.RenderOffset, tlcutoff, brcutoff)
 				end
 			end
