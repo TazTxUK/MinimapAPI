@@ -338,7 +338,8 @@ function MinimapAPI:LoadDefaultMap()
 			ItemIcons = {},
 			Position = MinimapAPI:GridIndexToVector(v.GridIndex),
 			Descriptor = v,
-			AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[v.Data.Type] or 5
+			AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[v.Data.Type] or 5,
+			Type = v.Data.Type,
 		}
 		if v.Data.Shape == RoomShape.ROOMSHAPE_LTL then
 			t.Position = t.Position + Vector(1,0)
@@ -384,6 +385,20 @@ function MinimapAPI:LoadDefaultMap()
 	end
 end
 
+function MinimapAPI:EffectBookOfSecrets()
+	for i,v in ipairs(MinimapAPI.Level) do
+		v:Reveal()
+	end
+end
+
+function MinimapAPI:EffectCrystalBall()
+	for i,v in ipairs(MinimapAPI.Level) do
+		if v.Type ~= RoomType.ROOM_SUPERSECRET then
+			v:Reveal()
+		end
+	end
+end
+
 function MinimapAPI:ClearMap()
 	MinimapAPI.Level = {}
 end
@@ -420,7 +435,14 @@ local maproomfunctions = {
 			x[#x + 1] = MinimapAPI:GetRoomAtPosition(room.Position + v)
 		end
 		return x
-	end
+	end,
+	Reveal = function(room)
+		if room.Hidden then
+			room.DisplayFlags = room.DisplayFlags | 6
+		else
+			room.DisplayFlags = room.DisplayFlags | 5
+		end
+	end,
 }
 
 local maproommeta = {
@@ -436,6 +458,7 @@ function MinimapAPI:AddRoom(t)
 	end
 	local x = {
 		Position = t.Position or defaultPosition,
+		Type = t.Type,
 		ID = t.ID,
 		Shape = t.Shape or RoomShape.ROOMSHAPE_1x1,
 		PermanentIcons = t.PermanentIcons or {},
@@ -533,12 +556,16 @@ function MinimapAPI:GetPositionRelativeToDoor(room, doorslot)
 	end
 end
 
-function MinimapAPI:IsPositionFree(position)
+function MinimapAPI:IsPositionFree(position,roomshape)
+	roomshape = roomshape or 1
 	for _,room in ipairs(MinimapAPI.Level) do
 		for _,pos in ipairs(MinimapAPI.RoomShapePositions[room.Shape]) do
-			local p = pos + room.Position
-			if p.X == position.X and p.Y == position.Y then
-				return false
+			for _,pos2 in ipairs(MinimapAPI.RoomShapePositions[roomshape]) do
+				local p = pos + room.Position
+				local p2 = position + pos2
+				if p.X == p2.X and p.Y == p2.Y then
+					return false
+				end
 			end
 		end
 	end
@@ -628,6 +655,14 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 		unboundedMapOffset = Vector(-maxx, -miny)
 	end
 end
+
+MinimapAPI:AddCallback(	ModCallbacks.MC_USE_ITEM, function(self, colltype, rng)
+	if colltype == CollectibleType.COLLECTIBLE_BOOK_OF_SECRETS then
+		MinimapAPI:EffectBookOfSecrets()
+	elseif colltype == CollectibleType.COLLECTIBLE_CRYSTAL_BALL then
+		MinimapAPI:EffectCrystalBall()
+	end
+end)
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 	updatePlayerPos()
@@ -1002,6 +1037,7 @@ local function renderMinimapIcons()
 end
 
 MinimapAPI.DisableSpelunkerHat = false
+
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 	if MinimapAPI.Config.Disable then return end
 	if MinimapAPI.Config.HideInCombat == 2 then
@@ -1029,7 +1065,7 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 			end
 			for _,adjroom in ipairs(currentroomdata:GetAdjacentRooms()) do
 				if not adjroom.NoUpdate then
-					adjroom.DisplayFlags = adjroom.DisplayFlags | (hasSpelunkerHat and 5 or adjroom.AdjacentDisplayFlags)
+					adjroom.DisplayFlags = adjroom.DisplayFlags | (hasSpelunkerHat and (v.Hidden and 6 or 5) or adjroom.AdjacentDisplayFlags)
 				end
 			end
 		end
