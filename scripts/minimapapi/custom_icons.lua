@@ -71,46 +71,45 @@ MinimapAPI:AddPickup("PillWhiteBlack","PillWhiteBlack",5,70,PillColor.PILL_WHITE
 MinimapAPI:AddPickup("PillWhiteYellow","PillWhiteYellow",5,70,PillColor.PILL_WHITE_YELLOW,MinimapAPI.PickupNotCollected,"pills",6100)
 
 
-MinimapAPI:AddPickup("DoubleHeart","DoubleHeart",5,10,5,MinimapAPI.PickupNotCollected,"hearts",4100)
+MinimapAPI:AddPickup("DoubleHeart","DoubleHeart",5,10,5,MinimapAPI.PickupNotCollected,"hearts",10200)
 MinimapAPI:AddPickup("DoublePenny","DoublePenny",5,20,4,MinimapAPI.PickupNotCollected,"coins",3200)
 MinimapAPI:AddPickup("Nickel","Nickel",5,20,2,MinimapAPI.PickupNotCollected,"coins",3400)
-MinimapAPI:AddPickup("StickyNickel","StickyNickel",5,20,6,MinimapAPI.PickupNotCollected,"coins",3300)
+MinimapAPI:AddPickup("StickyNickel","Nickel",5,20,6,MinimapAPI.PickupNotCollected,"coins",3300)
 MinimapAPI:AddPickup("Dime","Dime",5,20,3,MinimapAPI.PickupNotCollected,"coins",3600)
 MinimapAPI:AddPickup("LuckyPenny","LuckyPenny",5,20,5,MinimapAPI.PickupNotCollected,"coins",3500)
-MinimapAPI:AddPickup("GoldenKey","GoldenKey",5,30,2,MinimapAPI.PickupNotCollected,"keys",5100)
+MinimapAPI:AddPickup("GoldenKey","GoldenKey",5,30,2,MinimapAPI.PickupNotCollected,"keys",5300)
 MinimapAPI:AddPickup("KeyRing","KeyRing",5,30,3,MinimapAPI.PickupNotCollected,"keys",5100)
-MinimapAPI:AddPickup("ChargedKey","ChargedKey",5,30,4,MinimapAPI.PickupNotCollected,"keys",5100)
-MinimapAPI:AddPickup("DoubleBomb","DoubleBomb",5,40,2,MinimapAPI.PickupNotCollected,"bombs",4150)
-MinimapAPI:AddPickup("GoldenBomb","GoldenBomb",5,40,4,MinimapAPI.PickupNotCollected,"bombs",4100)
+MinimapAPI:AddPickup("ChargedKey","ChargedKey",5,30,4,MinimapAPI.PickupNotCollected,"keys",5200)
+MinimapAPI:AddPickup("DoubleBomb","DoubleBomb",5,40,2,MinimapAPI.PickupNotCollected,"bombs",4100)
+MinimapAPI:AddPickup("GoldenBomb","GoldenBomb",5,40,4,MinimapAPI.PickupNotCollected,"bombs",4200)
 
-
-MinimapAPI:AddPickup("TarotCard","TarotCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",4000)
+MinimapAPI:AddPickup("TarotCard","TarotCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",1000)
 for i=23,31 do 
-	MinimapAPI:AddPickup("RedCard"..i,"RedCard",5,300,i,MinimapAPI.PickupNotCollected,"cards",4100)
+	MinimapAPI:AddPickup("RedCard"..i,"RedCard",5,300,i,MinimapAPI.PickupNotCollected,"cards",1100)
 end
 for i=32,40 do 
-	MinimapAPI:AddPickup("Rune"..i,"Rune",5,300,i,MinimapAPI.PickupNotCollected,"runes",4100)
+	MinimapAPI:AddPickup("Rune"..i,"Rune",5,300,i,MinimapAPI.PickupNotCollected,"runes",1100)
 end
-MinimapAPI:AddPickup("ChaosCard","RedCard",5,300,42,MinimapAPI.PickupNotCollected,"cards",4100)--Chaos Card
-MinimapAPI:AddPickup("RulesCard","RedCard",5,300,44,MinimapAPI.PickupNotCollected,"cards",4100)--Rules Card
-MinimapAPI:AddPickup("SuicideKing","RedCard",5,300,46,MinimapAPI.PickupNotCollected,"cards",4100)--Suicide King
-MinimapAPI:AddPickup("QuestionmarkCard","RedCard",5,300,48,MinimapAPI.PickupNotCollected,"cards",4100)--?Card 
-MinimapAPI:AddPickup("CreditCard","CreditCard",5,300,43,MinimapAPI.PickupNotCollected,"cards",4100)
-MinimapAPI:AddPickup("GetOutOfJail","GetOutOfJail",5,300,47,MinimapAPI.PickupNotCollected,"cards",4100)
-MinimapAPI:AddPickup("CardAgainstHumanity","CardAgainstHumanity",5,300,45,MinimapAPI.PickupNotCollected,"cards",4100)
-MinimapAPI:AddPickup("HolyCard","HolyCard",5,300,51,MinimapAPI.PickupNotCollected,"cards",4100)
-MinimapAPI:AddPickup("MomsContract","MomsContract",5,300,50,MinimapAPI.PickupNotCollected,"cards",4100)
-MinimapAPI:AddPickup("DiceShard","DiceShard",5,300,49,MinimapAPI.PickupNotCollected,"cards",4100)
+MinimapAPI:AddPickup("ChaosCard","RedCard",5,300,42,MinimapAPI.PickupNotCollected,"cards",1100)--Chaos Card
+MinimapAPI:AddPickup("RulesCard","RedCard",5,300,44,MinimapAPI.PickupNotCollected,"cards",1100)--Rules Card
+MinimapAPI:AddPickup("SuicideKing","RedCard",5,300,46,MinimapAPI.PickupNotCollected,"cards",1100)--Suicide King
+MinimapAPI:AddPickup("QuestionmarkCard","RedCard",5,300,48,MinimapAPI.PickupNotCollected,"cards",1100)--?Card 
+MinimapAPI:AddPickup("CreditCard","CreditCard",5,300,43,MinimapAPI.PickupNotCollected,"cards",1100)
+MinimapAPI:AddPickup("GetOutOfJail","GetOutOfJail",5,300,47,MinimapAPI.PickupNotCollected,"cards",1100)
+MinimapAPI:AddPickup("CardAgainstHumanity","CardAgainstHumanity",5,300,45,MinimapAPI.PickupNotCollected,"cards",1100)
+MinimapAPI:AddPickup("HolyCard","HolyCard",5,300,51,MinimapAPI.PickupNotCollected,"cards",1100)
+MinimapAPI:AddPickup("MomsContract","MomsContract",5,300,50,MinimapAPI.PickupNotCollected,"cards",1100)
+MinimapAPI:AddPickup("DiceShard","DiceShard",5,300,49,MinimapAPI.PickupNotCollected,"cards",1100)
 
-MinimapAPI:AddPickup("SlotBloodDonation","SlotBloodDonation",6,2,-1,MinimapAPI.PickupSlotMachineNotBroken,"slots",100)
-MinimapAPI:AddPickup("SlotFortune","SlotFortune",6,3,-1,MinimapAPI.PickupSlotMachineNotBroken,"slots",100)
-MinimapAPI:AddPickup("DonationMachine","DonationMachine",6,8,-1,MinimapAPI.PickupSlotMachineNotBroken,"slots",100)
-MinimapAPI:AddPickup("RestockMachine","RestockMachine",6,10,-1,MinimapAPI.PickupSlotMachineNotBroken,"slots",100)
-MinimapAPI:AddPickup("GreedDonationMachine","GreedDonationMachine",6,11,-1,MinimapAPI.PickupSlotMachineNotBroken,"slots",100)
-MinimapAPI:AddPickup("Dresser","Dresser",6,12,-1,MinimapAPI.PickupDresserNotDead,"slots",100)
-MinimapAPI:AddPickup("Trophy","CheckeredFlag",5,370,-1,nil,"trophies",12000)
-MinimapAPI:AddPickup("BigChest","CheckeredFlag",5,340,-1,nil,"trophies",12000)
-MinimapAPI:AddPickup("Shovel","Shovel",5,110,-1,nil,"trophies",12000)
+MinimapAPI:AddPickup("SlotBloodDonation","SlotBloodDonation",6,2,-1,MinimapAPI.PickupSlotMachineNotBroken,"slots",1100)
+MinimapAPI:AddPickup("SlotFortune","SlotFortune",6,3,-1,MinimapAPI.PickupSlotMachineNotBroken,"slots",1100)
+MinimapAPI:AddPickup("DonationMachine","DonationMachine",6,8,-1,MinimapAPI.PickupSlotMachineNotBroken,"slots",1100)
+MinimapAPI:AddPickup("RestockMachine","RestockMachine",6,10,-1,MinimapAPI.PickupSlotMachineNotBroken,"slots",1100)
+MinimapAPI:AddPickup("GreedDonationMachine","GreedDonationMachine",6,11,-1,MinimapAPI.PickupSlotMachineNotBroken,"slots",1100)
+MinimapAPI:AddPickup("Dresser","Dresser",6,12,-1,MinimapAPI.PickupDresserNotDead,"slots",1100)
+MinimapAPI:AddPickup("Trophy","CheckeredFlag",5,370,-1,nil,"trophies",13000)
+MinimapAPI:AddPickup("BigChest","CheckeredFlag",5,340,-1,nil,"trophies",13000)
+MinimapAPI:AddPickup("Shovel","Shovel",5,110,-1,nil,"trophies",13000)
 
 MinimapAPI:AddPickup("Beggar","Beggar",6,4,-1,nil,"beggars",200)
 MinimapAPI:AddPickup("Devilbeggar","Devilbeggar",6,5,-1,nil,"beggars",100)

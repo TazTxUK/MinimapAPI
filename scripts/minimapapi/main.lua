@@ -288,13 +288,16 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 		local hash = GetPtrHash(ent)
 		if ent:GetData().MinimapAPIPickupID == nil then
 			for i, v in pairs(MinimapAPI.PickupList) do
-				if ent.Type == v.Type then
-					local toPickup = ent:ToPickup()
-					if (not toPickup) or (not toPickup:IsShopItem()) then
-						if v.Variant == -1 or ent.Variant == v.Variant then
-							if v.SubType == -1 or ent.SubType == v.SubType then
-								ent:GetData().MinimapAPIPickupID = i
-								success = true
+				local currentid = MinimapAPI.PickupList[ent:GetData().MinimapAPIPickupID]
+				if not currentid or (currentid.Priority < v.Priority) then
+					if ent.Type == v.Type then
+						local toPickup = ent:ToPickup()
+						if (not toPickup) or (not toPickup:IsShopItem()) then
+							if v.Variant == -1 or ent.Variant == v.Variant then
+								if v.SubType == -1 or ent.SubType == v.SubType then
+									ent:GetData().MinimapAPIPickupID = i
+									success = true
+								end
 							end
 						end
 					end
@@ -308,15 +311,23 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 		local id = ent:GetData().MinimapAPIPickupID
 		local pickupicon = MinimapAPI.PickupList[id]
 		if pickupicon then
-			if MinimapAPI.Config.PickupNoGrouping or not pickupgroupset[pickupicon.IconGroup] then
+			local ind = MinimapAPI.Config.PickupNoGrouping and (#pickupgroupset + 1) or pickupicon.IconGroup
+			-- GVM.Print("ind: "..ind)
+			if not pickupgroupset[ind] or MinimapAPI.PickupList[pickupgroupset[ind]].Priority < pickupicon.Priority then
+				if ind == "bombs" then
+					-- GVM.Print("calling on "..pickupicon.IconID)
+					-- GVM.Print("overriding "..(MinimapAPI.PickupList[pickupgroupset[ind]] and MinimapAPI.PickupList[pickupgroupset[ind]].IconID or "none"))
+				end
 				if (not pickupicon.Call) or pickupicon.Call(ent) then
 					if pickupicon.IconGroup then
-						pickupgroupset[pickupicon.IconGroup] = true
+						pickupgroupset[ind] = id
 					end
-					table.insert(addIcons, id)
 				end
 			end
 		end
+	end
+	for i,v in pairs(pickupgroupset) do
+		addIcons[#addIcons + 1] = v
 	end
 	if not MinimapAPI.Config.PickupFirstComeFirstServe then
 		table.sort(addIcons, function(a,b) return MinimapAPI.PickupList[a].Priority > MinimapAPI.PickupList[b].Priority end)
@@ -813,6 +824,7 @@ local function renderUnboundedMinimap(size)
 			if displayflags & 0x1 > 0 then
 				local frame = MinimapAPI:GetRoomShapeFrame(v.Shape)
 				local anim
+				local spr = sprite
 				if iscurrent then
 					anim = "RoomCurrent"
 				elseif v:IsClear() then
@@ -830,8 +842,6 @@ local function renderUnboundedMinimap(size)
 					updateMinimapIcon(spr, fr1)
 					spr:Render(offsetVec + v.RenderOffset, zvec, zvec)
 				else
-					local spr = sprite
-					
 					spr:SetFrame(anim, frame)
 					spr.Color = v.Color or defaultRoomColor
 					spr:Render(offsetVec + v.RenderOffset, zvec, zvec)
