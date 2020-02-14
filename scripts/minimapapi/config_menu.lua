@@ -188,14 +188,14 @@ if ModConfigMenu then
 
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Map",
+		"Pickups",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.ShowCurrentRoomItems
 			end,
 			Display = function()
-				return "Show Current Room Items: " .. (MinimapAPI.Config.ShowCurrentRoomItems and "True" or "False")
+				return "Show Current Room Pickups: " .. (MinimapAPI.Config.ShowCurrentRoomItems and "True" or "False")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowCurrentRoomItems = currentBool
@@ -481,6 +481,24 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentNum)
 				MinimapAPI.Config.DefaultRoomColorB = currentNum
+			end
+		}
+	)
+	
+	ModConfigMenu.AddSetting(
+		"Minimap API",
+		"General",
+		{
+			Type = ModConfigMenuOptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.ExternalMap
+			end,
+			Display = function()
+				return "Enable External Map: " .. (MinimapAPI.Config.ExternalMap and "True" or "False")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.ExternalMap = currentBool
+				MinimapAPI:UpdateExternalMap()
 			end
 		}
 	)

@@ -526,6 +526,7 @@ function MinimapAPI:RemoveRoom(pos)
 		if v.Position.X == pos.X and v.Position.Y == pos.Y then
 			table.remove(MinimapAPI.Level, i)
 			success = true
+			MinimapAPI:UpdateExternalMap()
 			break
 		end
 	end
@@ -539,6 +540,7 @@ function MinimapAPI:RemoveRoomByID(id)
 			table.remove(MinimapAPI.Level, i)
 		end
 	end
+	MinimapAPI:UpdateExternalMap()
 end
 
 function MinimapAPI:GetRoom(pos)
@@ -673,6 +675,7 @@ end
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_LEVEL,	function(self)
 	MinimapAPI:LoadDefaultMap()
 	updatePlayerPos()
+	MinimapAPI:UpdateExternalMap()
 end)
 
 function MinimapAPI:UpdateUnboundedMapOffset()
@@ -699,13 +702,44 @@ end
 MinimapAPI:AddCallback(	ModCallbacks.MC_USE_ITEM, function(self, colltype, rng)
 	if colltype == CollectibleType.COLLECTIBLE_BOOK_OF_SECRETS then
 		MinimapAPI:EffectBookOfSecrets()
+		MinimapAPI:UpdateExternalMap()
 	elseif colltype == CollectibleType.COLLECTIBLE_CRYSTAL_BALL then
 		MinimapAPI:EffectCrystalBall()
+		MinimapAPI:UpdateExternalMap()
 	end
 end)
 
+function MinimapAPI:UpdateExternalMap()
+	if MinimapAPI.Config.ExternalMap then
+		local output = {}
+		local extlevel = {}
+		output.Level = extlevel
+		for i,v in ipairs(MinimapAPI.Level) do
+			if v.DisplayFlags > 0 then
+				local x = {
+					Position = {X = v.Position.X, Y = v.Position.Y},
+					Shape = v.Shape,
+					PermanentIcons = #v.PermanentIcons > 0 and v.PermanentIcons or nil,
+					ItemIcons = #v.ItemIcons > 0 and v.ItemIcons or nil,
+					LockedIcons = #v.LockedIcons > 0 and v.LockedIcons or nil,
+					DisplayFlags = v.DisplayFlags,
+					Clear = v.Clear,
+					Visited = v.Visited,
+				}
+				if v.Color then
+					x.Color = {R = v.Color.R, G = v.Color.G, B = v.Color.B, A = v.Color.A, RO = v.Color.RO, GO = v.Color.GO, BO = v.Color.BO}
+				end
+				extlevel[#extlevel + 1] = x
+			end
+		end
+		output.PlayerPosition = {X = playerMapPos.X, Y = playerMapPos.Y}
+		Isaac.DebugString("MinimapAPI.External "..json.encode(output))
+	end
+end
+
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 	updatePlayerPos()
+	MinimapAPI:UpdateExternalMap()
 end)
 
 function MinimapAPI:ShowMap()
@@ -716,6 +750,7 @@ function MinimapAPI:ShowMap()
 			v.DisplayFlags = 5
 		end
 	end
+	MinimapAPI:UpdateExternalMap()
 end
 
 MinimapAPI:AddCallback( ModCallbacks.MC_USE_CARD, function(self, card)
@@ -1238,13 +1273,14 @@ end
 MinimapAPI:AddCallback(
 	ModCallbacks.MC_POST_GAME_STARTED,
 	function(self, is_save)
-		if MinimapAPI:HasData() then
+		if MinimapAPI:HasData() and is_save then
 			if not MinimapAPI.DisableSaving then
 				local saved = json.decode(Isaac.LoadModData(MinimapAPI))
 				MinimapAPI:LoadSaveTable(saved,is_save)
 			else
 				MinimapAPI:LoadDefaultMap()
 			end
+			MinimapAPI:UpdateExternalMap()
 		end
 	end
 )

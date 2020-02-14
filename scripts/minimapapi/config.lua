@@ -24,6 +24,7 @@ MinimapAPI.Config = {
 	["DefaultRoomColorR"] = 1,
 	["DefaultRoomColorG"] = 1,
 	["DefaultRoomColorB"] = 1,
+	["ExternalMap"] = false,
 	
 	["ConfigPreset"] = 1,
 }
