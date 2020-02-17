@@ -875,6 +875,7 @@ local function renderUnboundedMinimap(size)
 					local fr1 = fr0[anim] or fr0["RoomUnvisited"]
 					local spr = fr1.sprite or sprite
 					updateMinimapIcon(spr, fr1)
+					spr.Color = v.Color or defaultRoomColor
 					spr:Render(offsetVec + v.RenderOffset, zvec, zvec)
 				else
 					spr:SetFrame(anim, frame)
@@ -1027,6 +1028,7 @@ local function renderBoundedMinimap()
 					local fr0 = frame.small
 					local fr1 = fr0[anim] or fr0["RoomUnvisited"]
 					spr = fr1.sprite or spr
+					spr.Color = v.Color or defaultRoomColor
 					updateMinimapIcon(spr, fr1)
 				else
 					spr:SetFrame(anim, frame)
