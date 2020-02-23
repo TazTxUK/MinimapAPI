@@ -43,6 +43,7 @@ MinimapAPI:AddIcon("Shovel", MinimapAPI.CustomIcons, "CustomIconShovel", 0)
 MinimapAPI:AddIcon("TarotCard", MinimapAPI.CustomIcons, "CustomIconTarotCard", 0)
 MinimapAPI:AddIcon("RedCard", MinimapAPI.CustomIcons, "CustomIconRedCard", 0)
 MinimapAPI:AddIcon("RuneRight", MinimapAPI.CustomIcons, "CustomIconRuneRight", 0)
+MinimapAPI:AddIcon("RuneBlack", MinimapAPI.CustomIcons, "CustomIconRuneBlack", 0)
 MinimapAPI:AddIcon("CreditCard", MinimapAPI.CustomIcons, "CustomIconCreditCard", 0)
 MinimapAPI:AddIcon("GetOutOfJail", MinimapAPI.CustomIcons, "CustomIconGetOutOfJail", 0)
 MinimapAPI:AddIcon("CardAgainstHumanity", MinimapAPI.CustomIcons, "CustomIconCardAgainstHumanity", 0)
@@ -87,9 +88,13 @@ MinimapAPI:AddPickup("TarotCard","TarotCard",5,300,-1,MinimapAPI.PickupNotCollec
 for i=23,31 do 
 	MinimapAPI:AddPickup("RedCard"..i,"RedCard",5,300,i,MinimapAPI.PickupNotCollected,"cards",1100)
 end
-for i=32,40 do 
-	MinimapAPI:AddPickup("Rune"..i,"Rune",5,300,i,MinimapAPI.PickupNotCollected,"runes",1100)
+for i=32,35 do 
+	MinimapAPI:AddPickup("RuneLeft"..i,"Rune",5,300,i,MinimapAPI.PickupNotCollected,"runes",1100)
 end
+for i=36,40 do 
+	MinimapAPI:AddPickup("RuneRight"..i,"RuneRight",5,300,i,MinimapAPI.PickupNotCollected,"runes",1100)
+end
+MinimapAPI:AddPickup("RuneBlack","RuneBlack",5,300,41,MinimapAPI.PickupNotCollected,"runes",1100)--Black rune
 MinimapAPI:AddPickup("ChaosCard","RedCard",5,300,42,MinimapAPI.PickupNotCollected,"cards",1100)--Chaos Card
 MinimapAPI:AddPickup("RulesCard","RedCard",5,300,44,MinimapAPI.PickupNotCollected,"cards",1100)--Rules Card
 MinimapAPI:AddPickup("SuicideKing","RedCard",5,300,46,MinimapAPI.PickupNotCollected,"cards",1100)--Suicide King
