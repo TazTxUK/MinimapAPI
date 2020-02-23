@@ -1,1 +1,1 @@
-MinimapAPI.Version = "workshop"
+MinimapAPI.Version = "master"
