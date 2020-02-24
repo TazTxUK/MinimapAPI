@@ -1191,9 +1191,10 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 			end
 			
 			local levelflagoffset
-			if MinimapAPI.Config.DisplayMode == 2 then
+			local islarge = MinimapAPI:IsLarge()
+			if not islarge and MinimapAPI.Config.DisplayMode == 2 then
 				levelflagoffset = Vector(screen_size.X - MinimapAPI.Config.MapFrameWidth - MinimapAPI.Config.PositionX - 9,8)
-			elseif MinimapAPI.Config.DisplayMode == 4 then
+			elseif not islarge and MinimapAPI.Config.DisplayMode == 4 then
 				levelflagoffset = Vector(screen_size.X - 9,8)
 			else
 				local minx = screen_size.X
