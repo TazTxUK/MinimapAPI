@@ -89,12 +89,12 @@ for i=23,31 do
 	MinimapAPI:AddPickup("RedCard"..i,"RedCard",5,300,i,MinimapAPI.PickupNotCollected,"cards",1100)
 end
 for i=32,35 do 
-	MinimapAPI:AddPickup("RuneLeft"..i,"Rune",5,300,i,MinimapAPI.PickupNotCollected,"runes",1100)
+	MinimapAPI:AddPickup("Rune"..i,"Rune",5,300,i,MinimapAPI.PickupNotCollected,"runes",1100)
 end
 for i=36,40 do 
-	MinimapAPI:AddPickup("RuneRight"..i,"RuneRight",5,300,i,MinimapAPI.PickupNotCollected,"runes",1100)
+	MinimapAPI:AddPickup("Rune"..i,"RuneRight",5,300,i,MinimapAPI.PickupNotCollected,"runes",1100)
 end
-MinimapAPI:AddPickup("RuneBlack","RuneBlack",5,300,41,MinimapAPI.PickupNotCollected,"runes",1100)--Black rune
+MinimapAPI:AddPickup("Rune41","RuneBlack",5,300,41,MinimapAPI.PickupNotCollected,"runes",1200)--Black rune
 MinimapAPI:AddPickup("ChaosCard","RedCard",5,300,42,MinimapAPI.PickupNotCollected,"cards",1100)--Chaos Card
 MinimapAPI:AddPickup("RulesCard","RedCard",5,300,44,MinimapAPI.PickupNotCollected,"cards",1100)--Rules Card
 MinimapAPI:AddPickup("SuicideKing","RedCard",5,300,46,MinimapAPI.PickupNotCollected,"cards",1100)--Suicide King

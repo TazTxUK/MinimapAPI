@@ -279,6 +279,8 @@ function MinimapAPI:PlayerInRoom(roomdata)
 	return playerMapPos.X == roomdata.Position.X and playerMapPos.Y == roomdata.Position.Y
 end
 
+-- MinimapAPI.GridEntityPickupIDs
+
 function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current room ONLY
 	local ents = Isaac.GetRoomEntities()
 	local pickupgroupset = {}
@@ -407,13 +409,13 @@ function MinimapAPI:LoadDefaultMap()
 			if Game():GetLevel():GetStage() == LevelStage.STAGE7 then
 				for i,v in ipairs(MinimapAPI.Level) do
 					if v.Shape == RoomShape.ROOMSHAPE_2x2 and v.Descriptor.Data.Type == RoomType.ROOM_BOSS then
-						if MinimapAPI:GetPositionRelativeToDoor(v,0) or MinimapAPI:GetPositionRelativeToDoor(v,1) then
+						if not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP0)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.LEFT0)) then
 							--
-						elseif MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP1) or MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT0) then
+						elseif not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP1)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT0)) then
 							v.DisplayPosition = v.Position + Vector(1,0)
-						elseif MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT1) or MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.DOWN1) then
+						elseif not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT1)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.DOWN1)) then
 							v.DisplayPosition = v.Position + Vector(1,1)
-						elseif MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.LEFT1) or MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.DOWN0) then
+						elseif not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.LEFT1)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.DOWN0)) then
 							v.DisplayPosition = v.Position + Vector(0,1)
 						end
 						v.Shape = RoomShape.ROOMSHAPE_1x1
@@ -490,14 +492,10 @@ local maproommeta = {
 }
 
 function MinimapAPI:AddRoom(t)
-	local defaultPosition = Vector(12, -1)
-	if not t.AllowRoomOverlap then
-		for i,v in ipairs(MinimapAPI.RoomShapePositions[t.Shape or RoomShape.ROOMSHAPE_1x1]) do
-			MinimapAPI:RemoveRoom((t.Position or defaultPosition)+v)
-		end
-	end
+	local defaultPosition = Vector(0,-1)
 	local x = {
 		Position = t.Position or defaultPosition,
+		DisplayPosition = t.DisplayPosition,
 		Type = t.Type,
 		ID = t.ID,
 		Shape = t.Shape or RoomShape.ROOMSHAPE_1x1,
@@ -768,10 +766,11 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_UPDATE, function(self)
 				[1] = MinimapAPI.Config.AllowToggleSmallMap,
 				[2] = MinimapAPI.Config.AllowToggleBoundedMap,
 				[3] = MinimapAPI.Config.AllowToggleLargeMap,
+				[4] = MinimapAPI.Config.AllowToggleNoMap,
 			}
-			for i=1,3 do
+			for i=1,4 do
 				MinimapAPI.Config.DisplayMode = MinimapAPI.Config.DisplayMode + 1
-				if MinimapAPI.Config.DisplayMode > 3 then
+				if MinimapAPI.Config.DisplayMode > 4 then
 					MinimapAPI.Config.DisplayMode = 1
 				end
 				if modes[MinimapAPI.Config.DisplayMode] then
@@ -793,41 +792,54 @@ local function updateMinimapIcon(spr, t)
 	end
 end
 
-function MinimapAPI:GetDiscoveredBounds()
-	local minx
-	local maxx
-	local miny
-	local maxy
-	for i = 1, #(MinimapAPI.Level) do
-		local v = MinimapAPI.Level[i]
-		if (v.DisplayFlags or 0) > 0 then
-			local minxval = v.Position.X
-			if not minx or (minxval < minx) then minx = minxval	end
-			local maxxval = v.Position.X - MinimapAPI.RoomShapeGridPivots[v.Shape].X + MinimapAPI:GetRoomShapeGridSize(v.Shape).X
-			if not maxx or (maxxval > maxx) then maxx = maxxval	end
-			
-			local minyval = v.Position.Y
-			if not miny or (minyval < miny) then miny = minyval	end
-			local maxyval = v.Position.Y - MinimapAPI.RoomShapeGridPivots[v.Shape].Y + MinimapAPI:GetRoomShapeGridSize(v.Shape).Y
-			if not maxy or (maxyval > maxy) then maxy = maxyval	end
-		end
+local function renderMinimapLevelFlags(renderOffset)
+	local gameLvl = Game():GetLevel()
+	
+	local flags = {}
+	
+	local offset=Vector(0,0)
+	if gameLvl:GetStateFlag(LevelStateFlag.STATE_MAP_EFFECT) then 
+		flags[#flags + 1] = 2
 	end
-	return {minx,maxx,miny,maxy}
+	if gameLvl:GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT) then 
+		flags[#flags + 1] = 1
+	end
+	if gameLvl:GetStateFlag(LevelStateFlag.STATE_COMPASS_EFFECT) then 
+		flags[#flags + 1] = 0
+	end
+	if Isaac.GetPlayer(0):HasCollectible(CollectibleType.COLLECTIBLE_RESTOCK) or Game():IsGreedMode() then 
+		flags[#flags + 1] = 4
+	end
+	
+	-- local offset = Vector(math.floor((#flags-1)/4)*-16,0)
+	local offset = Vector(0,0)
+	for i,v in ipairs(flags) do
+		minimapicons:SetFrame("icons", v)
+		minimapicons:Render(renderOffset+offset, zvec, zvec)
+		offset=offset+Vector(0,16)
+		-- if offset.Y >= 48 then
+			-- offset = offset + Vector(16,-48)
+		-- end
+	end
+	
 end
 
-local function renderUnboundedMinimap(size)
+local function renderUnboundedMinimap(size,hide)
 	if MinimapAPI.Config.OverrideLost or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
 		MinimapAPI:UpdateUnboundedMapOffset()
 		local offsetVec = Vector(screen_size.X - MinimapAPI.Config.PositionX, MinimapAPI.Config.PositionY)
 		local renderRoomSize = size == "small" and roomSize or largeRoomSize
 		local renderAnimPivot = size == "small" and roomAnimPivot or largeRoomAnimPivot
 		local sprite = size == "small" and minimapsmall or minimaplarge
-
+		
 		for i, v in ipairs(MinimapAPI.Level) do
 			local roomOffset = (v.DisplayPosition or v.Position) + unboundedMapOffset
 			roomOffset.X = roomOffset.X * renderRoomSize.X
 			roomOffset.Y = roomOffset.Y * renderRoomSize.Y
-			v.TargetRenderOffset = roomOffset + renderAnimPivot
+			v.TargetRenderOffset = offsetVec + roomOffset + renderAnimPivot
+			if hide then
+				v.TargetRenderOffset = v.TargetRenderOffset + Vector(0,-800)
+			end
 			if v.RenderOffset then
 				v.RenderOffset = v.TargetRenderOffset * MinimapAPI.Config.SmoothSlidingSpeed + v.RenderOffset * (1 - MinimapAPI.Config.SmoothSlidingSpeed)
 			else
@@ -837,7 +849,10 @@ local function renderUnboundedMinimap(size)
 				v.RenderOffset = v.TargetRenderOffset
 			end
 		end
-
+		
+		if hide then return end
+		
+		local defaultOutlineColor = Color(1, 1, 1, 1, math.floor(MinimapAPI.Config.DefaultOutlineColorR*255), math.floor(MinimapAPI.Config.DefaultOutlineColorG*255), math.floor(MinimapAPI.Config.DefaultOutlineColorB*255))
 		if MinimapAPI.Config.ShowShadows then
 			for i, v in pairs(MinimapAPI.Level) do
 				local displayflags = v:GetDisplayFlags()
@@ -845,8 +860,9 @@ local function renderUnboundedMinimap(size)
 					for n, pos in ipairs(MinimapAPI:GetRoomShapePositions(v.Shape)) do
 						pos = Vector(pos.X * renderRoomSize.X, pos.Y * renderRoomSize.Y)
 						--local actualRoomPixelSize = renderOutlinePixelSize   -- unused
+						sprite.Color = defaultOutlineColor
 						sprite:SetFrame("RoomOutline", 1)
-						sprite:Render(offsetVec + v.RenderOffset + pos, zvec, zvec)
+						sprite:Render(v.RenderOffset + pos, zvec, zvec)
 					end
 				end
 			end
@@ -876,11 +892,11 @@ local function renderUnboundedMinimap(size)
 					local spr = fr1.sprite or sprite
 					updateMinimapIcon(spr, fr1)
 					spr.Color = v.Color or defaultRoomColor
-					spr:Render(offsetVec + v.RenderOffset, zvec, zvec)
+					spr:Render(v.RenderOffset, zvec, zvec)
 				else
 					spr:SetFrame(anim, frame)
 					spr.Color = v.Color or defaultRoomColor
-					spr:Render(offsetVec + v.RenderOffset, zvec, zvec)
+					spr:Render(v.RenderOffset, zvec, zvec)
 				end
 			end
 		end
@@ -902,9 +918,9 @@ local function renderUnboundedMinimap(size)
 							local spr = icontb.sprite or sprite
 							updateMinimapIcon(spr, icontb)
 							if size == "small" then
-								spr:Render(offsetVec + iconlocOffset + v.RenderOffset, zvec, zvec)
+								spr:Render(iconlocOffset + v.RenderOffset, zvec, zvec)
 							else
-								spr:Render(offsetVec + iconlocOffset + v.RenderOffset - largeRoomAnimPivot + largeIconOffset, zvec, zvec)
+								spr:Render(iconlocOffset + v.RenderOffset - largeRoomAnimPivot + largeIconOffset, zvec, zvec)
 							end
 							k = k + 1
 						end
@@ -936,6 +952,8 @@ local function renderUnboundedMinimap(size)
 				end
 			end
 		end
+		
+		
 	end
 end
 
@@ -977,14 +995,15 @@ local function renderBoundedMinimap()
 			local roomOffset = (v.DisplayPosition or v.Position) - roomCenterOffset
 			roomOffset.X = roomOffset.X * roomSize.X
 			roomOffset.Y = roomOffset.Y * roomSize.Y
-			v.TargetRenderOffset = roomOffset + MinimapAPI:GetFrameCenterOffset() + roomAnimPivot
+			v.TargetRenderOffset = offsetVec + roomOffset + MinimapAPI:GetFrameCenterOffset() + roomAnimPivot
 			if v.RenderOffset then
 				v.RenderOffset = v.TargetRenderOffset * MinimapAPI.Config.SmoothSlidingSpeed + v.RenderOffset * (1 - MinimapAPI.Config.SmoothSlidingSpeed)
 			else
 				v.RenderOffset = v.TargetRenderOffset
 			end
 		end
-
+		
+		local defaultOutlineColor = Color(1, 1, 1, 1, math.floor(MinimapAPI.Config.DefaultOutlineColorR*255), math.floor(MinimapAPI.Config.DefaultOutlineColorG*255), math.floor(MinimapAPI.Config.DefaultOutlineColorB*255))
 		if MinimapAPI.Config.ShowShadows then
 			for i, v in pairs(MinimapAPI.Level) do
 				local displayflags = v:GetDisplayFlags()
@@ -992,14 +1011,15 @@ local function renderBoundedMinimap()
 					for n, pos in ipairs(MinimapAPI:GetRoomShapePositions(v.Shape)) do
 						pos = Vector(pos.X * roomSize.X, pos.Y * roomSize.Y)
 						local actualRoomPixelSize = outlinePixelSize
-						local brcutoff = v.RenderOffset + pos + actualRoomPixelSize - MinimapAPI:GetFrameBR()
-						local tlcutoff = -(v.RenderOffset + pos)
+						local brcutoff = v.RenderOffset - offsetVec + pos + actualRoomPixelSize - MinimapAPI:GetFrameBR()
+						local tlcutoff = -(v.RenderOffset - offsetVec + pos)
 						if brcutoff.X < actualRoomPixelSize.X and brcutoff.Y < actualRoomPixelSize.Y and 
 						tlcutoff.X < actualRoomPixelSize.X and tlcutoff.Y < actualRoomPixelSize.Y then
 							brcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
 							tlcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
+							minimapsmall.Color = defaultOutlineColor
 							minimapsmall:SetFrame("RoomOutline", 1)
-							minimapsmall:Render(offsetVec + v.RenderOffset + pos, tlcutoff, brcutoff)
+							minimapsmall:Render(v.RenderOffset + pos, tlcutoff, brcutoff)
 						end
 					end
 				end
@@ -1036,13 +1056,13 @@ local function renderBoundedMinimap()
 				end
 				local rms = MinimapAPI:GetRoomShapeGridSize(v.Shape)
 				local actualRoomPixelSize = Vector(roomPixelSize.X * rms.X, roomPixelSize.Y * rms.Y) - roomAnimPivot
-				local brcutoff = v.RenderOffset + actualRoomPixelSize - MinimapAPI:GetFrameBR()
-				local tlcutoff = -v.RenderOffset
+				local brcutoff = v.RenderOffset - offsetVec + actualRoomPixelSize - MinimapAPI:GetFrameBR()
+				local tlcutoff = -(v.RenderOffset - offsetVec)
 				if brcutoff.X < actualRoomPixelSize.X and brcutoff.Y < actualRoomPixelSize.Y and 
 				tlcutoff.X < actualRoomPixelSize.X and tlcutoff.Y < actualRoomPixelSize.Y then
 					brcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
 					tlcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
-					spr:Render(offsetVec + v.RenderOffset, tlcutoff, brcutoff)
+					spr:Render(v.RenderOffset, tlcutoff, brcutoff)
 				end
 			end
 		end
@@ -1064,13 +1084,13 @@ local function renderBoundedMinimap()
 							local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
 							local spr = icontb.sprite or minimapsmall
 							updateMinimapIcon(spr, icontb)
-							local brcutoff = v.RenderOffset + iconlocOffset + iconPixelSize - MinimapAPI:GetFrameBR()
-							local tlcutoff = frameTL - (v.RenderOffset + iconlocOffset)
+							local brcutoff = v.RenderOffset - offsetVec + iconlocOffset + iconPixelSize - MinimapAPI:GetFrameBR()
+							local tlcutoff = frameTL - (v.RenderOffset - offsetVec + iconlocOffset)
 							if brcutoff.X < iconPixelSize.X and brcutoff.Y < iconPixelSize.Y and 
 							tlcutoff.X < iconPixelSize.X and tlcutoff.Y < iconPixelSize.Y then
 								brcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
 								tlcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
-								spr:Render(offsetVec + iconlocOffset + v.RenderOffset, tlcutoff, brcutoff)
+								spr:Render(iconlocOffset + v.RenderOffset, tlcutoff, brcutoff)
 								k = k + 1
 							end
 						end
@@ -1100,37 +1120,8 @@ local function renderBoundedMinimap()
 	end
 end
 
-local function renderMinimapIcons()
-	local gameLvl = Game():GetLevel()
-	local curseIconPos = Vector( screen_size.X - MinimapAPI.Config.PositionX, MinimapAPI.Config.PositionY + 5)
-	local bounds = MinimapAPI:GetDiscoveredBounds()
-	
-	if #bounds == 0 then return end
-	
-	if MinimapAPI:IsLarge() then curseIconPos= curseIconPos + Vector(- (bounds[2]-bounds[1])* largeRoomPixelSize.X, 0)
-	elseif MinimapAPI.Config.DisplayMode == 1 then curseIconPos= curseIconPos + Vector( - (bounds[2]-bounds[1])*roomPixelSize.X, 0) 
-	elseif MinimapAPI.Config.DisplayMode == 2 then curseIconPos= curseIconPos + Vector( - MinimapAPI.Config.MapFrameWidth - 8, 0) end
-
-	if true then
-		local offset=Vector(0,0)
-		if gameLvl:GetStateFlag(LevelStateFlag.STATE_MAP_EFFECT) then 
-			minimapicons:SetFrame("icons", 2)
-			minimapicons:Render(curseIconPos+offset, zvec, zvec)
-			offset=offset+Vector(0,16)
-		end
-		if gameLvl:GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT) then 
-			minimapicons:SetFrame("icons", 1)
-			minimapicons:Render(curseIconPos+offset, zvec, zvec)
-			offset=offset+Vector(0,16)
-		end
-		if gameLvl:GetStateFlag(LevelStateFlag.STATE_COMPASS_EFFECT) then 
-			minimapicons:SetFrame("icons", 0)
-			minimapicons:Render(curseIconPos+offset, zvec, zvec)
-		end
-	end
-end
-
 MinimapAPI.DisableSpelunkerHat = false
+MinimapAPI.LevelFlagX = 420
 
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 	if MinimapAPI.Config.Disable then return end
@@ -1195,10 +1186,27 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 				renderUnboundedMinimap("small")
 			elseif MinimapAPI.Config.DisplayMode == 2 then
 				renderBoundedMinimap()
+			elseif MinimapAPI.Config.DisplayMode == 4 then
+				renderUnboundedMinimap("small",true)
 			end
-			if MinimapAPI.Config.ShowLevelFlags then
-				renderMinimapIcons()
+			
+			local levelflagoffset
+			if MinimapAPI.Config.DisplayMode == 2 then
+				levelflagoffset = Vector(screen_size.X - MinimapAPI.Config.MapFrameWidth - MinimapAPI.Config.PositionX - 9,8)
+			elseif MinimapAPI.Config.DisplayMode == 4 then
+				levelflagoffset = Vector(screen_size.X - 9,8)
+			else
+				local minx = screen_size.X
+				for i,v in ipairs(MinimapAPI.Level) do
+					if v.TargetRenderOffset.Y < 64 then
+						minx = math.min(minx, v.RenderOffset.X)
+					end
+				end
+				levelflagoffset = Vector(minx-9,8)
 			end
+			MinimapAPI.LevelFlagX = MinimapAPI.LevelFlagX * 0.5 + levelflagoffset.X * 0.5
+			levelflagoffset.X = MinimapAPI.LevelFlagX
+			renderMinimapLevelFlags(levelflagoffset)
 		end
 	end
 end)
@@ -1216,6 +1224,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 			for i, v in ipairs(saved.LevelData) do
 				MinimapAPI:AddRoom {
 					Position = Vector(v.PositionX, v.PositionY),
+					DisplayPosition = (v.DisplayPositionX and v.DisplayPositionY) and Vector(v.DisplayPositionX, v.DisplayPositionY),
 					ID = v.ID,
 					Shape = v.Shape,
 					ItemIcons = v.ItemIcons,
@@ -1224,7 +1233,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 					Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
 					DisplayFlags = v.DisplayFlags,
 					Clear = v.Clear,
-					Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO),
+					Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, math.floor(v.Color.RO+0.5), math.floor(v.Color.GO+0.5), math.floor(v.Color.BO+0.5)),
 					AdjacentDisplayFlags = v.AdjacentDisplayFlags,
 					Visited = v.Visited,
 					Hidden = v.Hidden,
@@ -1265,6 +1274,8 @@ function MinimapAPI:GetSaveTable(menuexit)
 				Visited = v.Visited,
 				Hidden = v.Hidden,
 				NoUpdate = v.NoUpdate,
+				DisplayPositionX = v.DisplayPosition and v.DisplayPosition.X,
+				DisplayPositionY = v.DisplayPosition and v.DisplayPosition.Y,
 			}
 		end
 	end

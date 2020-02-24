@@ -1,16 +1,14 @@
 
 if ModConfigMenu then
 	local configPresets = {
-		"Default",
+		"API Default",
 		"Vanilla",
 		"Beta",
-		"Racing",
 	}
 	local configPresetTexts = {
 		"Default config options.",
 		"A close recreation of the original AB+ map.",
 		"The original look of Wofsauge's miniMAPI.",
-		"For speedrunners.",
 	}
 	local configPresetFuncs = {
 		function() --default
@@ -18,7 +16,7 @@ if ModConfigMenu then
 			MinimapAPI.Config.ShowPickupIcons = true
 			MinimapAPI.Config.ShowShadows = true
 			MinimapAPI.Config.ShowCurrentRoomItems = false
-			MinimapAPI.Config.MapFrameWidth = 75
+			MinimapAPI.Config.MapFrameWidth = 65
 			MinimapAPI.Config.MapFrameHeight = 60
 			MinimapAPI.Config.PositionX = 4 
 			MinimapAPI.Config.PositionY = 4
@@ -31,6 +29,7 @@ if ModConfigMenu then
 			MinimapAPI.Config.AllowToggleLargeMap = true
 			MinimapAPI.Config.AllowToggleSmallMap = true
 			MinimapAPI.Config.AllowToggleBoundedMap = false
+			MinimapAPI.Config.AllowToggleNoMap = false
 			MinimapAPI.Config.PickupFirstComeFirstServe = false
 			MinimapAPI.Config.PickupNoGrouping = false
 		end,
@@ -52,6 +51,7 @@ if ModConfigMenu then
 			MinimapAPI.Config.AllowToggleLargeMap = true
 			MinimapAPI.Config.AllowToggleSmallMap = false
 			MinimapAPI.Config.AllowToggleBoundedMap = true
+			MinimapAPI.Config.AllowToggleNoMap = false
 			MinimapAPI.Config.PickupFirstComeFirstServe = false
 			MinimapAPI.Config.PickupNoGrouping = false
 		end,
@@ -73,29 +73,9 @@ if ModConfigMenu then
 			MinimapAPI.Config.AllowToggleLargeMap = false
 			MinimapAPI.Config.AllowToggleSmallMap = true
 			MinimapAPI.Config.AllowToggleBoundedMap = true
+			MinimapAPI.Config.AllowToggleNoMap = false
 			MinimapAPI.Config.PickupFirstComeFirstServe = true
 			MinimapAPI.Config.PickupNoGrouping = false
-		end,
-		function() --racing
-			MinimapAPI.Config.ShowIcons = true
-			MinimapAPI.Config.ShowPickupIcons = true
-			MinimapAPI.Config.ShowShadows = true
-			MinimapAPI.Config.ShowCurrentRoomItems = true
-			MinimapAPI.Config.MapFrameWidth = 70
-			MinimapAPI.Config.MapFrameHeight = 65
-			MinimapAPI.Config.PositionX = 4 
-			MinimapAPI.Config.PositionY = 4
-			MinimapAPI.Config.DisplayMode = 1
-			MinimapAPI.Config.ShowLevelFlags = false
-			MinimapAPI.Config.SmoothSlidingSpeed = 1
-			MinimapAPI.Config.HideInCombat = 1
-			MinimapAPI.Config.OverrideVoid = false
-			MinimapAPI.Config.DisplayExploredRooms = true
-			MinimapAPI.Config.AllowToggleLargeMap = true
-			MinimapAPI.Config.AllowToggleSmallMap = true
-			MinimapAPI.Config.AllowToggleBoundedMap = false
-			MinimapAPI.Config.PickupFirstComeFirstServe = false
-			MinimapAPI.Config.PickupNoGrouping = true
 		end,
 	}
 	
@@ -161,7 +141,7 @@ if ModConfigMenu then
 				return MinimapAPI.Config.ShowShadows
 			end,
 			Display = function()
-				return "Show Shadows: " .. (MinimapAPI.Config.ShowShadows and "True" or "False")
+				return "Show Room Outlines: " .. (MinimapAPI.Config.ShowShadows and "True" or "False")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowShadows = currentBool
@@ -178,7 +158,7 @@ if ModConfigMenu then
 				return MinimapAPI.Config.ShowLevelFlags
 			end,
 			Display = function()
-				return "Show Level Flags: " .. (MinimapAPI.Config.ShowLevelFlags and "True" or "False")
+				return "Show Map Effect Icons: " .. (MinimapAPI.Config.ShowLevelFlags and "True" or "False")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowLevelFlags = currentBool
@@ -222,7 +202,7 @@ if ModConfigMenu then
 	
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Func.",
+		"Modes",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -239,7 +219,7 @@ if ModConfigMenu then
 	
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Func.",
+		"Modes",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -256,7 +236,7 @@ if ModConfigMenu then
 	
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Func.",
+		"Modes",
 		{
 			Type = ModConfigMenuOptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -271,10 +251,27 @@ if ModConfigMenu then
 		}
 	)
 	
+	ModConfigMenu.AddSetting(
+		"Minimap API",
+		"Modes",
+		{
+			Type = ModConfigMenuOptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.AllowToggleNoMap
+			end,
+			Display = function()
+				return "Toggle No Map: " .. (MinimapAPI.Config.AllowToggleNoMap and "True" or "False")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.AllowToggleNoMap = currentBool
+			end
+		}
+	)
+	
 	local hicstrings = {"Never","Bosses Only","Always"}
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Func.",
+		"Map",
 		{
 			Type = ModConfigMenuOptionType.NUMBER,
 			CurrentSetting = function()
@@ -373,7 +370,7 @@ if ModConfigMenu then
 
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Func.",
+		"Map",
 		{
 			Type = ModConfigMenuOptionType.NUMBER,
 			CurrentSetting = function()
@@ -427,7 +424,7 @@ if ModConfigMenu then
 	
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Map",
+		"Colors",
 		{
 			Type = ModConfigMenuOptionType.NUMBER,
 			CurrentSetting = function()
@@ -447,7 +444,7 @@ if ModConfigMenu then
 	
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Map",
+		"Colors",
 		{
 			Type = ModConfigMenuOptionType.NUMBER,
 			CurrentSetting = function()
@@ -467,7 +464,7 @@ if ModConfigMenu then
 	
 	ModConfigMenu.AddSetting(
 		"Minimap API",
-		"Map",
+		"Colors",
 		{
 			Type = ModConfigMenuOptionType.NUMBER,
 			CurrentSetting = function()
@@ -481,6 +478,66 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentNum)
 				MinimapAPI.Config.DefaultRoomColorB = currentNum
+			end
+		}
+	)
+	
+	ModConfigMenu.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = ModConfigMenuOptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.DefaultOutlineColorR
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Outline Color Red: " .. MinimapAPI.Config.DefaultOutlineColorR
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.DefaultOutlineColorR = currentNum
+			end
+		}
+	)
+	
+	ModConfigMenu.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = ModConfigMenuOptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.DefaultOutlineColorG
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Outline Color Green: " .. MinimapAPI.Config.DefaultOutlineColorG
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.DefaultOutlineColorG = currentNum
+			end
+		}
+	)
+	
+	ModConfigMenu.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = ModConfigMenuOptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.DefaultOutlineColorB
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Outline Color Blue: " .. MinimapAPI.Config.DefaultOutlineColorB
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.DefaultOutlineColorB = currentNum
 			end
 		}
 	)
