@@ -757,26 +757,55 @@ MinimapAPI:AddCallback( ModCallbacks.MC_USE_CARD, function(self, card)
 	end
 end)
 
+function MinimapAPI:PrevMapDisplayMode()
+	local modes = {
+		[1] = MinimapAPI.Config.AllowToggleSmallMap,
+		[2] = MinimapAPI.Config.AllowToggleBoundedMap,
+		[3] = MinimapAPI.Config.AllowToggleLargeMap,
+		[4] = MinimapAPI.Config.AllowToggleNoMap,
+	}
+	for i=1,4 do
+		MinimapAPI.Config.DisplayMode = MinimapAPI.Config.DisplayMode - 1
+		if MinimapAPI.Config.DisplayMode < 1 then
+			MinimapAPI.Config.DisplayMode = 4
+		end
+		if modes[MinimapAPI.Config.DisplayMode] then
+			break
+		end
+	end
+end
+
+function MinimapAPI:NextMapDisplayMode()
+	local modes = {
+		[1] = MinimapAPI.Config.AllowToggleSmallMap,
+		[2] = MinimapAPI.Config.AllowToggleBoundedMap,
+		[3] = MinimapAPI.Config.AllowToggleLargeMap,
+		[4] = MinimapAPI.Config.AllowToggleNoMap,
+	}
+	for i=1,4 do
+		MinimapAPI.Config.DisplayMode = MinimapAPI.Config.DisplayMode + 1
+		if MinimapAPI.Config.DisplayMode > 4 then
+			MinimapAPI.Config.DisplayMode = 1
+		end
+		if modes[MinimapAPI.Config.DisplayMode] then
+			break
+		end
+	end
+end
+
+-- local mapheld = false
+-- MinimapAPI:AddCallback( ModCallbacks.MC_INPUT_ACTION, function(self,ent,hook,action)
+	-- if hook == InputHook.IS_ACTION_PRESSED and action == ButtonAction.ACTION_MAP then
+		-- mapheld = true
+	-- end
+-- end)
+
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_UPDATE, function(self)
 	if Input.IsActionPressed(ButtonAction.ACTION_MAP, 0) then
 		mapheldframes = mapheldframes + 1
 	elseif mapheldframes > 0 then
 		if mapheldframes < 8 then
-			local modes = {
-				[1] = MinimapAPI.Config.AllowToggleSmallMap,
-				[2] = MinimapAPI.Config.AllowToggleBoundedMap,
-				[3] = MinimapAPI.Config.AllowToggleLargeMap,
-				[4] = MinimapAPI.Config.AllowToggleNoMap,
-			}
-			for i=1,4 do
-				MinimapAPI.Config.DisplayMode = MinimapAPI.Config.DisplayMode + 1
-				if MinimapAPI.Config.DisplayMode > 4 then
-					MinimapAPI.Config.DisplayMode = 1
-				end
-				if modes[MinimapAPI.Config.DisplayMode] then
-					break
-				end
-			end
+			MinimapAPI:NextMapDisplayMode()
 		end
 		mapheldframes = 0
 	end
@@ -971,12 +1000,12 @@ local function renderBoundedMinimap()
 		minimapsmall:Render(offsetVec, zvec, zvec)
 		minimapsmall:SetFrame("MinimapAPIFrameE", 0)
 		minimapsmall:Render(offsetVec + Vector(MinimapAPI.Config.MapFrameWidth, 0), zvec, zvec)
-
+		
 		minimapsmall.Scale =
-			Vector(MinimapAPI.Config.MapFrameWidth / dframeCenterSize.X, MinimapAPI.Config.MapFrameHeight / dframeCenterSize.Y)
+			Vector((MinimapAPI.Config.MapFrameWidth - frameTL.X) / dframeCenterSize.X, (MinimapAPI.Config.MapFrameHeight - frameTL.Y) / dframeCenterSize.Y)
 		minimapsmall:SetFrame("MinimapAPIFrameCenter", 0)
-		minimapsmall:Render(offsetVec, zvec, zvec)
-
+		minimapsmall:Render(offsetVec + frameTL, zvec, zvec)
+		
 		minimapsmall.Scale = Vector((MinimapAPI.Config.MapFrameWidth + frameTL.X) / dframeHorizBarSize.X, 1)
 		minimapsmall:SetFrame("MinimapAPIFrameShadowS", 0)
 		minimapsmall:Render(offsetVec + Vector(frameTL.X, frameTL.Y + MinimapAPI:GetFrameBR().Y), zvec, zvec)
@@ -1150,7 +1179,7 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 			end
 			for _,adjroom in ipairs(currentroomdata:GetAdjacentRooms()) do
 				if not adjroom.NoUpdate then
-					adjroom.DisplayFlags = adjroom.DisplayFlags | (hasSpelunkerHat and (v.Hidden and 6 or 5) or adjroom.AdjacentDisplayFlags)
+					adjroom.DisplayFlags = adjroom.DisplayFlags | (hasSpelunkerHat and (adjroom.Hidden and 6 or 5) or adjroom.AdjacentDisplayFlags)
 				end
 			end
 		end
@@ -1199,7 +1228,7 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 			else
 				local minx = screen_size.X
 				for i,v in ipairs(MinimapAPI.Level) do
-					if v.TargetRenderOffset.Y < 64 then
+					if v.TargetRenderOffset and v.TargetRenderOffset.Y < 64 then
 						minx = math.min(minx, v.RenderOffset.X)
 					end
 				end
