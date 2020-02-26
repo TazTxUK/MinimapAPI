@@ -1,1 +1,1 @@
-MinimapAPI.Version = "Workshop" --branch
+MinimapAPI.Version = "master" --branch
