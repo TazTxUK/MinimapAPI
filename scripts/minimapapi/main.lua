@@ -1084,13 +1084,15 @@ local function renderBoundedMinimap()
 					spr.Color = v.Color or defaultRoomColor
 				end
 				local rms = MinimapAPI:GetRoomShapeGridSize(v.Shape)
-				local actualRoomPixelSize = Vector(roomPixelSize.X * rms.X, roomPixelSize.Y * rms.Y) - roomAnimPivot
-				local brcutoff = v.RenderOffset - offsetVec + actualRoomPixelSize - MinimapAPI:GetFrameBR()
-				local tlcutoff = -(v.RenderOffset - offsetVec)
-				if brcutoff.X < actualRoomPixelSize.X and brcutoff.Y < actualRoomPixelSize.Y and 
-				tlcutoff.X < actualRoomPixelSize.X and tlcutoff.Y < actualRoomPixelSize.Y then
-					brcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
-					tlcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
+				local rsgp = MinimapAPI.RoomShapeGridPivots[v.Shape]
+				local roomPivotOffset = Vector((roomPixelSize.X - 1) * rsgp.X, (roomPixelSize.Y - 1) * rsgp.Y)
+				local roomPixelBR = Vector(roomPixelSize.X * rms.X, roomPixelSize.Y * rms.Y) - roomAnimPivot
+				local brcutoff = v.RenderOffset - offsetVec + roomPixelBR - MinimapAPI:GetFrameBR() - roomPivotOffset
+				local tlcutoff = -(v.RenderOffset - offsetVec - roomPivotOffset)
+				if brcutoff.X < roomPixelBR.X and brcutoff.Y < roomPixelBR.Y and 
+				tlcutoff.X - roomPivotOffset.X < roomPixelBR.X and tlcutoff.Y - roomPivotOffset.Y < roomPixelBR.Y then
+					brcutoff:Clamp(0, 0, roomPixelBR.X, roomPixelBR.Y)
+					tlcutoff:Clamp(0, 0, roomPixelBR.X, roomPixelBR.Y)
 					spr:Render(v.RenderOffset, tlcutoff, brcutoff)
 				end
 			end
@@ -1234,7 +1236,7 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 				end
 				levelflagoffset = Vector(minx-9,8)
 			end
-			MinimapAPI.LevelFlagX = MinimapAPI.LevelFlagX * 0.5 + levelflagoffset.X * 0.5
+			MinimapAPI.LevelFlagX = MinimapAPI.LevelFlagX * (1-MinimapAPI.Config.SmoothSlidingSpeed) + levelflagoffset.X * MinimapAPI.Config.SmoothSlidingSpeed
 			levelflagoffset.X = MinimapAPI.LevelFlagX
 			renderMinimapLevelFlags(levelflagoffset)
 		end
