@@ -1052,7 +1052,7 @@ local function renderBoundedMinimap()
 						pos = Vector(pos.X * roomSize.X, pos.Y * roomSize.Y)
 						local actualRoomPixelSize = outlinePixelSize
 						local brcutoff = v.RenderOffset - offsetVec + pos + actualRoomPixelSize - MinimapAPI:GetFrameBR()
-						local tlcutoff = -(v.RenderOffset - offsetVec + pos)
+						local tlcutoff = -(v.RenderOffset - offsetVec + pos) + frameTL
 						if brcutoff.X < actualRoomPixelSize.X and brcutoff.Y < actualRoomPixelSize.Y and 
 						tlcutoff.X < actualRoomPixelSize.X and tlcutoff.Y < actualRoomPixelSize.Y then
 							brcutoff:Clamp(0, 0, actualRoomPixelSize.X, actualRoomPixelSize.Y)
