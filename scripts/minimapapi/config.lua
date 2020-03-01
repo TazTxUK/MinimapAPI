@@ -22,6 +22,7 @@ MinimapAPI.Config = {
 	["AllowToggleNoMap"] = false,
 	["PickupFirstComeFirstServe"] = false,
 	["PickupNoGrouping"] = false,
+	["RoomHoverShowContents"] = true,
 	["DefaultRoomColorR"] = 1,
 	["DefaultRoomColorG"] = 1,
 	["DefaultRoomColorB"] = 1,

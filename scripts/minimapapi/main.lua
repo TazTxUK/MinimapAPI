@@ -107,7 +107,6 @@ local mapheldframes = 0
 
 local callbacks_playerpos = {}
 local disabled_itemdet = false
-
 local override_greed = true
 
 --draw
@@ -285,6 +284,7 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 	local ents = Isaac.GetRoomEntities()
 	local pickupgroupset = {}
 	local addIcons = {}
+	local hoverList = {}
 	for _, ent in ipairs(ents) do
 		local success = false
 		local hash = GetPtrHash(ent)
@@ -482,6 +482,12 @@ local maproomfunctions = {
 			room.DisplayFlags = room.DisplayFlags | 6
 		else
 			room.DisplayFlags = room.DisplayFlags | 5
+		end
+	end,
+	UpdateType = function(room)
+		if room.Descriptor then
+			room.Type = room.Descriptor.Data.Type
+			room.PermanentIcons = {MinimapAPI:GetRoomTypeIconID(room.Type)}
 		end
 	end,
 }
@@ -737,6 +743,11 @@ end
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 	updatePlayerPos()
+	for i,v in ipairs(MinimapAPI.Level) do
+		if not v.NoUpdate then
+			v:UpdateType()
+		end
+	end
 	MinimapAPI:UpdateExternalMap()
 end)
 
@@ -1019,7 +1030,7 @@ local function renderBoundedMinimap()
 
 	if MinimapAPI.Config.OverrideLost or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
 		MinimapAPI:UpdateMinimapCenterOffset()
-	
+		
 		for i, v in ipairs(MinimapAPI.Level) do
 			local roomOffset = (v.DisplayPosition or v.Position) - roomCenterOffset
 			roomOffset.X = roomOffset.X * roomSize.X
