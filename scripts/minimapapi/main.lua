@@ -761,7 +761,7 @@ function MinimapAPI:ShowMap()
 end
 
 MinimapAPI:AddCallback( ModCallbacks.MC_USE_CARD, function(self, card)
-	if card == Card.CARD_WORLD or card == Card.CARD_SUN then
+	if card == Card.CARD_WORLD or card == Card.CARD_SUN or card == Card.RUNE_ANSUZ then
 		MinimapAPI:ShowMap()
 	end
 end)
@@ -1184,7 +1184,6 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 		if currentroomdata and MinimapAPI:PickupDetectionEnabled() then
 			if not currentroomdata.NoUpdate then
 				currentroomdata.ItemIcons = MinimapAPI:GetCurrentRoomPickupIDs()
-				currentroomdata.ItemList = MinimapAPI:GetCurrentRoomPickupList()
 				currentroomdata.DisplayFlags = 5
 				currentroomdata.Clear = gamelevel:GetCurrentRoomDesc().Clear
 				currentroomdata.Visited = true
