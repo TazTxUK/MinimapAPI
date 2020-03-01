@@ -284,10 +284,8 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 	local ents = Isaac.GetRoomEntities()
 	local pickupgroupset = {}
 	local addIcons = {}
-	local hoverList = {}
 	for _, ent in ipairs(ents) do
 		local success = false
-		local hash = GetPtrHash(ent)
 		if ent:GetData().MinimapAPIPickupID == nil then
 			for i, v in pairs(MinimapAPI.PickupList) do
 				local currentid = MinimapAPI.PickupList[ent:GetData().MinimapAPIPickupID]
@@ -485,7 +483,7 @@ local maproomfunctions = {
 		end
 	end,
 	UpdateType = function(room)
-		if room.Descriptor then
+		if room.Descriptor and room.Descriptor.Data then
 			room.Type = room.Descriptor.Data.Type
 			room.PermanentIcons = {MinimapAPI:GetRoomTypeIconID(room.Type)}
 		end
@@ -1186,6 +1184,7 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 		if currentroomdata and MinimapAPI:PickupDetectionEnabled() then
 			if not currentroomdata.NoUpdate then
 				currentroomdata.ItemIcons = MinimapAPI:GetCurrentRoomPickupIDs()
+				currentroomdata.ItemList = MinimapAPI:GetCurrentRoomPickupList()
 				currentroomdata.DisplayFlags = 5
 				currentroomdata.Clear = gamelevel:GetCurrentRoomDesc().Clear
 				currentroomdata.Visited = true
