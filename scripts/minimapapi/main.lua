@@ -1157,7 +1157,6 @@ local function renderBoundedMinimap()
 end
 
 MinimapAPI.DisableSpelunkerHat = false
-MinimapAPI.LevelFlagX = 420
 
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 	if MinimapAPI.Config.Disable then return end
@@ -1241,8 +1240,6 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 				end
 				levelflagoffset = Vector(minx-9,8)
 			end
-			MinimapAPI.LevelFlagX = MinimapAPI.LevelFlagX * (1-MinimapAPI.Config.SmoothSlidingSpeed) + levelflagoffset.X * MinimapAPI.Config.SmoothSlidingSpeed
-			levelflagoffset.X = MinimapAPI.LevelFlagX
 			renderMinimapLevelFlags(levelflagoffset)
 		end
 	end
