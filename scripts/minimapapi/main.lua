@@ -459,41 +459,75 @@ function MinimapAPI:ClearMap()
 end
 
 local maproomfunctions = {
-	IsVisible = function(self)
-		return (self.DisplayFlags or 0) & 1 > 0
+	IsVisible = function(room)
+		return (room.DisplayFlags or 0) & 1 > 0
 	end,
-	IsShadow = function(self)
-		return (self.DisplayFlags or 0) & 2 > 0
+	IsShadow = function(room)
+		return (room.DisplayFlags or 0) & 2 > 0
 	end,
-	IsIconVisible = function(self)
-		return (self.DisplayFlags or 0) & 4 > 0
+	IsIconVisible = function(room)
+		return (room.DisplayFlags or 0) & 4 > 0
 	end,
-	IsVisited = function(self)
-		return self.Visited or false
+	IsVisited = function(room)
+		return room.Visited or false
 	end,
-	GetDisplayFlags = function(self)
-		local df = self.DisplayFlags or 0
-		if self.Type and self.Type > 1 and Isaac.GetPlayer(0):GetEffects():HasCollectibleEffect(21) then
+	GetPosition = function(room, pos)
+		return room.Position
+	end,
+	SetPosition = function(room, pos)
+		room.Position = pos
+		room:UpdateAdjacentRoomsCache()
+	end,
+	GetDisplayFlags = function(room)
+		local df = room.DisplayFlags or 0
+		if room.Type and room.Type > 1 and Isaac.GetPlayer(0):GetEffects():HasCollectibleEffect(21) then
 			df = df | 6
 		end
-		return MinimapAPI:RunDisplayFlagsCallbacks(self,df)
+		return MinimapAPI:RunDisplayFlagsCallbacks(room,df)
 	end,
-	IsClear = function(self)
-		return self.Clear or false
+	IsClear = function(room)
+		return room.Clear or false
 	end,
-	SetDisplayFlags = function(self,df)
-		if self.Descriptor then
-			self.Descriptor.DisplayFlags = df
+	SetDisplayFlags = function(room,df)
+		if room.Descriptor then
+			room.Descriptor.DisplayFlags = df
 		else
-			self.DisplayFlags = df
+			room.DisplayFlags = df
+		end
+	end,
+	UpdateAdjacentRoomsCache = function(room)
+		if room.AdjacentRooms then
+			for i,v in ipairs(room:GetAdjacentRooms()) do
+				v:RemoveAdjacentRoom(room)
+			end
+		end
+		room.AdjacentRooms = {}
+		for i,v in ipairs(MinimapAPI.RoomShapeAdjacentCoords[room.Shape]) do
+			local roomatpos = MinimapAPI:GetRoomAtPosition(room.Position + v)
+			if roomatpos then
+				room.AdjacentRooms[#room.AdjacentRooms + 1] = roomatpos
+				roomatpos:AddAdjacentRoom(room)
+			end
+		end
+	end,
+	AddAdjacentRoom = function(room, adjroom)
+		local adjrooms = room:GetAdjacentRooms()
+		for i,v in ipairs(adjrooms) do
+			if v == adjroom then return end
+		end
+		adjrooms[#adjrooms + 1] = adjroom
+	end,
+	RemoveAdjacentRoom = function(room, adjroom)
+		local adjrooms = room:GetAdjacentRooms()
+		for i,v in ipairs(adjrooms) do
+			if v == adjroom then return table.remove(adjrooms,i) end
 		end
 	end,
 	GetAdjacentRooms = function(room)
-		local x = {}
-		for i,v in ipairs(MinimapAPI.RoomShapeAdjacentCoords[room.Shape]) do
-			x[#x + 1] = MinimapAPI:GetRoomAtPosition(room.Position + v)
+		if not room.AdjacentRooms then
+			room:UpdateAdjacentRoomsCache()
 		end
-		return x
+		return room.AdjacentRooms
 	end,
 	Reveal = function(room)
 		if room.Hidden then
@@ -538,7 +572,15 @@ function MinimapAPI:AddRoom(t)
 	}
 	setmetatable(x, maproommeta)
 	MinimapAPI.Level[#MinimapAPI.Level + 1] = x
+	x:SetPosition(x.Position)
 	return x
+end
+
+local function removeAdjacentRoomRefs(room)
+	if not room.AdjacentRooms then return end
+	for i,v in ipairs(room.AdjacentRooms) do
+		v:RemoveAdjacentRoom(room)
+	end
 end
 
 function MinimapAPI:RemoveRoom(pos)
@@ -546,6 +588,7 @@ function MinimapAPI:RemoveRoom(pos)
 	local success = false
 	for i, v in ipairs(MinimapAPI.Level) do
 		if v.Position.X == pos.X and v.Position.Y == pos.Y then
+			removeAdjacentRoomRefs(v)
 			table.remove(MinimapAPI.Level, i)
 			success = true
 			MinimapAPI:UpdateExternalMap()
@@ -559,6 +602,7 @@ function MinimapAPI:RemoveRoomByID(id)
 	for i = #MinimapAPI.Level, 1, -1 do
 		local v = MinimapAPI.Level[i]
 		if v.ID == id then
+			removeAdjacentRoomRefs(v)
 			table.remove(MinimapAPI.Level, i)
 		end
 	end
