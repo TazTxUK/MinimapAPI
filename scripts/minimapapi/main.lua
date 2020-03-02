@@ -343,7 +343,7 @@ end
 
 function MinimapAPI:RunPlayerPosCallbacks()
 	for i, v in ipairs(callbacks_playerpos) do
-		local s, ret = pcall(v.call, MinimapAPI:GetCurrentRoom(), playerMapPos)
+		local s, ret = pcall(v.call, v.mod, MinimapAPI:GetCurrentRoom(), playerMapPos)
 		if s then
 			if ret then
 				playerMapPos = ret
@@ -357,7 +357,7 @@ end
 
 function MinimapAPI:RunDisplayFlagsCallbacks(room, df)
 	for i, v in ipairs(callbacks_displayflags) do
-		local s, ret = pcall(v.call, room, df)
+		local s, ret = pcall(v.call, v.mod, room, df)
 		if s then
 			if ret then
 				return ret
