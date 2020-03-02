@@ -106,6 +106,8 @@ MinimapAPI.Level = {}
 local mapheldframes = 0
 
 local callbacks_playerpos = {}
+local callbacks_displayflags = {}
+
 local disabled_itemdet = false
 local override_greed = true
 
@@ -353,6 +355,20 @@ function MinimapAPI:RunPlayerPosCallbacks()
 	end
 end
 
+function MinimapAPI:RunDisplayFlagsCallbacks(room, df)
+	for i, v in ipairs(callbacks_displayflags) do
+		local s, ret = pcall(v.call, room, df)
+		if s then
+			if ret then
+				return ret
+			end
+		else
+			Isaac.ConsoleOutput("Error in MinimapAPI DisplayFlags Callback:\n" .. tostring(ret) .. "\n")
+		end
+	end
+	return df
+end
+
 function MinimapAPI:InstanceOf(obj, class)
 	local meta = getmetatable(obj)
 	local metaclass = getmetatable(class)
@@ -456,10 +472,11 @@ local maproomfunctions = {
 		return self.Visited or false
 	end,
 	GetDisplayFlags = function(self)
+		local df = self.DisplayFlags or 0
 		if self.Type and self.Type > 1 and Isaac.GetPlayer(0):GetEffects():HasCollectibleEffect(21) then
-			return self.DisplayFlags | 6
+			df = df | 6
 		end
-		return self.DisplayFlags or 0
+		return MinimapAPI:RunDisplayFlagsCallbacks(self,df)
 	end,
 	IsClear = function(self)
 		return self.Clear or false
@@ -647,8 +664,17 @@ function MinimapAPI:AddPlayerPositionCallback(modtable, func)
 	if not MinimapAPI:IsModTable(modtable) then
 		error("Table given to AddPlayerPositionCallback was not a mod table")
 	end
-	MinimapAPI:RemovePlayerPositionCallback(modtable)
 	callbacks_playerpos[#callbacks_playerpos + 1] = {
+		mod = modtable,
+		call = func
+	}
+end
+
+function MinimapAPI:AddDisplayFlagsCallback(modtable, func)
+	if not MinimapAPI:IsModTable(modtable) then
+		error("Table given to AddDisplayFlagsCallback was not a mod table")
+	end
+	callbacks_displayflags[#callbacks_displayflags + 1] = {
 		mod = modtable,
 		call = func
 	}
