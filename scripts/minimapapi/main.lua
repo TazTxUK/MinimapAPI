@@ -456,6 +456,9 @@ local maproomfunctions = {
 		return self.Visited or false
 	end,
 	GetDisplayFlags = function(self)
+		if self.Type and self.Type > 1 and Isaac.GetPlayer(0):GetEffects():HasCollectibleEffect(21) then
+			return self.DisplayFlags | 6
+		end
 		return self.DisplayFlags or 0
 	end,
 	IsClear = function(self)
@@ -685,7 +688,7 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 	local miny
 	for i = 1, #(MinimapAPI.Level) do
 		local v = MinimapAPI.Level[i]
-		if (v.DisplayFlags or 0) > 0 then
+		if v:GetDisplayFlags() > 0 then
 			local maxxval = v.Position.X - MinimapAPI.RoomShapeGridPivots[v.Shape].X + MinimapAPI:GetRoomShapeGridSize(v.Shape).X
 			if not maxx or (maxxval > maxx) then
 				maxx = maxxval
@@ -801,13 +804,6 @@ function MinimapAPI:NextMapDisplayMode()
 		end
 	end
 end
-
--- local mapheld = false
--- MinimapAPI:AddCallback( ModCallbacks.MC_INPUT_ACTION, function(self,ent,hook,action)
-	-- if hook == InputHook.IS_ACTION_PRESSED and action == ButtonAction.ACTION_MAP then
-		-- mapheld = true
-	-- end
--- end)
 
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_UPDATE, function(self)
 	if Input.IsActionPressed(ButtonAction.ACTION_MAP, 0) then
@@ -1112,7 +1108,7 @@ local function renderBoundedMinimap()
 		if MinimapAPI.Config.ShowIcons then
 			for i, v in pairs(MinimapAPI.Level) do
 				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI.Config.ShowCurrentRoomItems
-				local displayflags = v.DisplayFlags or 0
+				local displayflags = v:GetDisplayFlags() or 0
 				local k = 1
 				local function renderIcons(icons, locs)
 					for _,icon in ipairs(icons) do
