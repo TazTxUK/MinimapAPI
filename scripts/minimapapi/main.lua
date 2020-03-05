@@ -111,6 +111,9 @@ local callbacks_displayflags = {}
 local disabled_itemdet = false
 local override_greed = true
 
+local first_time = false
+local first_time_counter = 0
+
 --draw
 local roomCenterOffset = Vector(0, 0)
 local roomAnimPivot = Vector(-2, -2)
@@ -1320,16 +1323,36 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 			renderMinimapLevelFlags(levelflagoffset)
 		end
 	end
+	
+	if first_time then
+		if first_time_counter >= 900 or MinimapAPI.DisableSaving then
+			first_time = false
+		else
+			-- local x
+			-- if first_time_counter < 300 then
+				-- x = 60 + 1000*1.2^(40-first_time_counter)
+			-- else
+				-- x = 60 - 1000*1.2^(first_time_counter-460)
+			-- end
+			-- local y = 90
+			-- Isaac.RenderText("MiniMAPI",x,y,0.5,0.5,1,1)
+			-- Isaac.RenderText("If you have two minimaps on the screen when you",x,y+12,1,1,1,1)
+			-- Isaac.RenderText("start or continue, you MUST restart your game.",x,y+12*2,1,1,1,1)
+			-- Isaac.RenderText("Thanks for downloading!",x,y+12*3,0.5,1,0.5,1)
+			-- Isaac.RenderText("This message will not appear again.",x,y+12*4.5,1,1,1,0.5)
+			-- if not Game():IsPaused() and Game():GetRoom():GetFrameCount() > 0 then
+				-- first_time_counter = first_time_counter + 1
+			-- end
+		end
+	end
 end)
 
 MinimapAPI.DisableSaving = false
 
 function MinimapAPI:LoadSaveTable(saved,is_save)
 	if saved then
-		Isaac.ConsoleOutput("LOADING SAVE!\n")
 		for i,v in pairs(saved.Config) do
 			MinimapAPI.Config[i] = v
-			Isaac.ConsoleOutput("LOADING "..i..": "..tostring(v).."\n")
 		end
 		if is_save and saved.LevelData and saved.Seed == Game():GetSeeds():GetStartSeed() then
 			local vanillarooms = Game():GetLevel():GetRooms()
@@ -1407,6 +1430,9 @@ MinimapAPI:AddCallback(
 				MinimapAPI:LoadDefaultMap()
 			end
 			MinimapAPI:UpdateExternalMap()
+		else
+			first_time = true
+			MinimapAPI:LoadDefaultMap()
 		end
 	end
 )
