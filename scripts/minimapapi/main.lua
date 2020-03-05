@@ -99,6 +99,9 @@ function MinimapAPI:GetFrameCenterOffset()
 end
 
 --minimap api
+local badload = false
+local font = Font()
+font:Load("font/pftempestasevencondensed.fnt")
 local rooms
 local playerMapPos = Vector(0, 0)
 MinimapAPI.Level = {}
@@ -1245,6 +1248,19 @@ MinimapAPI.DisableSpelunkerHat = false
 
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 	if MinimapAPI.Config.Disable then return end
+	
+	if badload then
+		font:DrawString("MinimapAPI didn't load correctly.",40,30,KColor(1,0.5,0.5,1),0,false)
+		font:DrawString("Restart your game!",40,40,KColor(1,0.5,0.5,1),0,false)
+		
+		font:DrawString("(This tends to happen when the mod is first installed, or when",40,60,KColor(1,0.5,0.5,1),0,false)
+		font:DrawString("it is re-enabled via the mod menu)",40,70,KColor(1,0.5,0.5,1),0,false)
+		
+		font:DrawString("If you have restarted already and are still getting this message,",40,90,KColor(1,0.5,0.5,1),0,false)
+		font:DrawString("leave a comment on the workshop page.",40,100,KColor(1,0.5,0.5,1),0,false)
+		return
+	end
+	
 	if MinimapAPI.Config.HideInCombat == 2 then
 		local r = Game():GetRoom()
 		if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
@@ -1405,9 +1421,7 @@ end
 MinimapAPI:AddCallback(
 	ModCallbacks.MC_POST_GAME_STARTED,
 	function(self, is_save)
-		if MinimapAPI:IsBadLoad() then
-			Game():ShowHallucination() --KILL THE GAME KILL IT NOW
-		end
+		badload = MinimapAPI:IsBadLoad()
 		if MinimapAPI:HasData() then
 			if not MinimapAPI.DisableSaving then
 				local saved = json.decode(Isaac.LoadModData(MinimapAPI))
