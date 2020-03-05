@@ -1326,8 +1326,10 @@ MinimapAPI.DisableSaving = false
 
 function MinimapAPI:LoadSaveTable(saved,is_save)
 	if saved then
+		Isaac.ConsoleOutput("LOADING SAVE!\n")
 		for i,v in pairs(saved.Config) do
 			MinimapAPI.Config[i] = v
+			Isaac.ConsoleOutput("LOADING "..i..": "..tostring(v).."\n")
 		end
 		if is_save and saved.LevelData and saved.Seed == Game():GetSeeds():GetStartSeed() then
 			local vanillarooms = Game():GetLevel():GetRooms()
@@ -1397,7 +1399,7 @@ end
 MinimapAPI:AddCallback(
 	ModCallbacks.MC_POST_GAME_STARTED,
 	function(self, is_save)
-		if MinimapAPI:HasData() and is_save then
+		if MinimapAPI:HasData() then
 			if not MinimapAPI.DisableSaving then
 				local saved = json.decode(Isaac.LoadModData(MinimapAPI))
 				MinimapAPI:LoadSaveTable(saved,is_save)
