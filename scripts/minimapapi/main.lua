@@ -111,9 +111,6 @@ local callbacks_displayflags = {}
 local disabled_itemdet = false
 local override_greed = true
 
-local first_time = false
-local first_time_counter = 0
-
 --draw
 local roomCenterOffset = Vector(0, 0)
 local roomAnimPivot = Vector(-2, -2)
@@ -750,6 +747,14 @@ local function updatePlayerPos()
 	MinimapAPI:RunPlayerPosCallbacks()
 end
 
+function MinimapAPI:IsBadLoad()
+	local spr = Sprite()
+	spr:Load("gfx/ui/minimap1.anm2", true)
+	spr:SetFrame("RoomUnvisited", 0)
+	spr:SetLastFrame()
+	return spr:GetFrame() ~= 0
+end
+
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_LEVEL,	function(self)
 	MinimapAPI:LoadDefaultMap()
 	updatePlayerPos()
@@ -1323,28 +1328,6 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 			renderMinimapLevelFlags(levelflagoffset)
 		end
 	end
-	
-	if first_time then
-		if first_time_counter >= 900 or MinimapAPI.DisableSaving then
-			first_time = false
-		else
-			-- local x
-			-- if first_time_counter < 300 then
-				-- x = 60 + 1000*1.2^(40-first_time_counter)
-			-- else
-				-- x = 60 - 1000*1.2^(first_time_counter-460)
-			-- end
-			-- local y = 90
-			-- Isaac.RenderText("MiniMAPI",x,y,0.5,0.5,1,1)
-			-- Isaac.RenderText("If you have two minimaps on the screen when you",x,y+12,1,1,1,1)
-			-- Isaac.RenderText("start or continue, you MUST restart your game.",x,y+12*2,1,1,1,1)
-			-- Isaac.RenderText("Thanks for downloading!",x,y+12*3,0.5,1,0.5,1)
-			-- Isaac.RenderText("This message will not appear again.",x,y+12*4.5,1,1,1,0.5)
-			-- if not Game():IsPaused() and Game():GetRoom():GetFrameCount() > 0 then
-				-- first_time_counter = first_time_counter + 1
-			-- end
-		end
-	end
 end)
 
 MinimapAPI.DisableSaving = false
@@ -1422,6 +1405,9 @@ end
 MinimapAPI:AddCallback(
 	ModCallbacks.MC_POST_GAME_STARTED,
 	function(self, is_save)
+		if MinimapAPI:IsBadLoad() then
+			Game():ShowHallucination() --KILL THE GAME KILL IT NOW
+		end
 		if MinimapAPI:HasData() then
 			if not MinimapAPI.DisableSaving then
 				local saved = json.decode(Isaac.LoadModData(MinimapAPI))
@@ -1431,7 +1417,6 @@ MinimapAPI:AddCallback(
 			end
 			MinimapAPI:UpdateExternalMap()
 		else
-			first_time = true
 			MinimapAPI:LoadDefaultMap()
 		end
 	end

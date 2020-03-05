@@ -1,5 +1,5 @@
 <AnimatedActor>
-	<Info CreatedBy="Unknown" CreatedOn="23/01/2020 21:25:20" Version="10" Fps="30"/>
+	<Info CreatedBy="Unknown" CreatedOn="05/03/2020 03:58:58" Version="11" Fps="30"/>
 	<Content>
 		<Spritesheets>
 			<Spritesheet Path="minimap1.png" Id="0"/>
@@ -22,29 +22,23 @@
 			<Triggers/>
 		</Animation>
 		<Animation Name="RoomOutline" FrameNum="1" Loop="true">
-			<RootAnimation>
-				<Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
-			</RootAnimation>
+			<RootAnimation/>
 			<LayerAnimations>
 				<LayerAnimation LayerId="0" Visible="true"/>
 			</LayerAnimations>
 			<NullAnimations/>
 			<Triggers/>
 		</Animation>
-		<Animation Name="RoomVisited" FrameNum="12" Loop="true">
-			<RootAnimation>
-				<Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="12" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
-			</RootAnimation>
+		<Animation Name="RoomVisited" FrameNum="1" Loop="true">
+			<RootAnimation/>
 			<LayerAnimations>
 				<LayerAnimation LayerId="0" Visible="true"/>
 			</LayerAnimations>
 			<NullAnimations/>
 			<Triggers/>
 		</Animation>
-		<Animation Name="RoomUnvisited" FrameNum="25" Loop="true">
-			<RootAnimation>
-				<Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="12" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>
-			</RootAnimation>
+		<Animation Name="RoomUnvisited" FrameNum="1" Loop="true">
+			<RootAnimation/>
 			<LayerAnimations>
 				<LayerAnimation LayerId="0" Visible="true"/>
 			</LayerAnimations>
