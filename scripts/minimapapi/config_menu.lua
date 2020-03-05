@@ -1,14 +1,18 @@
 
 if ModConfigMenu then
 	local configPresets = {
+		[0] = "Custom",
 		"API Default",
 		"Vanilla",
-		"Beta",
+		"All Info",
+		"Minimal",
 	}
 	local configPresetTexts = {
+		[0] = "",
 		"Default config options.",
 		"A close recreation of the original AB+ map.",
-		"The original look of Wofsauge's miniMAPI.",
+		"As much information as possible.",
+		"The map is long and thin.",
 	}
 	local configPresetFuncs = {
 		function() --default
@@ -21,7 +25,7 @@ if ModConfigMenu then
 			MinimapAPI.Config.PositionX = 4 
 			MinimapAPI.Config.PositionY = 4
 			MinimapAPI.Config.DisplayMode = 1
-			MinimapAPI.Config.ShowLevelFlags = false
+			MinimapAPI.Config.ShowLevelFlags = true
 			MinimapAPI.Config.SmoothSlidingSpeed = 0.3
 			MinimapAPI.Config.HideInCombat = 1
 			MinimapAPI.Config.OverrideVoid = false
@@ -55,26 +59,48 @@ if ModConfigMenu then
 			MinimapAPI.Config.PickupFirstComeFirstServe = false
 			MinimapAPI.Config.PickupNoGrouping = false
 		end,
-		function() --wofsauge
+		function() --all
 			MinimapAPI.Config.ShowIcons = true
 			MinimapAPI.Config.ShowPickupIcons = true
-			MinimapAPI.Config.ShowShadows = false
+			MinimapAPI.Config.ShowShadows = true
 			MinimapAPI.Config.ShowCurrentRoomItems = true
-			MinimapAPI.Config.MapFrameWidth = 70
+			MinimapAPI.Config.MapFrameWidth = 75
 			MinimapAPI.Config.MapFrameHeight = 70
-			MinimapAPI.Config.PositionX = 6 
-			MinimapAPI.Config.PositionY = 6
-			MinimapAPI.Config.DisplayMode = 2
+			MinimapAPI.Config.PositionX = 2 
+			MinimapAPI.Config.PositionY = 2
+			MinimapAPI.Config.DisplayMode = 1
 			MinimapAPI.Config.ShowLevelFlags = true
-			MinimapAPI.Config.SmoothSlidingSpeed = 1
+			MinimapAPI.Config.SmoothSlidingSpeed = 0.3
 			MinimapAPI.Config.HideInCombat = 1
 			MinimapAPI.Config.OverrideVoid = false
-			MinimapAPI.Config.DisplayExploredRooms = false
+			MinimapAPI.Config.DisplayExploredRooms = true
+			MinimapAPI.Config.AllowToggleLargeMap = true
+			MinimapAPI.Config.AllowToggleSmallMap = true
+			MinimapAPI.Config.AllowToggleBoundedMap = true
+			MinimapAPI.Config.AllowToggleNoMap = false
+			MinimapAPI.Config.PickupFirstComeFirstServe = false
+			MinimapAPI.Config.PickupNoGrouping = true
+		end,
+		function()
+			MinimapAPI.Config.ShowIcons = true
+			MinimapAPI.Config.ShowPickupIcons = false
+			MinimapAPI.Config.ShowShadows = true
+			MinimapAPI.Config.ShowCurrentRoomItems = false
+			MinimapAPI.Config.MapFrameWidth = 85
+			MinimapAPI.Config.MapFrameHeight = 45
+			MinimapAPI.Config.PositionX = 2 
+			MinimapAPI.Config.PositionY = 2
+			MinimapAPI.Config.DisplayMode = 2
+			MinimapAPI.Config.ShowLevelFlags = false
+			MinimapAPI.Config.SmoothSlidingSpeed = 0.3
+			MinimapAPI.Config.HideInCombat = 1
+			MinimapAPI.Config.OverrideVoid = false
+			MinimapAPI.Config.DisplayExploredRooms = true
 			MinimapAPI.Config.AllowToggleLargeMap = false
 			MinimapAPI.Config.AllowToggleSmallMap = true
 			MinimapAPI.Config.AllowToggleBoundedMap = true
 			MinimapAPI.Config.AllowToggleNoMap = false
-			MinimapAPI.Config.PickupFirstComeFirstServe = true
+			MinimapAPI.Config.PickupFirstComeFirstServe = false
 			MinimapAPI.Config.PickupNoGrouping = false
 		end,
 	}
@@ -105,7 +131,7 @@ if ModConfigMenu then
 					configPresetFuncs[currentNum]()
 				end
 				MinimapAPI.Config.ConfigPreset = currentNum
-			end
+			end,
 		}
 	)
 	
@@ -128,7 +154,11 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowPickupIcons = currentBool
-			end
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"If true, pickup icons like hearts will be visible."
+			}
 		}
 	)
 
@@ -145,7 +175,11 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowShadows = currentBool
-			end
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"If true, the dark room outlines will show."
+			}
 		}
 	)
 
@@ -162,7 +196,12 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowLevelFlags = currentBool
-			end
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"If true, the blue map, compass and treasure map",
+				"icons will show when the effect is active."
+			}
 		}
 	)
 
@@ -179,7 +218,12 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowCurrentRoomItems = currentBool
-			end
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"If true, pickup icons will show even if Isaac",
+				"is in the same room."
+			}
 		}
 	)
 	
@@ -196,7 +240,12 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.DisplayExploredRooms = currentBool
-			end
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"If true, rooms that have been seen but not",
+				"cleared are shown as a checkerboard pattern."
+			}
 		}
 	)
 	
@@ -213,6 +262,7 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.AllowToggleLargeMap = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
 			end
 		}
 	)
@@ -230,6 +280,7 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.AllowToggleSmallMap = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
 			end
 		}
 	)
@@ -247,6 +298,7 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.AllowToggleBoundedMap = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
 			end
 		}
 	)
@@ -264,6 +316,7 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.AllowToggleNoMap = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
 			end
 		}
 	)
@@ -284,7 +337,11 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentNum)
 				MinimapAPI.Config.HideInCombat = currentNum
-			end
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"The map will be hidden when in an uncleared room."
+			}
 		}
 	)
 
@@ -304,7 +361,11 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentNum)
 				MinimapAPI.Config.MapFrameWidth = currentNum
-			end
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"The border map's width."
+			}
 		}
 	)
 
@@ -324,7 +385,11 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentNum)
 				MinimapAPI.Config.MapFrameHeight = currentNum
-			end
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"The border map's height."
+			}
 		}
 	)
 
@@ -344,6 +409,7 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentNum)
 				MinimapAPI.Config.PositionX = currentNum
+				MinimapAPI.Config.ConfigPreset = 0
 			end
 		}
 	)
@@ -364,6 +430,7 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentNum)
 				MinimapAPI.Config.PositionY = currentNum
+				MinimapAPI.Config.ConfigPreset = 0
 			end
 		}
 	)
@@ -378,32 +445,37 @@ if ModConfigMenu then
 			end,
 			Minimum = 0.25,
 			Maximum = 1,
-			ModifyBy = 0.25,
+			ModifyBy = 0.05,
 			Display = function()
 				return "Smooth Movement Speed: " .. MinimapAPI.Config.SmoothSlidingSpeed
 			end,
 			OnChange = function(currentNum)
 				MinimapAPI.Config.SmoothSlidingSpeed = currentNum
-			end
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"How quickly the map moves. 1.0 = instant",
+				"0.1 = very slow."
+			}
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
-		"Minimap API",
-		"Pickups",
-		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.PickupFirstComeFirstServe
-			end,
-			Display = function()
-				return "Sort Pickups By First Appearing: " .. (MinimapAPI.Config.PickupFirstComeFirstServe and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.PickupFirstComeFirstServe = currentBool
-			end
-		}
-	)
+	-- ModConfigMenu.AddSetting(
+		-- "Minimap API",
+		-- "Pickups",
+		-- {
+			-- Type = ModConfigMenuOptionType.BOOLEAN,
+			-- CurrentSetting = function()
+				-- return MinimapAPI.Config.PickupFirstComeFirstServe
+			-- end,
+			-- Display = function()
+				-- return "Sort Pickups By First Appearing: " .. (MinimapAPI.Config.PickupFirstComeFirstServe and "True" or "False")
+			-- end,
+			-- OnChange = function(currentBool)
+				-- MinimapAPI.Config.PickupFirstComeFirstServe = currentBool
+			-- end
+		-- }
+	-- )
 	
 	ModConfigMenu.AddSetting(
 		"Minimap API",
@@ -418,7 +490,12 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.PickupNoGrouping = currentBool
-			end
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"Two of the same pickup can show up on",
+				"the map as icons."
+			}
 		}
 	)
 	
@@ -624,6 +701,7 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowIcons = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
 			end
 		}
 	)

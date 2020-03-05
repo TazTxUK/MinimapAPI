@@ -1138,7 +1138,7 @@ local function renderBoundedMinimap()
 		
 		local defaultRoomColor = Color(MinimapAPI.Config.DefaultRoomColorR, MinimapAPI.Config.DefaultRoomColorG, MinimapAPI.Config.DefaultRoomColorB, 1, 0, 0, 0)
 		for i, v in pairs(MinimapAPI.Level) do
-			if roomInView[v] then
+			if roomInView[v] or not MinimapAPI.Config.ShowShadows then
 				local iscurrent = MinimapAPI:PlayerInRoom(v)
 				local displayflags = v:GetDisplayFlags()
 				local spr = minimapsmall
