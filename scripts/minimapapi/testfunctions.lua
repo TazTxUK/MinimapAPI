@@ -120,3 +120,55 @@ function MinimapAPI.Debug.Colors()
 	end
 	MinimapAPI:SetPlayerPosition(Vector(math.random(0,12),math.random(0,12)))
 end
+
+function MinimapAPI.Debug.LevelGenHell()
+	MinimapAPI:ClearMap()
+	for j=0,12,2 do
+		for i=0,19 do
+			MinimapAPI:AddRoom{
+				Position = Vector(i,j),
+				DisplayFlags = 5,
+			}
+		end
+	end
+	for j=1,11,2 do
+		MinimapAPI:AddRoom{
+			Position = (j+1)%4==0 and Vector(0,j) or Vector(19,j),
+			DisplayFlags = 5,
+		}
+	end
+end
+
+function MinimapAPI.Debug.RandomColors()
+	for i,v in ipairs(MinimapAPI.Level) do
+		v.Color = Color(math.random(0,1),math.random(0,1),math.random(0,1),1,0,0,0)
+	end
+end
+
+function MinimapAPI.Debug.Colors2()
+	MinimapAPI:ClearMap()
+	for j=0,15 do
+		for i=0,15 do
+			if MinimapAPI:IsPositionFree(Vector(i,j)) then
+				local s = math.random(1,12)
+				local size = MinimapAPI.RoomShapeGridSizes[s]
+				if not MinimapAPI:IsPositionFree(Vector(i,j),s) or size.X + i > 16 or size.Y + j > 16 or s == RoomShape.ROOMSHAPE_IH or s == RoomShape.ROOMSHAPE_IIH or s == RoomShape.ROOMSHAPE_IV or s == RoomShape.ROOMSHAPE_IIV then
+					s = 1
+				end
+			
+				MinimapAPI:AddRoom{
+					DisplayFlags = 5,
+					Position = Vector(i,j),
+					Clear = true,
+					Shape = s,
+					Color = Color(
+						i/15*rng[1] + j/15*rng[2],
+						i/15*rng[3] + j/15*rng[4],
+						i/15*rng[5] + j/15*rng[6],
+						1, 0, 0, 0)
+				}
+			end
+		end
+	end
+	MinimapAPI:SetPlayerPosition(Vector(math.random(0,12),math.random(0,12)))
+end

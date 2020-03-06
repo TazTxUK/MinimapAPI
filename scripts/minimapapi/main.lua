@@ -825,11 +825,11 @@ end
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 	updatePlayerPos()
-	for i,v in ipairs(MinimapAPI.Level) do
-		if not v.NoUpdate then
-			v:UpdateType()
-		end
-	end
+	-- for i,v in ipairs(MinimapAPI.Level) do
+		-- if not v.NoUpdate then
+			-- v:UpdateType()
+		-- end
+	-- end
 	MinimapAPI:UpdateExternalMap()
 end)
 
