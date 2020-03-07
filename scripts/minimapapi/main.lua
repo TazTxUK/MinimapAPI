@@ -1246,7 +1246,7 @@ end
 
 MinimapAPI.DisableSpelunkerHat = false
 
-MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
+local function renderCallbackFunction(self)
 	if MinimapAPI.Config.Disable then return end
 	
 	if badload then
@@ -1418,10 +1418,15 @@ function MinimapAPI:GetSaveTable(menuexit)
 end
 
 -- LOADING SAVED GAME
+local addRenderCall = true
 MinimapAPI:AddCallback(
 	ModCallbacks.MC_POST_GAME_STARTED,
 	function(self, is_save)
 		badload = MinimapAPI:IsBadLoad()
+		if addRenderCall then
+			MinimapAPI:AddCallback(ModCallbacks.MC_POST_RENDER, renderCallbackFunction)
+			addRenderCall = false
+		end
 		if MinimapAPI:HasData() then
 			if not MinimapAPI.DisableSaving then
 				local saved = json.decode(Isaac.LoadModData(MinimapAPI))
