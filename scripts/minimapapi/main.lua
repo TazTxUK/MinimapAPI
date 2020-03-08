@@ -1344,7 +1344,7 @@ local function renderCallbackFunction(self)
 			renderMinimapLevelFlags(levelflagoffset)
 		end
 	end
-end)
+end
 
 MinimapAPI.DisableSaving = false
 
