@@ -483,7 +483,7 @@ local maproomfunctions = {
 	end,
 	GetDisplayFlags = function(room)
 		local df = room.DisplayFlags or 0
-		if room.Type and room.Type > 1 and Isaac.GetPlayer(0):GetEffects():HasCollectibleEffect(21) then
+		if room.Type and room.Type > 1 and not room.Hidden and Isaac.GetPlayer(0):GetEffects():HasCollectibleEffect(21) then
 			df = df | 6
 		end
 		return MinimapAPI:RunDisplayFlagsCallbacks(room,df)
