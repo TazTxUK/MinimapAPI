@@ -1326,22 +1326,24 @@ local function renderCallbackFunction(self)
 				renderUnboundedMinimap("small",true)
 			end
 			
-			local levelflagoffset
-			local islarge = MinimapAPI:IsLarge()
-			if not islarge and MinimapAPI.Config.DisplayMode == 2 then
-				levelflagoffset = Vector(screen_size.X - MinimapAPI.Config.MapFrameWidth - MinimapAPI.Config.PositionX - 9,8)
-			elseif not islarge and MinimapAPI.Config.DisplayMode == 4 then
-				levelflagoffset = Vector(screen_size.X - 9,8)
-			else
-				local minx = screen_size.X
-				for i,v in ipairs(MinimapAPI.Level) do
-					if v.TargetRenderOffset and v.TargetRenderOffset.Y < 64 then
-						minx = math.min(minx, v.RenderOffset.X)
+			if MinimapAPI.Config.ShowLevelFlags then
+				local levelflagoffset
+				local islarge = MinimapAPI:IsLarge()
+				if not islarge and MinimapAPI.Config.DisplayMode == 2 then
+					levelflagoffset = Vector(screen_size.X - MinimapAPI.Config.MapFrameWidth - MinimapAPI.Config.PositionX - 9,8)
+				elseif not islarge and MinimapAPI.Config.DisplayMode == 4 then
+					levelflagoffset = Vector(screen_size.X - 9,8)
+				else
+					local minx = screen_size.X
+					for i,v in ipairs(MinimapAPI.Level) do
+						if v.TargetRenderOffset and v.TargetRenderOffset.Y < 64 then
+							minx = math.min(minx, v.RenderOffset.X)
+						end
 					end
+					levelflagoffset = Vector(minx-9,8)
 				end
-				levelflagoffset = Vector(minx-9,8)
+				renderMinimapLevelFlags(levelflagoffset)
 			end
-			renderMinimapLevelFlags(levelflagoffset)
 		end
 	end
 end
