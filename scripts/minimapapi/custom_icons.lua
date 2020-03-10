@@ -84,7 +84,7 @@ MinimapAPI:AddPickup("ChargedKey","ChargedKey",5,30,4,MinimapAPI.PickupNotCollec
 MinimapAPI:AddPickup("DoubleBomb","DoubleBomb",5,40,2,MinimapAPI.PickupNotCollected,"bombs",4100)
 MinimapAPI:AddPickup("GoldenBomb","GoldenBomb",5,40,4,MinimapAPI.PickupNotCollected,"bombs",4200)
 
-MinimapAPI:AddPickup("TarotCard","TarotCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",1000)
+MinimapAPI:AddPickup("Card","TarotCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",1000)
 for i=23,31 do 
 	MinimapAPI:AddPickup("RedCard"..i,"RedCard",5,300,i,MinimapAPI.PickupNotCollected,"cards",1100)
 end
