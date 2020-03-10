@@ -105,6 +105,7 @@ font:Load("font/pftempestasevencondensed.fnt")
 local rooms
 local playerMapPos = Vector(0, 0)
 MinimapAPI.Level = {}
+MinimapAPI.OverrideVoid = false
 
 local mapheldframes = 0
 
@@ -421,7 +422,7 @@ function MinimapAPI:LoadDefaultMap()
 		end
 		MinimapAPI:AddRoom(t)
 	end
-	if not MinimapAPI.Config.OverrideVoid then
+	if not (MinimapAPI.Config.OverrideVoid or MinimapAPI.OverrideVoid) then
 		if not Game():IsGreedMode() then
 			if Game():GetLevel():GetStage() == LevelStage.STAGE7 then
 				for i,v in ipairs(MinimapAPI.Level) do
