@@ -1074,7 +1074,7 @@ local function renderUnboundedMinimap(size,hide)
 end
 
 local function renderBoundedMinimap()
-	local offsetVec = Vector( screen_size.X - MinimapAPI.Config.MapFrameWidth - MinimapAPI.Config.PositionX - 1, MinimapAPI.Config.PositionY - 2.5)
+	local offsetVec = Vector( screen_size.X - MinimapAPI.Config.MapFrameWidth - MinimapAPI.Config.PositionX - 1, MinimapAPI.Config.PositionY - 2)
 	do
 		minimapsmall.Scale = Vector((MinimapAPI.Config.MapFrameWidth + frameTL.X) / dframeHorizBarSize.X, 1)
 		minimapsmall:SetFrame("MinimapAPIFrameN", 0)
