@@ -1276,6 +1276,7 @@ local function renderCallbackFunction(self)
 	if MinimapAPI.Config.DisplayOnNoHUD or not Game():GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD) then
 		local currentroomdata = MinimapAPI:GetCurrentRoom()
 		local gamelevel = Game():GetLevel()
+		local gameroom = Game():GetRoom()
 		local player = Isaac.GetPlayer(0)
 		local hasSpelunkerHat = player:HasCollectible(CollectibleType.COLLECTIBLE_SPELUNKER_HAT) and not MinimapAPI.DisableSpelunkerHat
 		if currentroomdata and MinimapAPI:PickupDetectionEnabled() then
@@ -1285,9 +1286,22 @@ local function renderCallbackFunction(self)
 				currentroomdata.Clear = gamelevel:GetCurrentRoomDesc().Clear
 				currentroomdata.Visited = true
 			end
-			for _,adjroom in ipairs(currentroomdata:GetAdjacentRooms()) do
-				if not adjroom.NoUpdate then
-					adjroom.DisplayFlags = adjroom.DisplayFlags | (hasSpelunkerHat and (adjroom.Hidden and 6 or 5) or adjroom.AdjacentDisplayFlags)
+			if currentroomdata.Hidden then
+				for _,doorslot in ipairs(MinimapAPI.RoomShapeDoorSlots[currentroomdata.Shape]) do
+					local doorent = gameroom:GetDoor(doorslot)
+					if doorent and doorent:IsOpen() then
+						local coord = currentroomdata.Position + MinimapAPI.RoomShapeDoorCoords[currentroomdata.Shape][doorslot+1]
+						local room = MinimapAPI:GetRoomAtPosition(coord)
+						if room then
+							room:Reveal()
+						end
+					end
+				end
+			else
+				for _,adjroom in ipairs(currentroomdata:GetAdjacentRooms()) do
+					if not adjroom.NoUpdate then
+						adjroom.DisplayFlags = adjroom.DisplayFlags | (hasSpelunkerHat and (adjroom.Hidden and 6 or 5) or adjroom.AdjacentDisplayFlags)
+					end
 				end
 			end
 		end
