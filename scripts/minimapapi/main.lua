@@ -645,6 +645,14 @@ function MinimapAPI:GetRoomByID(ID)
 	end
 end
 
+function MinimapAPI:GetRoomByIdx(Idx)
+	for i, v in ipairs(MinimapAPI.Level) do
+		if v.Descriptor and v.Descriptor.GridIndex == Idx then
+			return v
+		end
+	end
+end
+
 local function isRoomAdj(room1,room2)
 	for i,v in ipairs(MinimapAPI.RoomShapeAdjacentCoords[room1.Shape]) do
 		local offsetpos = room1.Position + v
