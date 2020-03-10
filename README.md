@@ -25,18 +25,11 @@ Go to the wiki section or [click here](https://github.com/TazTxUK/MinimapAPI/wik
 ### Planned Features:
 * Add Map Curse Icons (restock, curses)
   * Change position of the Map Curse icons (left, bottom[vanilla])
-* Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
 * Draw new pickup icons (where applicable):
   * Trapdoor (Grid Entity icons not implemented)
-* New Setting: Map Transparency
-* Display mode: Vanilla Borderless
-* Hovering over a room will display a list of its contents *(Thanks JSG!)*
+* Hovering over a room will display a list of its contents
 
 
 ### Known issues:
 * Curse of the Lost questionmark isnt drawn
-* Fix bounded map incorrectly culling huge rooms
 * See [Issues](https://github.com/TazTxUK/MinimapAPI/issues)
-
-### Needs rework:
-* Some comments for the functions with a small explaination on what they are used for, what arguments they require, which of them are optional and what the function returns
