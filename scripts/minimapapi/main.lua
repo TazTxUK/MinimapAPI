@@ -499,6 +499,14 @@ local maproomfunctions = {
 			room.DisplayFlags = df
 		end
 	end,
+	Remove = function(room)
+		for i,v in ipairs(MinimapAPI.Level) do
+			if v == room then
+				table.remove(MinimapAPI.Level, i)
+				return room
+			end
+		end
+	end,
 	UpdateAdjacentRoomsCache = function(room)
 		if room.AdjacentRooms then
 			for i,v in ipairs(room:GetAdjacentRooms()) do
