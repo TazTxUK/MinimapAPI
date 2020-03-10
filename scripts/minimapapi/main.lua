@@ -887,7 +887,8 @@ function MinimapAPI:NextMapDisplayMode()
 end
 
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_UPDATE, function(self)
-	if Input.IsActionPressed(ButtonAction.ACTION_MAP, 0) then
+	local player = Isaac.GetPlayer(0)
+	if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
 		mapheldframes = mapheldframes + 1
 	elseif mapheldframes > 0 then
 		if mapheldframes < 8 then
