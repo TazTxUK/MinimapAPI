@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <name>!!miniMAPI</name>
+    <directory>minimapi</directory>
+    <id>1978904635</id>
+    <description>A mod that provides an easy to use API for editing the MiniMap of the game, while also providing a lot of customization features for the player itself.
+
+[h1][b]Features:[/b][/h1]
+- Dynamically resizable minimap
+- Over 40 new unique custom icons for pickups, slot machines and beggars
+- Highly configurable: Turn on/off parts of the minimap, like shadows or icons
+- Smooth minimap movement (1.0 is instant, 0.1 is very slow)
+- New map mode: Small full map (display all rooms in small form!)
+- Powerful API that allows a lot of manipulation of the minimap
+- 
+
+[h1][b]Planned Features:[/b][/h1]
+-Add Map Curse Icons (restock, curses)
+-- Change position of the Map Curse icons (left, bottom[vanilla])
+- Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
+- Draw new pickup icons (where applicable):
+-- Trapdoor (Grid Entity icons not implemented)
+- New Setting: Map Transparency
+- Display mode: Vanilla Borderless
+- Hovering over a room will display a list of its contents (Thanks JSG!)
+
+[h1][b]if you see two minimaps, restart your game![/b][/h1]
+
+
+[b][url=https://github.com/TazTxUK/MinimapAPI]visit this project on GitHub![/url][/b]
+
+[b][url=https://github.com/TazTxUK/MinimapAPI/wiki]A Documentation can be found here[/url][/b]</description>
+    <version>1.11</version>
+    <visibility>Public</visibility>
+    <tag id="Lua"/>
+    <tag id="Floors"/>
+    <tag id="Tweaks"/>
+    <tag id="Graphics"/>
+</metadata>
