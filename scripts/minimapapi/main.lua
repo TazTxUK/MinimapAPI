@@ -1279,16 +1279,21 @@ local function renderCallbackFunction(self)
 		return
 	end
 	
+	local r = Game():GetRoom()
+	if r:GetFrameCount() == 0 and r:GetType() == RoomType.ROOM_BOSS then
+		return
+	end
+	
 	if MinimapAPI.Config.HideInCombat == 2 then
-		local r = Game():GetRoom()
 		if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
 			return
 		end
 	elseif MinimapAPI.Config.HideInCombat == 3 then
-		if not Game():GetRoom():IsClear() then
+		if not r:IsClear() then
 			return
 		end
 	end
+	
 	screen_size = MinimapAPI:GetScreenSize()
 	if MinimapAPI.Config.DisplayOnNoHUD or not Game():GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD) then
 		local currentroomdata = MinimapAPI:GetCurrentRoom()
