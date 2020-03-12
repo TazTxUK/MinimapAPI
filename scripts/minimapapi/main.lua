@@ -1280,7 +1280,7 @@ local function renderCallbackFunction(self)
 	end
 	
 	local r = Game():GetRoom()
-	if r:GetFrameCount() == 0 and r:GetType() == RoomType.ROOM_BOSS then
+	if r:GetFrameCount() == 0 and r:GetType() == RoomType.ROOM_BOSS and not r:IsClear() then
 		return
 	end
 	
