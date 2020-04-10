@@ -1,3 +1,5 @@
+local MinimapAPI = require "scripts.minimapapi"
+
 local json = require("json")
 
 local function assertLevel(bool,msg,lvl)

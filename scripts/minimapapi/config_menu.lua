@@ -1,6 +1,7 @@
 local MinimapAPI = require "scripts.minimapapi"
+local modconfigexists, MCM = pcall(require, "scripts.modconfig")
 
-if ModConfigMenu then
+if modconfigexists then
 	local configPresets = {
 		[0] = "Custom",
 		"API Default",
@@ -106,19 +107,19 @@ if ModConfigMenu then
 		end,
 	}
 	
-	ModConfigMenu.AddSpace("Minimap API", "Presets")
+	MCM.AddSpace("Minimap API", "Presets")
 	
-	ModConfigMenu.AddText("Minimap API", "Presets", function()
+	MCM.AddText("Minimap API", "Presets", function()
 		return "Minimap Config Preset:"
 	end)
 	
-	ModConfigMenu.AddSpace("Minimap API", "Presets")
+	MCM.AddSpace("Minimap API", "Presets")
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Presets",
 		{
-			Type = ModConfigMenuOptionType.NUMBER,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
 				return MinimapAPI.Config.ConfigPreset
 			end,
@@ -136,17 +137,17 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSpace("Minimap API", "Presets")
+	MCM.AddSpace("Minimap API", "Presets")
 	
-	ModConfigMenu.AddText("Minimap API", "Presets", function()
+	MCM.AddText("Minimap API", "Presets", function()
 		return configPresetTexts[MinimapAPI.Config.ConfigPreset]
 	end)
 
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Pickups",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.ShowPickupIcons
 			end,
@@ -163,11 +164,11 @@ if ModConfigMenu then
 		}
 	)
 
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Map",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.ShowShadows
 			end,
@@ -184,11 +185,11 @@ if ModConfigMenu then
 		}
 	)
 
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Map",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.ShowLevelFlags
 			end,
@@ -206,11 +207,11 @@ if ModConfigMenu then
 		}
 	)
 
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Pickups",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.ShowCurrentRoomItems
 			end,
@@ -228,11 +229,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Map",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.DisplayExploredRooms
 			end,
@@ -250,11 +251,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Modes",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.AllowToggleLargeMap
 			end,
@@ -268,11 +269,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Modes",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.AllowToggleSmallMap
 			end,
@@ -286,11 +287,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Modes",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.AllowToggleBoundedMap
 			end,
@@ -304,11 +305,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Modes",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.AllowToggleNoMap
 			end,
@@ -323,11 +324,11 @@ if ModConfigMenu then
 	)
 	
 	local hicstrings = {"Never","Bosses Only","Always"}
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Map",
 		{
-			Type = ModConfigMenuOptionType.NUMBER,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
 				return MinimapAPI.Config.HideInCombat
 			end,
@@ -346,11 +347,11 @@ if ModConfigMenu then
 		}
 	)
 
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Map",
 		{
-			Type = ModConfigMenuOptionType.NUMBER,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
 				return MinimapAPI.Config.MapFrameWidth
 			end,
@@ -370,11 +371,11 @@ if ModConfigMenu then
 		}
 	)
 
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Map",
 		{
-			Type = ModConfigMenuOptionType.NUMBER,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
 				return MinimapAPI.Config.MapFrameHeight
 			end,
@@ -394,11 +395,11 @@ if ModConfigMenu then
 		}
 	)
 
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Map",
 		{
-			Type = ModConfigMenuOptionType.NUMBER,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
 				return MinimapAPI.Config.PositionX
 			end,
@@ -419,11 +420,11 @@ if ModConfigMenu then
 		}
 	)
 
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Map",
 		{
-			Type = ModConfigMenuOptionType.NUMBER,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
 				return MinimapAPI.Config.PositionY
 			end,
@@ -444,11 +445,11 @@ if ModConfigMenu then
 		}
 	)
 
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Map",
 		{
-			Type = ModConfigMenuOptionType.NUMBER,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
 				return MinimapAPI.Config.SmoothSlidingSpeed
 			end,
@@ -469,11 +470,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	-- ModConfigMenu.AddSetting(
+	-- MCM.AddSetting(
 		-- "Minimap API",
 		-- "Pickups",
 		-- {
-			-- Type = ModConfigMenuOptionType.BOOLEAN,
+			-- Type = MCM.OptionType.BOOLEAN,
 			-- CurrentSetting = function()
 				-- return MinimapAPI.Config.PickupFirstComeFirstServe
 			-- end,
@@ -486,11 +487,11 @@ if ModConfigMenu then
 		-- }
 	-- )
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Pickups",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.PickupNoGrouping
 			end,
@@ -508,11 +509,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
 		{
-			Type = ModConfigMenuOptionType.NUMBER,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
 				return MinimapAPI.Config.DefaultRoomColorR
 			end,
@@ -528,11 +529,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
 		{
-			Type = ModConfigMenuOptionType.NUMBER,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
 				return MinimapAPI.Config.DefaultRoomColorG
 			end,
@@ -548,11 +549,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
 		{
-			Type = ModConfigMenuOptionType.NUMBER,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
 				return MinimapAPI.Config.DefaultRoomColorB
 			end,
@@ -568,11 +569,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
 		{
-			Type = ModConfigMenuOptionType.NUMBER,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
 				return MinimapAPI.Config.DefaultOutlineColorR
 			end,
@@ -588,11 +589,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
 		{
-			Type = ModConfigMenuOptionType.NUMBER,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
 				return MinimapAPI.Config.DefaultOutlineColorG
 			end,
@@ -608,11 +609,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
 		{
-			Type = ModConfigMenuOptionType.NUMBER,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
 				return MinimapAPI.Config.DefaultOutlineColorB
 			end,
@@ -628,11 +629,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"General",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.ExternalMap
 			end,
@@ -650,11 +651,11 @@ if ModConfigMenu then
 		}
 	)
 	
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"General",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.Disable
 			end,
@@ -670,11 +671,11 @@ if ModConfigMenu then
 		}
 	)
 
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"General",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.OverrideLost
 			end,
@@ -691,11 +692,11 @@ if ModConfigMenu then
 		}
 	)
 
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"General",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.DisplayOnNoHUD
 			end,
@@ -712,11 +713,11 @@ if ModConfigMenu then
 		}
 	)
 
-	ModConfigMenu.AddSetting(
+	MCM.AddSetting(
 		"Minimap API",
 		"General",
 		{
-			Type = ModConfigMenuOptionType.BOOLEAN,
+			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.ShowIcons
 			end,
