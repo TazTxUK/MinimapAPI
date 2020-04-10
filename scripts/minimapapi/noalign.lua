@@ -1,3 +1,5 @@
+local MinimapAPI = require "scripts.minimapapi"
+
 --Functions for rooms that are not grid aligned
 
 local function aabb(r1p1,r1p2,r2p1,r2p2)

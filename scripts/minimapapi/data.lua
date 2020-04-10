@@ -1,3 +1,5 @@
+local MinimapAPI = require "scripts.minimapapi"
+
 local RS = RoomShape
 
 MinimapAPI.RoomShapeFrames = {

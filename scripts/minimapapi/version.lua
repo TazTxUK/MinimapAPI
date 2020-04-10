@@ -1,1 +1,3 @@
-MinimapAPI.Version = "master" --branch
+local MinimapAPI = require "scripts.minimapapi"
+
+MinimapAPI.Version = "experimental" --branch

@@ -1,3 +1,4 @@
+local MinimapAPI = require "scripts.minimapapi"
 
 if ModConfigMenu then
 	local configPresets = {
@@ -410,7 +411,11 @@ if ModConfigMenu then
 			OnChange = function(currentNum)
 				MinimapAPI.Config.PositionX = currentNum
 				MinimapAPI.Config.ConfigPreset = 0
-			end
+			end,
+			Info = {
+				"The map's horizontal distance from the top",
+				"right of the screen."
+			}
 		}
 	)
 
@@ -431,7 +436,11 @@ if ModConfigMenu then
 			OnChange = function(currentNum)
 				MinimapAPI.Config.PositionY = currentNum
 				MinimapAPI.Config.ConfigPreset = 0
-			end
+			end,
+			Info = {
+				"The map's vertical distance from the top",
+				"right of the screen."
+			}
 		}
 	)
 
@@ -443,11 +452,11 @@ if ModConfigMenu then
 			CurrentSetting = function()
 				return MinimapAPI.Config.SmoothSlidingSpeed
 			end,
-			Minimum = 0.25,
+			Minimum = 0.1,
 			Maximum = 1,
 			ModifyBy = 0.05,
 			Display = function()
-				return "Smooth Movement Speed: " .. MinimapAPI.Config.SmoothSlidingSpeed
+				return "Map Interpolation: " .. MinimapAPI.Config.SmoothSlidingSpeed
 			end,
 			OnChange = function(currentNum)
 				MinimapAPI.Config.SmoothSlidingSpeed = currentNum
@@ -633,7 +642,11 @@ if ModConfigMenu then
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ExternalMap = currentBool
 				MinimapAPI:UpdateExternalMap()
-			end
+			end,
+			Info = {
+				"Enables output of the map's state into the log.",
+				"Use in conjunction with external map."
+			}
 		}
 	)
 	
@@ -650,7 +663,10 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.Disable = currentBool
-			end
+			end,
+			Info = {
+				"Removes the minimap entirely."
+			}
 		}
 	)
 
@@ -667,7 +683,11 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.OverrideLost = currentBool
-			end
+			end,
+			Info = {
+				"Forces map to show even when Curse of",
+				"the Lost is active."
+			}
 		}
 	)
 
@@ -684,7 +704,11 @@ if ModConfigMenu then
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.DisplayOnNoHUD = currentBool
-			end
+			end,
+			Info = {
+				"Forces map to show even when the No HUD",
+				"seed is active."
+			}
 		}
 	)
 
@@ -702,7 +726,11 @@ if ModConfigMenu then
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowIcons = currentBool
 				MinimapAPI.Config.ConfigPreset = 0
-			end
+			end,
+			Info = {
+				"Setting this to false will hide",
+				"all icons."
+			}
 		}
 	)
 	

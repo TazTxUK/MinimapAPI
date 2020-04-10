@@ -1,3 +1,5 @@
+local MinimapAPI = require "scripts.minimapapi"
+
 MinimapAPI.Debug = {}
 
 function MinimapAPI.Debug.Icons()

@@ -1,3 +1,5 @@
+local MinimapAPI = require "scripts.minimapapi"
+
 MinimapAPI.CustomIcons = Sprite()
 MinimapAPI.CustomIcons:Load("gfx/ui/minimapapi/custom_icons.anm2",true)
 

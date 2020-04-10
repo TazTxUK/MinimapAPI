@@ -1,3 +1,5 @@
+local MinimapAPI = require "scripts.minimapapi"
+
 MinimapAPI.Config = {
 	["Disable"] = false,
 	["DisplayOnNoHUD"] = false,
