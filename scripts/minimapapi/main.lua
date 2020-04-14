@@ -2,12 +2,6 @@ local MinimapAPI = require "scripts.minimapapi"
 
 local json = require("json")
 
-local function assertLevel(bool,msg,lvl)
-	if not bool then
-		error(msg,lvl)
-	end
-end
-
 local function getType(obj)
 	local mt = getmetatable(obj)
 	if mt and mt.__type then
@@ -155,6 +149,10 @@ function MinimapAPI:GetLevel()
 	return MinimapAPI.Level
 end
 
+function MinimapAPI:SetLevel(level)
+	MinimapAPI.Level = level
+end
+
 function MinimapAPI:ShallowCopy(t)
 	local t2 = {}
 	for i, v in pairs(t) do
@@ -254,17 +252,18 @@ function MinimapAPI:RemoveIcon(id)
 	end
 end
 
--- TODO: Add Room Shape
--- MinimapAPI.CustomRoomShapes = {}
--- function MinimapAPI:AddRoomShape(id, t)
-	-- assertLevel(id ~= nil, string.format(errorBadArgument, "#1", "AddRoomShape", "any", "nil"), 3)
-	-- assertLevel(getType(t) == "table", string.format(errorBadArgument, "#2", "AddRoomShape", "table", getType(t)), 3)
-	-- MinimapAPI.CustomRoomShapes[id] = {
-		-- Anim = t.Anim,
-		-- Positions = t.Positions or {Vector(0,0)},
-	-- }
-	
--- end
+function MinimapAPI:AddRoomShape(id, roomshapesmallanims, roomshapelargeanims, gridpivot, gridsize, positions, iconpositions, iconpositioncenter)
+	MinimapAPI.RoomShapeFrames[id] = {
+		small = roomshapesmallanims,
+		large = roomshapelargeanims,
+	}
+
+	MinimapAPI.RoomShapeGridPivots["bigroom"] = gridpivot
+	MinimapAPI.RoomShapeGridSizes["bigroom"] = gridsize
+	MinimapAPI.RoomShapePositions["bigroom"] = positions
+	MinimapAPI.RoomShapeIconPositions[1]["bigroom"] = {iconpositioncenter}
+	MinimapAPI.RoomShapeIconPositions[2]["bigroom"] = iconpositions
+end
 
 function MinimapAPI:PickupDetectionEnabled()
 	return not disabled_itemdet
@@ -1267,7 +1266,7 @@ end
 MinimapAPI.DisableSpelunkerHat = false
 
 local function renderCallbackFunction(self)
-	if MinimapAPI.Config.Disable then return end
+	if MinimapAPI.Config.Disable or MinimapAPI.Disable then return end
 	
 	if badload then
 		font:DrawString("MinimapAPI didn't load correctly.",40,30,KColor(1,0.5,0.5,1),0,false)
@@ -1398,7 +1397,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 			local vanillarooms = Game():GetLevel():GetRooms()
 			MinimapAPI:ClearMap()
 			for i, v in ipairs(saved.LevelData) do
-				MinimapAPI:AddRoom {
+				MinimapAPI:AddRoom{
 					Position = Vector(v.PositionX, v.PositionY),
 					DisplayPosition = (v.DisplayPositionX and v.DisplayPositionY) and Vector(v.DisplayPositionX, v.DisplayPositionY),
 					ID = v.ID,
