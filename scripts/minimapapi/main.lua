@@ -445,12 +445,6 @@ function MinimapAPI:LoadDefaultMap()
 	end
 end
 
-function MinimapAPI:EffectBookOfSecrets()
-	for i,v in ipairs(MinimapAPI.Level) do
-		v:Reveal()
-	end
-end
-
 function MinimapAPI:EffectCrystalBall()
 	for i,v in ipairs(MinimapAPI.Level) do
 		if v.Type ~= RoomType.ROOM_SUPERSECRET then
@@ -804,10 +798,7 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 end
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_USE_ITEM, function(self, colltype, rng)
-	if colltype == CollectibleType.COLLECTIBLE_BOOK_OF_SECRETS then
-		MinimapAPI:EffectBookOfSecrets()
-		MinimapAPI:UpdateExternalMap()
-	elseif colltype == CollectibleType.COLLECTIBLE_CRYSTAL_BALL then
+	if colltype == CollectibleType.COLLECTIBLE_CRYSTAL_BALL then
 		MinimapAPI:EffectCrystalBall()
 		MinimapAPI:UpdateExternalMap()
 	end
