@@ -3,7 +3,7 @@
     <name>!!miniMAPI</name>
     <directory>minimapi</directory>
     <id>1978904635</id>
-    <description>A mod that provides an easy to use API for editing the MiniMap of the game, while also providing a lot of customization features for the player itself.
+    <description>A mod that provides an easy to use API for editing the minimap of the game, while also providing a lot of customization features for the player itself.
 
 [h1][b]Features:[/b][/h1]
 - Dynamically resizable minimap
@@ -12,7 +12,7 @@
 - Smooth minimap movement (1.0 is instant, 0.1 is very slow)
 - New map mode: Small full map (display all rooms in small form!)
 - Powerful API that allows a lot of manipulation of the minimap
-- 
+- And loads of other QoL improvements
 
 [h1][b]Planned Features:[/b][/h1]
 -Add Map Curse Icons (restock, curses)
@@ -20,12 +20,10 @@
 - Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
 - Draw new pickup icons (where applicable):
 -- Trapdoor (Grid Entity icons not implemented)
-- New Setting: Map Transparency
 - Display mode: Vanilla Borderless
 - Hovering over a room will display a list of its contents (Thanks JSG!)
 
 [h1][b]if you see two minimaps, restart your game![/b][/h1]
-
 
 [b][url=https://github.com/TazTxUK/MinimapAPI]visit this project on GitHub![/url][/b]
 

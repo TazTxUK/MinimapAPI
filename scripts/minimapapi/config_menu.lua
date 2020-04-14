@@ -16,95 +16,99 @@ if modconfigexists then
 		"As much information as possible.",
 		"The map is long and thin.",
 	}
-	local configPresetFuncs = {
-		function() --default
-			MinimapAPI.Config.ShowIcons = true
-			MinimapAPI.Config.ShowPickupIcons = true
-			MinimapAPI.Config.ShowShadows = true
-			MinimapAPI.Config.ShowCurrentRoomItems = false
-			MinimapAPI.Config.MapFrameWidth = 65
-			MinimapAPI.Config.MapFrameHeight = 60
-			MinimapAPI.Config.PositionX = 4 
-			MinimapAPI.Config.PositionY = 4
-			MinimapAPI.Config.DisplayMode = 1
-			MinimapAPI.Config.ShowLevelFlags = true
-			MinimapAPI.Config.SmoothSlidingSpeed = 0.3
-			MinimapAPI.Config.HideInCombat = 1
-			MinimapAPI.Config.OverrideVoid = false
-			MinimapAPI.Config.DisplayExploredRooms = true
-			MinimapAPI.Config.AllowToggleLargeMap = true
-			MinimapAPI.Config.AllowToggleSmallMap = true
-			MinimapAPI.Config.AllowToggleBoundedMap = false
-			MinimapAPI.Config.AllowToggleNoMap = false
-			MinimapAPI.Config.PickupFirstComeFirstServe = false
-			MinimapAPI.Config.PickupNoGrouping = false
-		end,
-		function() --vanilla
-			MinimapAPI.Config.ShowIcons = true
-			MinimapAPI.Config.ShowPickupIcons = true
-			MinimapAPI.Config.ShowShadows = true
-			MinimapAPI.Config.ShowCurrentRoomItems = false
-			MinimapAPI.Config.MapFrameWidth = 50
-			MinimapAPI.Config.MapFrameHeight = 45
-			MinimapAPI.Config.PositionX = 4 
-			MinimapAPI.Config.PositionY = 4
-			MinimapAPI.Config.DisplayMode = 2
-			MinimapAPI.Config.ShowLevelFlags = true
-			MinimapAPI.Config.SmoothSlidingSpeed = 1
-			MinimapAPI.Config.HideInCombat = 1
-			MinimapAPI.Config.OverrideVoid = false
-			MinimapAPI.Config.DisplayExploredRooms = false
-			MinimapAPI.Config.AllowToggleLargeMap = true
-			MinimapAPI.Config.AllowToggleSmallMap = false
-			MinimapAPI.Config.AllowToggleBoundedMap = true
-			MinimapAPI.Config.AllowToggleNoMap = false
-			MinimapAPI.Config.PickupFirstComeFirstServe = false
-			MinimapAPI.Config.PickupNoGrouping = false
-		end,
-		function() --all
-			MinimapAPI.Config.ShowIcons = true
-			MinimapAPI.Config.ShowPickupIcons = true
-			MinimapAPI.Config.ShowShadows = true
-			MinimapAPI.Config.ShowCurrentRoomItems = true
-			MinimapAPI.Config.MapFrameWidth = 75
-			MinimapAPI.Config.MapFrameHeight = 70
-			MinimapAPI.Config.PositionX = 2 
-			MinimapAPI.Config.PositionY = 2
-			MinimapAPI.Config.DisplayMode = 1
-			MinimapAPI.Config.ShowLevelFlags = true
-			MinimapAPI.Config.SmoothSlidingSpeed = 0.3
-			MinimapAPI.Config.HideInCombat = 1
-			MinimapAPI.Config.OverrideVoid = false
-			MinimapAPI.Config.DisplayExploredRooms = true
-			MinimapAPI.Config.AllowToggleLargeMap = true
-			MinimapAPI.Config.AllowToggleSmallMap = true
-			MinimapAPI.Config.AllowToggleBoundedMap = true
-			MinimapAPI.Config.AllowToggleNoMap = false
-			MinimapAPI.Config.PickupFirstComeFirstServe = false
-			MinimapAPI.Config.PickupNoGrouping = true
-		end,
-		function()
-			MinimapAPI.Config.ShowIcons = true
-			MinimapAPI.Config.ShowPickupIcons = false
-			MinimapAPI.Config.ShowShadows = true
-			MinimapAPI.Config.ShowCurrentRoomItems = false
-			MinimapAPI.Config.MapFrameWidth = 85
-			MinimapAPI.Config.MapFrameHeight = 45
-			MinimapAPI.Config.PositionX = 2 
-			MinimapAPI.Config.PositionY = 2
-			MinimapAPI.Config.DisplayMode = 2
-			MinimapAPI.Config.ShowLevelFlags = false
-			MinimapAPI.Config.SmoothSlidingSpeed = 0.3
-			MinimapAPI.Config.HideInCombat = 1
-			MinimapAPI.Config.OverrideVoid = false
-			MinimapAPI.Config.DisplayExploredRooms = true
-			MinimapAPI.Config.AllowToggleLargeMap = false
-			MinimapAPI.Config.AllowToggleSmallMap = true
-			MinimapAPI.Config.AllowToggleBoundedMap = true
-			MinimapAPI.Config.AllowToggleNoMap = false
-			MinimapAPI.Config.PickupFirstComeFirstServe = false
-			MinimapAPI.Config.PickupNoGrouping = false
-		end,
+	local configPresetSettings = {
+		{ --default
+			ShowIcons = true,
+			ShowPickupIcons = true,
+			ShowShadows = true,
+			ShowCurrentRoomItems = false,
+			MapFrameWidth = 65,
+			MapFrameHeight = 60,
+			PositionX = 4,
+			PositionY = 4,
+			DisplayMode = 1,
+			ShowLevelFlags = true,
+			SmoothSlidingSpeed = 0.3,
+			HideInCombat = 1,
+			OverrideVoid = false,
+			DisplayExploredRooms = true,
+			AllowToggleLargeMap = true,
+			AllowToggleSmallMap = true,
+			AllowToggleBoundedMap = false,
+			AllowToggleNoMap = false,
+			PickupFirstComeFirstServe = false,
+			PickupNoGrouping = false,
+			ShowGridDistances = false,
+		},
+		{ --vanilla
+			ShowIcons = true,
+			ShowPickupIcons = true,
+			ShowShadows = true,
+			ShowCurrentRoomItems = false,
+			MapFrameWidth = 50,
+			MapFrameHeight = 45,
+			PositionX = 4,
+			PositionY = 4,
+			DisplayMode = 2,
+			ShowLevelFlags = true,
+			SmoothSlidingSpeed = 1,
+			HideInCombat = 1,
+			OverrideVoid = false,
+			DisplayExploredRooms = false,
+			AllowToggleLargeMap = true,
+			AllowToggleSmallMap = false,
+			AllowToggleBoundedMap = true,
+			AllowToggleNoMap = false,
+			PickupFirstComeFirstServe = false,
+			PickupNoGrouping = false,
+			ShowGridDistances = false,
+		},
+		{ --all
+			ShowIcons = true,
+			ShowPickupIcons = true,
+			ShowShadows = true,
+			ShowCurrentRoomItems = true,
+			MapFrameWidth = 75,
+			MapFrameHeight = 70,
+			PositionX = 2,
+			PositionY = 2,
+			DisplayMode = 1,
+			ShowLevelFlags = true,
+			SmoothSlidingSpeed = 0.3,
+			HideInCombat = 1,
+			OverrideVoid = false,
+			DisplayExploredRooms = true,
+			AllowToggleLargeMap = true,
+			AllowToggleSmallMap = true,
+			AllowToggleBoundedMap = true,
+			AllowToggleNoMap = false,
+			PickupFirstComeFirstServe = false,
+			PickupNoGrouping = true,
+			ShowGridDistances = true,
+		},
+		{
+			ShowIcons = true,
+			ShowPickupIcons = false,
+			ShowShadows = true,
+			ShowCurrentRoomItems = false,
+			MapFrameWidth = 85,
+			MapFrameHeight = 45,
+			PositionX = 2,
+			PositionY = 2,
+			DisplayMode = 2,
+			ShowLevelFlags = false,
+			SmoothSlidingSpeed = 0.3,
+			HideInCombat = 1,
+			OverrideVoid = false,
+			DisplayExploredRooms = true,
+			AllowToggleLargeMap = false,
+			AllowToggleSmallMap = true,
+			AllowToggleBoundedMap = true,
+			AllowToggleNoMap = false,
+			PickupFirstComeFirstServe = false,
+			PickupNoGrouping = false,
+			ShowGridDistances = false,
+		},
 	}
 	
 	MCM.AddSpace("Minimap API", "Presets")
@@ -129,8 +133,10 @@ if modconfigexists then
 				return configPresets[MinimapAPI.Config.ConfigPreset]
 			end,
 			OnChange = function(currentNum)
-				if configPresetFuncs[currentNum] then
-					configPresetFuncs[currentNum]()
+				if configPresetSettings[currentNum] then
+					for i,v in pairs(configPresetSettings[currentNum]) do
+						MinimapAPI.Config[i] = v
+					end
 				end
 				MinimapAPI.Config.ConfigPreset = currentNum
 			end,
@@ -152,7 +158,7 @@ if modconfigexists then
 				return MinimapAPI.Config.ShowPickupIcons
 			end,
 			Display = function()
-				return "Show Pickup Icons: " .. (MinimapAPI.Config.ShowPickupIcons and "True" or "False")
+				return "Show Pickup Icons: " .. (MinimapAPI.Config.ShowPickupIcons and "ON" or "OFF")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowPickupIcons = currentBool
@@ -166,14 +172,14 @@ if modconfigexists then
 
 	MCM.AddSetting(
 		"Minimap API",
-		"Map",
+		"Map(1)",
 		{
 			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.ShowShadows
 			end,
 			Display = function()
-				return "Show Room Outlines: " .. (MinimapAPI.Config.ShowShadows and "True" or "False")
+				return "Show Room Outlines: " .. (MinimapAPI.Config.ShowShadows and "ON" or "OFF")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowShadows = currentBool
@@ -187,14 +193,14 @@ if modconfigexists then
 
 	MCM.AddSetting(
 		"Minimap API",
-		"Map",
+		"Map(1)",
 		{
 			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.ShowLevelFlags
 			end,
 			Display = function()
-				return "Show Map Effect Icons: " .. (MinimapAPI.Config.ShowLevelFlags and "True" or "False")
+				return "Show Map Effect Icons: " .. (MinimapAPI.Config.ShowLevelFlags and "ON" or "OFF")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowLevelFlags = currentBool
@@ -216,7 +222,7 @@ if modconfigexists then
 				return MinimapAPI.Config.ShowCurrentRoomItems
 			end,
 			Display = function()
-				return "Show Current Room Pickups: " .. (MinimapAPI.Config.ShowCurrentRoomItems and "True" or "False")
+				return "Show Current Room Pickups: " .. (MinimapAPI.Config.ShowCurrentRoomItems and "ON" or "OFF")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowCurrentRoomItems = currentBool
@@ -231,14 +237,14 @@ if modconfigexists then
 	
 	MCM.AddSetting(
 		"Minimap API",
-		"Map",
+		"Map(1)",
 		{
 			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
 				return MinimapAPI.Config.DisplayExploredRooms
 			end,
 			Display = function()
-				return "Show Visited Uncleared Rooms: " .. (MinimapAPI.Config.DisplayExploredRooms and "True" or "False")
+				return "Show Visited Uncleared Rooms: " .. (MinimapAPI.Config.DisplayExploredRooms and "ON" or "OFF")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.DisplayExploredRooms = currentBool
@@ -251,82 +257,10 @@ if modconfigexists then
 		}
 	)
 	
-	MCM.AddSetting(
-		"Minimap API",
-		"Modes",
-		{
-			Type = MCM.OptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.AllowToggleLargeMap
-			end,
-			Display = function()
-				return "Toggle Large Map: " .. (MinimapAPI.Config.AllowToggleLargeMap and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.AllowToggleLargeMap = currentBool
-				MinimapAPI.Config.ConfigPreset = 0
-			end
-		}
-	)
-	
-	MCM.AddSetting(
-		"Minimap API",
-		"Modes",
-		{
-			Type = MCM.OptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.AllowToggleSmallMap
-			end,
-			Display = function()
-				return "Toggle Small Map: " .. (MinimapAPI.Config.AllowToggleSmallMap and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.AllowToggleSmallMap = currentBool
-				MinimapAPI.Config.ConfigPreset = 0
-			end
-		}
-	)
-	
-	MCM.AddSetting(
-		"Minimap API",
-		"Modes",
-		{
-			Type = MCM.OptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.AllowToggleBoundedMap
-			end,
-			Display = function()
-				return "Toggle Bounded Map: " .. (MinimapAPI.Config.AllowToggleBoundedMap and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.AllowToggleBoundedMap = currentBool
-				MinimapAPI.Config.ConfigPreset = 0
-			end
-		}
-	)
-	
-	MCM.AddSetting(
-		"Minimap API",
-		"Modes",
-		{
-			Type = MCM.OptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.AllowToggleNoMap
-			end,
-			Display = function()
-				return "Toggle No Map: " .. (MinimapAPI.Config.AllowToggleNoMap and "True" or "False")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.AllowToggleNoMap = currentBool
-				MinimapAPI.Config.ConfigPreset = 0
-			end
-		}
-	)
-	
 	local hicstrings = {"Never","Bosses Only","Always"}
 	MCM.AddSetting(
 		"Minimap API",
-		"Map",
+		"Map(2)",
 		{
 			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
@@ -346,10 +280,104 @@ if modconfigexists then
 			}
 		}
 	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Map(2)",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.ShowGridDistances
+			end,
+			Display = function()
+				return "Show Room Distances: " .. (MinimapAPI.Config.ShowGridDistances and "ON" or "OFF")
+			end,
+			OnChange = function(newVal)
+				MinimapAPI.Config.ShowGridDistances = newVal
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"Rooms will have their distance",
+				"shown on them"
+			}
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Modes",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.AllowToggleLargeMap
+			end,
+			Display = function()
+				return "Toggle Large Map: " .. (MinimapAPI.Config.AllowToggleLargeMap and "ON" or "OFF")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.AllowToggleLargeMap = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
+			end
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Modes",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.AllowToggleSmallMap
+			end,
+			Display = function()
+				return "Toggle Small Map: " .. (MinimapAPI.Config.AllowToggleSmallMap and "ON" or "OFF")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.AllowToggleSmallMap = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
+			end
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Modes",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.AllowToggleBoundedMap
+			end,
+			Display = function()
+				return "Toggle Bounded Map: " .. (MinimapAPI.Config.AllowToggleBoundedMap and "ON" or "OFF")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.AllowToggleBoundedMap = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
+			end
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Modes",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.AllowToggleNoMap
+			end,
+			Display = function()
+				return "Toggle No Map: " .. (MinimapAPI.Config.AllowToggleNoMap and "ON" or "OFF")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.AllowToggleNoMap = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
+			end
+		}
+	)
 
 	MCM.AddSetting(
 		"Minimap API",
-		"Map",
+		"Map(1)",
 		{
 			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
@@ -373,7 +401,7 @@ if modconfigexists then
 
 	MCM.AddSetting(
 		"Minimap API",
-		"Map",
+		"Map(1)",
 		{
 			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
@@ -397,7 +425,7 @@ if modconfigexists then
 
 	MCM.AddSetting(
 		"Minimap API",
-		"Map",
+		"Map(1)",
 		{
 			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
@@ -422,7 +450,7 @@ if modconfigexists then
 
 	MCM.AddSetting(
 		"Minimap API",
-		"Map",
+		"Map(1)",
 		{
 			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
@@ -447,7 +475,7 @@ if modconfigexists then
 
 	MCM.AddSetting(
 		"Minimap API",
-		"Map",
+		"Map(1)",
 		{
 			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
@@ -479,7 +507,7 @@ if modconfigexists then
 				-- return MinimapAPI.Config.PickupFirstComeFirstServe
 			-- end,
 			-- Display = function()
-				-- return "Sort Pickups By First Appearing: " .. (MinimapAPI.Config.PickupFirstComeFirstServe and "True" or "False")
+				-- return "Sort Pickups By First Appearing: " .. (MinimapAPI.Config.PickupFirstComeFirstServe and "ON" or "OFF")
 			-- end,
 			-- OnChange = function(currentBool)
 				-- MinimapAPI.Config.PickupFirstComeFirstServe = currentBool
@@ -496,7 +524,7 @@ if modconfigexists then
 				return MinimapAPI.Config.PickupNoGrouping
 			end,
 			Display = function()
-				return "Show Duplicate Pickups: " .. (MinimapAPI.Config.PickupNoGrouping and "True" or "False")
+				return "Show Duplicate Pickups: " .. (MinimapAPI.Config.PickupNoGrouping and "ON" or "OFF")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.PickupNoGrouping = currentBool
@@ -638,7 +666,7 @@ if modconfigexists then
 				return MinimapAPI.Config.ExternalMap
 			end,
 			Display = function()
-				return "Enable External Map: " .. (MinimapAPI.Config.ExternalMap and "True" or "False")
+				return "Enable External Map: " .. (MinimapAPI.Config.ExternalMap and "ON" or "OFF")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ExternalMap = currentBool
@@ -660,7 +688,7 @@ if modconfigexists then
 				return MinimapAPI.Config.Disable
 			end,
 			Display = function()
-				return "Disable Minimap: " .. (MinimapAPI.Config.Disable and "True" or "False")
+				return "Disable Minimap: " .. (MinimapAPI.Config.Disable and "ON" or "OFF")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.Disable = currentBool
@@ -680,7 +708,7 @@ if modconfigexists then
 				return MinimapAPI.Config.OverrideLost
 			end,
 			Display = function()
-				return "Display During Curse: " .. (MinimapAPI.Config.OverrideLost and "True" or "False")
+				return "Display During Curse: " .. (MinimapAPI.Config.OverrideLost and "ON" or "OFF")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.OverrideLost = currentBool
@@ -701,7 +729,7 @@ if modconfigexists then
 				return MinimapAPI.Config.DisplayOnNoHUD
 			end,
 			Display = function()
-				return "Display with No HUD Seed: " .. (MinimapAPI.Config.DisplayOnNoHUD and "True" or "False")
+				return "Display with No HUD Seed: " .. (MinimapAPI.Config.DisplayOnNoHUD and "ON" or "OFF")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.DisplayOnNoHUD = currentBool
@@ -722,7 +750,7 @@ if modconfigexists then
 				return MinimapAPI.Config.ShowIcons
 			end,
 			Display = function()
-				return "Show Icons: " .. (MinimapAPI.Config.ShowIcons and "True" or "False")
+				return "Show Icons: " .. (MinimapAPI.Config.ShowIcons and "ON" or "OFF")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.ShowIcons = currentBool

@@ -32,6 +32,7 @@ MinimapAPI.Config = {
 	["DefaultOutlineColorG"] = 0,
 	["DefaultOutlineColorB"] = 0,
 	["ExternalMap"] = false,
+	["ShowGridDistances"] = false,
 	
 	["ConfigPreset"] = 1,
 }
