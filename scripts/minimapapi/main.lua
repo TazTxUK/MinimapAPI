@@ -147,8 +147,9 @@ MinimapAPI.SpriteMinimapCustomSmall:Load("gfx/ui/minimapapi/custom_minimap1.anm2
 MinimapAPI.SpriteMinimapCustomLarge = Sprite()
 MinimapAPI.SpriteMinimapCustomLarge:Load("gfx/ui/minimapapi/custom_minimap2.anm2", true)
 
+MinimapAPI.OverrideConfig = {}
 function MinimapAPI:GetConfig(option)
-	return MinimapAPI[option] ~= nil and MinimapAPI[option] or MinimapAPI.Config[option]
+	return MinimapAPI.OverrideConfig[option] ~= nil and MinimapAPI.OverrideConfig[option] or MinimapAPI.Config[option]
 end
 
 function MinimapAPI:GetLevel()
