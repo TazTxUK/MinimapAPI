@@ -1,4 +1,5 @@
 local MinimapAPI = require "scripts.minimapapi"
+local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
 
 local json = require("json")
 
@@ -951,7 +952,15 @@ end
 local function renderUnboundedMinimap(size,hide)
 	if MinimapAPI:GetConfig("OverrideLost") or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
 		MinimapAPI:UpdateUnboundedMapOffset()
-		local offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), MinimapAPI:GetConfig("PositionY"))
+		local offsetVec
+		
+		if MinimapAPI:GetConfig("SyncPositionWithMCM") and SHExists then
+			local screen_size = ScreenHelper.GetScreenTopRight()
+			offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), screen_size.Y + MinimapAPI:GetConfig("PositionY"))
+		else
+			offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), MinimapAPI:GetConfig("PositionY"))
+		end
+		
 		local renderRoomSize = size == "small" and roomSize or largeRoomSize
 		local renderAnimPivot = size == "small" and roomAnimPivot or largeRoomAnimPivot
 		local sprite = size == "small" and MinimapAPI.SpriteMinimapSmall or MinimapAPI.SpriteMinimapLarge
@@ -1091,7 +1100,13 @@ local function renderUnboundedMinimap(size,hide)
 end
 
 local function renderBoundedMinimap()
-	local offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 1, MinimapAPI:GetConfig("PositionY") - 2)
+	local offsetVec
+	if MinimapAPI:GetConfig("SyncPositionWithMCM") and SHExists then
+		local screen_size = ScreenHelper.GetScreenTopRight()
+		offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 1, screen_size.Y + MinimapAPI:GetConfig("PositionY") - 2)
+	else
+		offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 1, MinimapAPI:GetConfig("PositionY") - 2)
+	end
 	do
 		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,MinimapAPI:GetConfig("BorderColorA"),math.floor(MinimapAPI:GetConfig("BorderColorR")*255),math.floor(MinimapAPI:GetConfig("BorderColorG")*255),math.floor(MinimapAPI:GetConfig("BorderColorB")*255))
 		MinimapAPI.SpriteMinimapSmall.Scale = Vector((MinimapAPI:GetConfig("MapFrameWidth") + frameTL.X) / dframeHorizBarSize.X, 1)
