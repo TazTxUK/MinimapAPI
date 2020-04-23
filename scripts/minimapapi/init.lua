@@ -10,6 +10,6 @@ require("scripts.minimapapi.custom_icons")
 require("scripts.minimapapi.config_menu")
 require("scripts.minimapapi.testfunctions")
 
-Isaac.ConsoleOutput("Minimap API loaded, branch: "..MinimapAPI.Version.."\n")
+Isaac.ConsoleOutput("MinimapAPI 1.9e - "..MinimapAPI.Version.." loaded.\n")
 
 return MinimapAPI

@@ -30,6 +30,7 @@ if modconfigexists then
 			ShowLevelFlags = true,
 			SmoothSlidingSpeed = 0.3,
 			HideInCombat = 1,
+			HideInInvalidRoom = false,
 			OverrideVoid = false,
 			DisplayExploredRooms = true,
 			AllowToggleLargeMap = true,
@@ -53,6 +54,7 @@ if modconfigexists then
 			ShowLevelFlags = true,
 			SmoothSlidingSpeed = 1,
 			HideInCombat = 1,
+			HideInInvalidRoom = true,
 			OverrideVoid = false,
 			DisplayExploredRooms = false,
 			AllowToggleLargeMap = true,
@@ -76,6 +78,7 @@ if modconfigexists then
 			ShowLevelFlags = true,
 			SmoothSlidingSpeed = 0.3,
 			HideInCombat = 1,
+			HideInInvalidRoom = false,
 			OverrideVoid = false,
 			DisplayExploredRooms = true,
 			AllowToggleLargeMap = true,
@@ -99,6 +102,7 @@ if modconfigexists then
 			ShowLevelFlags = false,
 			SmoothSlidingSpeed = 0.3,
 			HideInCombat = 1,
+			HideInInvalidRoom = true,
 			OverrideVoid = false,
 			DisplayExploredRooms = true,
 			AllowToggleLargeMap = false,
@@ -110,6 +114,8 @@ if modconfigexists then
 			ShowGridDistances = false,
 		},
 	}
+	
+	MCM.AddText("Minimap API", "Presets", function() return "Mod by Taz and Wofsauge" end)
 	
 	MCM.AddSpace("Minimap API", "Presets")
 	
@@ -287,6 +293,28 @@ if modconfigexists then
 		{
 			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
+				return MinimapAPI.Config.HideInInvalidRoom
+			end,
+			Display = function()
+				return "Hide Map for Invalid Rooms: " .. (MinimapAPI.Config.HideInInvalidRoom and "ON" or "OFF")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.HideInInvalidRoom = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"When in a room that is not on the map",
+				"(ie. devil rooms), the map will not show."
+			}
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Map(2)",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
 				return MinimapAPI.Config.ShowGridDistances
 			end,
 			Display = function()
@@ -299,6 +327,28 @@ if modconfigexists then
 			Info = {
 				"Rooms will have their distance",
 				"shown on them"
+			}
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Map(2)",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.AltSemivisitedSprite
+			end,
+			Display = function()
+				return "Alternate Visited Room Sprite: " .. (MinimapAPI.Config.AltSemivisitedSprite and "ON" or "OFF")
+			end,
+			OnChange = function(newVal)
+				MinimapAPI.Config.AltSemivisitedSprite = newVal
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"Uses an alternate sprite for",
+				"\"semivisited\" rooms."
 			}
 		}
 	)
@@ -597,6 +647,8 @@ if modconfigexists then
 		}
 	)
 	
+	MCM.AddSpace("Minimap API", "Colors")
+	
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -653,6 +705,170 @@ if modconfigexists then
 			end,
 			OnChange = function(currentNum)
 				MinimapAPI.Config.DefaultOutlineColorB = currentNum
+			end
+		}
+	)
+	
+	MCM.AddSpace("Minimap API", "Colors")
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.BorderColorR
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Border Color Red: " .. MinimapAPI.Config.BorderColorR
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.BorderColorR = currentNum
+			end
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.BorderColorG
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Border Color Green: " .. MinimapAPI.Config.BorderColorG
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.BorderColorG = currentNum
+			end
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.BorderColorB
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Border Color Blue: " .. MinimapAPI.Config.BorderColorB
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.BorderColorB = currentNum
+			end
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.BorderColorA
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Border Color Alpha: " .. MinimapAPI.Config.BorderColorA
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.BorderColorA = currentNum
+			end
+		}
+	)
+	
+	MCM.AddSpace("Minimap API", "Colors")
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.BorderBgColorR
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Border Background Color Red: " .. MinimapAPI.Config.BorderBgColorR
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.BorderBgColorR = currentNum
+			end
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.BorderBgColorG
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Border Background Color Green: " .. MinimapAPI.Config.BorderBgColorG
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.BorderBgColorG = currentNum
+			end
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.BorderBgColorB
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Border Background Color Blue: " .. MinimapAPI.Config.BorderBgColorB
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.BorderBgColorB = currentNum
+			end
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.BorderBgColorA
+			end,
+			Minimum = 0,
+			Maximum = 4,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Border Background Color Alpha: " .. MinimapAPI.Config.BorderBgColorA
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.BorderBgColorA = currentNum
 			end
 		}
 	)
