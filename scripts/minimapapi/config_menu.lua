@@ -355,6 +355,50 @@ if modconfigexists then
 	
 	MCM.AddSetting(
 		"Minimap API",
+		"Map(2)",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.AlignMapRight
+			end,
+			Display = function()
+				return "Map Align Right: " .. (MinimapAPI.Config.AlignMapRight and "ON" or "OFF")
+			end,
+			OnChange = function(newVal)
+				MinimapAPI.Config.AlignMapRight = newVal
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"The map is on the right of",
+				"the screen rather than the left."
+			}
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Map(2)",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.AlignMapDown
+			end,
+			Display = function()
+				return "Map Align Down: " .. (MinimapAPI.Config.AlignMapDown and "ON" or "OFF")
+			end,
+			OnChange = function(newVal)
+				MinimapAPI.Config.AlignMapDown = newVal
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"The map is on the bottom of",
+				"the screen rather than the top."
+			}
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
 		"Modes",
 		{
 			Type = MCM.OptionType.BOOLEAN,
@@ -469,28 +513,6 @@ if modconfigexists then
 			end,
 			Info = {
 				"The border map's height."
-			}
-		}
-	)
-
-	MCM.AddSetting(
-		"Minimap API",
-		"Map(1)",
-		{
-			Type = MCM.OptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.SyncPositionWithMCM
-			end,
-			Display = function()
-				return "Use Screen Helper: " .. (MinimapAPI.Config.SyncPositionWithMCM and "ON" or "OFF")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.SyncPositionWithMCM = currentBool
-				MinimapAPI.Config.ConfigPreset = 0
-			end,
-			Info = {
-				"Will try and use screen helper to get",
-				"the corners of the screen if it exists."
 			}
 		}
 	)

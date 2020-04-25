@@ -42,7 +42,8 @@ MinimapAPI.Config = {
 	["BorderBgColorA"] = 1,
 	["ExternalMap"] = false,
 	["ShowGridDistances"] = false,
-	["SyncPositionWithMCM"] = true,
+	["AlignMapRight"] = true,
+	["AlignMapDown"] = false,
 	
 	["ConfigPreset"] = 1,
 	

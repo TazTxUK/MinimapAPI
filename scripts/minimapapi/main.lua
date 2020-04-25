@@ -1,5 +1,5 @@
 local MinimapAPI = require "scripts.minimapapi"
-local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
+local ScreenHelper = require "scripts.screenhelper"
 
 local json = require("json")
 
@@ -14,7 +14,7 @@ end
 local errorBadArgument = "Bad argument %s to '%s': expected %s, got %s"
 
 --Returns screen size as Vector
-function MinimapAPI:GetScreenSize()
+function MinimapAPI:GetScreenSize() --deprecated
 	return (Isaac.WorldToScreen(Vector(320, 280)) - Game():GetRoom():GetRenderScrollOffset() - Game().ScreenShakeOffset) * 2
 end
 
@@ -85,6 +85,10 @@ end
 
 function MinimapAPI:RoomDistance(room1,room2)
 	return room1.Position:__sub(room2.Position):Length()
+end
+
+function MinimapAPI:RoomDistanceSquared(room1,room2)
+	return room1.Position:__sub(room2.Position):LengthSquared()
 end
 
 function MinimapAPI:GetFrameBR()
@@ -776,24 +780,26 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_LEVEL,	function(self)
 	MinimapAPI:UpdateExternalMap()
 end)
 
-function MinimapAPI:UpdateUnboundedMapOffset()
-	local maxx
-	local miny
+function MinimapAPI:UpdateUnboundedMapOffset(max_x, max_y)
+	local a
+	local b
 	for i = 1, #(MinimapAPI.Level) do
 		local v = MinimapAPI.Level[i]
 		if v:GetDisplayFlags() > 0 then
-			local maxxval = v.Position.X - MinimapAPI.RoomShapeGridPivots[v.Shape].X + MinimapAPI:GetRoomShapeGridSize(v.Shape).X
-			if not maxx or (maxxval > maxx) then
-				maxx = maxxval
+			local aval = v.Position.X
+			if max_x then aval = aval - MinimapAPI.RoomShapeGridPivots[v.Shape].X + MinimapAPI:GetRoomShapeGridSize(v.Shape).X end
+			if not a or (max_x and aval > a) or (not max_x and aval < a) then
+				a = aval
 			end
-			local minyval = v.Position.Y
-			if not miny or (minyval < miny) then
-				miny = minyval
+			local bval = v.Position.Y
+			if max_y then bval = bval - MinimapAPI.RoomShapeGridPivots[v.Shape].Y + MinimapAPI:GetRoomShapeGridSize(v.Shape).Y end
+			if not b or (max_y and bval > b) or (not max_y and bval < b) then
+				b = bval
 			end
 		end
 	end
-	if maxx and miny then
-		unboundedMapOffset = Vector(-maxx, -miny)
+	if a and b then
+		unboundedMapOffset = Vector(-a, -b)
 	end
 end
 
@@ -949,32 +955,42 @@ local function renderMinimapLevelFlags(renderOffset)
 	
 end
 
-local function renderUnboundedMinimap(size,hide)
-	if MinimapAPI:GetConfig("OverrideLost") or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
-		MinimapAPI:UpdateUnboundedMapOffset()
-		local offsetVec
-		
-		if MinimapAPI:GetConfig("SyncPositionWithMCM") and SHExists then
-			local screen_size = ScreenHelper.GetScreenTopRight()
-			offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), screen_size.Y + MinimapAPI:GetConfig("PositionY"))
+local function getScreenCornerOffsetVec()
+	if MinimapAPI:GetConfig("AlignMapRight") then
+		if MinimapAPI:GetConfig("AlignMapDown") then
+			local screen_size = ScreenHelper.GetScreenBottomRight()
+			return Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), screen_size.Y - MinimapAPI:GetConfig("PositionY"))
 		else
-			offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), MinimapAPI:GetConfig("PositionY"))
+			local screen_size = ScreenHelper.GetScreenTopRight()
+			return Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), screen_size.Y + MinimapAPI:GetConfig("PositionY"))
 		end
+	else
+		if MinimapAPI:GetConfig("AlignMapDown") then
+			local screen_size = ScreenHelper.GetScreenBottomLeft()
+			return Vector(screen_size.X + MinimapAPI:GetConfig("PositionX"), screen_size.Y - MinimapAPI:GetConfig("PositionY"))
+		else
+			local screen_size = ScreenHelper.GetScreenTopLeft()
+			return Vector(screen_size.X + MinimapAPI:GetConfig("PositionX"), screen_size.Y + MinimapAPI:GetConfig("PositionY"))
+		end
+	end
+end
+
+local function renderUnboundedMinimap(size)
+	if MinimapAPI:GetConfig("OverrideLost") or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
+		local align_right = MinimapAPI:GetConfig("AlignMapRight")
+		local align_down = MinimapAPI:GetConfig("AlignMapDown")
+		MinimapAPI:UpdateUnboundedMapOffset(align_right,align_down)
+		local offsetVec = getScreenCornerOffsetVec()
 		
 		local renderRoomSize = size == "small" and roomSize or largeRoomSize
 		local renderAnimPivot = size == "small" and roomAnimPivot or largeRoomAnimPivot
 		local sprite = size == "small" and MinimapAPI.SpriteMinimapSmall or MinimapAPI.SpriteMinimapLarge
-		
-		
 		
 		for i, v in ipairs(MinimapAPI.Level) do
 			local roomOffset = (v.DisplayPosition or v.Position) + unboundedMapOffset
 			roomOffset.X = roomOffset.X * renderRoomSize.X
 			roomOffset.Y = roomOffset.Y * renderRoomSize.Y
 			v.TargetRenderOffset = offsetVec + roomOffset + renderAnimPivot
-			if hide then
-				v.TargetRenderOffset = v.TargetRenderOffset + Vector(0,-800)
-			end
 			if v.RenderOffset then
 				v.RenderOffset = v.TargetRenderOffset * MinimapAPI:GetConfig("SmoothSlidingSpeed") + v.RenderOffset * (1 - MinimapAPI:GetConfig("SmoothSlidingSpeed"))
 			else
@@ -984,8 +1000,6 @@ local function renderUnboundedMinimap(size,hide)
 				v.RenderOffset = v.TargetRenderOffset
 			end
 		end
-		
-		if hide then return end
 		
 		local defaultOutlineColor = Color(1, 1, 1, 1, math.floor(MinimapAPI:GetConfig("DefaultOutlineColorR")*255), math.floor(MinimapAPI:GetConfig("DefaultOutlineColorG")*255), math.floor(MinimapAPI:GetConfig("DefaultOutlineColorB")*255))
 		if MinimapAPI:GetConfig("ShowShadows") then
@@ -1314,7 +1328,7 @@ local function renderCallbackFunction(self)
 		end
 	end
 	
-	screen_size = MinimapAPI:GetScreenSize()
+	screen_size = ScreenHelper.GetScreenBottomRight()
 	if MinimapAPI:GetConfig("DisplayOnNoHUD") or not Game():GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD) then
 		local currentroomdata = MinimapAPI:GetCurrentRoom()
 		local gamelevel = Game():GetLevel()
@@ -1421,7 +1435,7 @@ local function renderCallbackFunction(self)
 			elseif MinimapAPI:GetConfig("DisplayMode") == 2 then
 				renderBoundedMinimap()
 			elseif MinimapAPI:GetConfig("DisplayMode") == 4 then
-				renderUnboundedMinimap("small",true)
+				-- nothing
 			end
 			
 			if MinimapAPI:GetConfig("ShowLevelFlags") then
