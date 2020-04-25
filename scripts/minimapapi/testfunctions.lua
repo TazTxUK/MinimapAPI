@@ -123,6 +123,28 @@ function MinimapAPI.Debug.Colors()
 	MinimapAPI:SetPlayerPosition(Vector(math.random(0,12),math.random(0,12)))
 end
 
+function MinimapAPI.Debug.OfSprite(sprite)
+	MinimapAPI:ClearMap()
+	for j=0,15 do
+		for i=0,15 do
+			if MinimapAPI:IsPositionFree(Vector(i,j)) then
+				local s = 1
+				local size = MinimapAPI.RoomShapeGridSizes[s]
+			
+				local kcolor = sprite:GetTexel(Vector(i,j),Vector(0,0),1)
+				MinimapAPI:AddRoom{
+					DisplayFlags = 5,
+					Position = Vector(i,j),
+					Clear = true,
+					Shape = s,
+					Color = Color(kcolor.Red, kcolor.Green, kcolor.Blue, kcolor.Alpha, 0, 0, 0)
+				}
+			end
+		end
+	end
+	MinimapAPI:SetPlayerPosition(Vector(0,0))
+end
+
 function MinimapAPI.Debug.Gen(r,noborderbreak)
 	MinimapAPI:ClearMap()
 	local x = MinimapAPI:AddRoom{Position=Vector(0,0),DisplayFlags=5}
