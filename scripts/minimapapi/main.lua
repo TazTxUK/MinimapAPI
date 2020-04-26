@@ -1,8 +1,6 @@
 local MinimapAPI = require "scripts.minimapapi"
 local ScreenHelper = require "scripts.screenhelper"
 
-local json = require("json")
-
 local function getType(obj)
 	local mt = getmetatable(obj)
 	if mt and mt.__type then
@@ -1050,11 +1048,16 @@ local function renderUnboundedMinimap(size)
 			end
 		end
 		
-		if size == "huge" and MinimapAPI:GetConfig("ShowGridDistances") then
+		if size == "huge" then
 			for _, room in pairs(MinimapAPI.Level) do
-				if room.PlayerDistance then
-					local s = tostring(room.PlayerDistance)
-					font:DrawString(s, room.RenderOffset.X + 7, room.RenderOffset.Y + 3, KColor(0.2, 0.2, 0.2, 1), 0, false)
+				local overrideText = room.Text
+				if overrideText then
+					font:DrawString(overrideText, room.RenderOffset.X + 7, room.RenderOffset.Y + 3, room.TextColor or KColor(1, 1, 1, 1), 0, false)
+				elseif MinimapAPI:GetConfig("ShowGridDistances") then
+					if room.PlayerDistance then
+						local s = tostring(room.PlayerDistance)
+						font:DrawString(s, room.RenderOffset.X + 7, room.RenderOffset.Y + 3, KColor(0.2, 0.2, 0.2, 1), 0, false)
+					end
 				end
 			end
 		end
@@ -1114,12 +1117,14 @@ local function renderUnboundedMinimap(size)
 end
 
 local function renderBoundedMinimap()
-	local offsetVec
-	if MinimapAPI:GetConfig("SyncPositionWithMCM") and SHExists then
-		local screen_size = ScreenHelper.GetScreenTopRight()
-		offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 1, screen_size.Y + MinimapAPI:GetConfig("PositionY") - 2)
-	else
-		offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 1, MinimapAPI:GetConfig("PositionY") - 2)
+	local align_right = MinimapAPI:GetConfig("AlignMapRight")
+	local align_down = MinimapAPI:GetConfig("AlignMapDown")
+	local offsetVec = getScreenCornerOffsetVec() + Vector(1,2)
+	if align_down then
+		offsetVec.Y = offsetVec.Y - MinimapAPI:GetConfig("MapFrameHeight") - 2
+	end
+	if align_right then
+		offsetVec.X = offsetVec.X - MinimapAPI:GetConfig("MapFrameWidth") - 4
 	end
 	do
 		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,MinimapAPI:GetConfig("BorderColorA"),math.floor(MinimapAPI:GetConfig("BorderColorR")*255),math.floor(MinimapAPI:GetConfig("BorderColorG")*255),math.floor(MinimapAPI:GetConfig("BorderColorB")*255))
@@ -1441,18 +1446,43 @@ local function renderCallbackFunction(self)
 			if MinimapAPI:GetConfig("ShowLevelFlags") then
 				local levelflagoffset
 				local islarge = MinimapAPI:IsLarge()
+				local align_right = MinimapAPI:GetConfig("AlignMapRight")
+				local align_down = MinimapAPI:GetConfig("AlignMapDown")
+				local TL = ScreenHelper.GetScreenTopLeft()
+				local BR = ScreenHelper.GetScreenBottomRight()
 				if not islarge and MinimapAPI:GetConfig("DisplayMode") == 2 then
-					levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 9,8)
+					levelflagoffset = Vector(
+						align_right and (BR.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 12) or (TL.X + MinimapAPI:GetConfig("MapFrameWidth") + MinimapAPI:GetConfig("PositionX") + 12),
+						align_down and (BR.Y - MinimapAPI:GetConfig("MapFrameHeight") - MinimapAPI:GetConfig("PositionY") + 8) or (TL.Y + MinimapAPI:GetConfig("PositionY") + 8)
+					)
 				elseif not islarge and MinimapAPI:GetConfig("DisplayMode") == 4 then
-					levelflagoffset = Vector(screen_size.X - 9,8)
+					
 				else
-					local minx = screen_size.X
-					for i,v in ipairs(MinimapAPI.Level) do
-						if v.TargetRenderOffset and v.TargetRenderOffset.Y < 64 then
-							minx = math.min(minx, v.RenderOffset.X)
+					local x
+					local y
+					if align_right then
+						x = BR.X
+						for i,v in ipairs(MinimapAPI.Level) do
+							if v.RenderOffset then
+								x = math.min(x, v.RenderOffset.X)
+							end
 						end
+						x = x - 9
+					else
+						x = 0
+						for i,v in ipairs(MinimapAPI.Level) do
+							if v.RenderOffset then
+								x = math.max(x, v.RenderOffset.X)
+							end
+						end
+						x = x + 9
 					end
-					levelflagoffset = Vector(minx-9,8)
+					if align_down then
+						y = BR.Y - 9 * 6
+					else
+						y = 8
+					end
+					levelflagoffset = Vector(x,y)
 				end
 				renderMinimapLevelFlags(levelflagoffset)
 			end
@@ -1487,6 +1517,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 					Visited = v.Visited,
 					Hidden = v.Hidden,
 					NoUpdate = v.NoUpdate,
+					Text = v.Text,
 				}
 			end
 			if saved.playerMapPosX and saved.playerMapPosY then
@@ -1525,42 +1556,21 @@ function MinimapAPI:GetSaveTable(menuexit)
 				NoUpdate = v.NoUpdate,
 				DisplayPositionX = v.DisplayPosition and v.DisplayPosition.X,
 				DisplayPositionY = v.DisplayPosition and v.DisplayPosition.Y,
+				Text = v.Text,
 			}
 		end
 	end
 	return saved
 end
 
--- LOADING SAVED GAME
 local addRenderCall = true
 MinimapAPI:AddCallback(
 	ModCallbacks.MC_POST_GAME_STARTED,
-	function(self, is_save)
-		badload = MinimapAPI:IsBadLoad()
+	function(self)
+		local badload = MinimapAPI:IsBadLoad()
 		if addRenderCall then
 			MinimapAPI:AddCallback(ModCallbacks.MC_POST_RENDER, renderCallbackFunction)
 			addRenderCall = false
-		end
-		if MinimapAPI:HasData() then
-			if not MinimapAPI.DisableSaving then
-				local saved = json.decode(Isaac.LoadModData(MinimapAPI))
-				MinimapAPI:LoadSaveTable(saved,is_save)
-			else
-				MinimapAPI:LoadDefaultMap()
-			end
-			MinimapAPI:UpdateExternalMap()
-		else
-			MinimapAPI:LoadDefaultMap()
-		end
-	end
-)
-
--- SAVING GAME
-MinimapAPI:AddCallback(
-	ModCallbacks.MC_PRE_GAME_EXIT,
-	function(self, menuexit)
-		if not MinimapAPI.DisableSaving then
-			MinimapAPI:SaveData(json.encode(MinimapAPI:GetSaveTable(menuexit)))
 		end
 	end
 )

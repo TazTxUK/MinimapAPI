@@ -288,3 +288,60 @@ function MinimapAPI.Debug.Gen(r,noborderbreak)
 	
 	MinimapAPI:SetPlayerPosition(Vector(0,0))
 end
+
+local minecolors = {
+	[1] = KColor(0.2,0.2,1,1),
+	[2] = KColor(0.2,1,0.2,1),
+	[3] = KColor(1,0.2,0.2,1),
+	[4] = KColor(1,0.2,1,1),
+	[5] = KColor(0.4,0.4,0.2,1),
+	-- [6] = KColor(0.4,0.4,0.2,1),
+}
+function MinimapAPI.Debug.MinesweeperDiscover(room)
+	if room.discovered then return end
+	room.discovered = true
+	if room.mine then
+		room.Text = "X"
+		room.Color = Color(1,0,0,1,0,0,0)
+		return
+	end
+	local adjmines = 0
+	for i,v in ipairs(MinimapAPI.Level) do
+		local dx = math.abs(v.Position.X - room.Position.X)
+		local dy = math.abs(v.Position.Y - room.Position.Y)
+		if dx <= 1 and dy <= 1 and (dx > 0 or dy > 0) then
+			if v.mine then
+				adjmines = adjmines + 1
+			end
+		end
+	end
+	if adjmines == 0 then
+		for i,v in ipairs(MinimapAPI.Level) do
+			local d = v.Position:DistanceSquared(room.Position)
+			if d <= 1 and d ~= 0 then
+				MinimapAPI.Debug.MinesweeperDiscover(v)
+			end
+		end
+		room.Color = Color(1,1,1,1,0,0,0)
+		return
+	end
+	room.Text = tostring(adjmines)
+	room.Color = Color(1,1,1,1,0,0,0)
+	room.TextColor = minecolors[adjmines]
+end
+
+function MinimapAPI.Debug.Minesweeper()
+	MinimapAPI:ClearMap()
+	for i=0,19 do
+		for j=0,19 do
+			local room = MinimapAPI:AddRoom{
+				Position = Vector(i,j),
+				Color = Color(0.1,0.1,0.1,1,0,0,0)
+			}
+			room.mine = math.random() <= 0.2
+		end
+	end
+	
+	-- for i,v in pairs(MinimapAPI.Level) do MinimapAPI.Debug.MinesweeperDiscover(v) end
+	-- discover(MinimapAPI:GetRoom(Vector(math.random(0,19),math.random(0,19))))
+end
