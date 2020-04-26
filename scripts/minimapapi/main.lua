@@ -560,25 +560,17 @@ local maproommeta = {
 
 function MinimapAPI:AddRoom(t)
 	local defaultPosition = Vector(0,-1)
-	local x = {
-		Position = t.Position or defaultPosition,
-		DisplayPosition = t.DisplayPosition,
-		Type = t.Type,
-		ID = t.ID,
-		Shape = t.Shape or RoomShape.ROOMSHAPE_1x1,
-		PermanentIcons = t.PermanentIcons or {},
-		LockedIcons = t.LockedIcons or {},
-		ItemIcons = t.ItemIcons or {},
-		Descriptor = t.Descriptor or nil,
-		Color = t.Color or nil,
-		RenderOffset = nil,
-		DisplayFlags = t.DisplayFlags or 0,
-		Clear = t.Clear or false,
-		Visited = t.Visited or false,
-		AdjacentDisplayFlags = t.AdjacentDisplayFlags or 5,
-		Hidden = t.Hidden or nil,
-		NoUpdate = t.NoUpdate or nil,
-	}
+	local x = {}
+	for i,v in pairs(t) do x[i] = v end
+	x.Position = x.Position or defaultPosition
+	x.Shape = x.Shape or RoomShape.ROOMSHAPE_1x1
+	x.PermanentIcons = x.PermanentIcons or {}
+	x.LockedIcons = x.LockedIcons or {}
+	x.ItemIcons = x.ItemIcons or {}
+	x.DisplayFlags = x.DisplayFlags or 0
+	x.Clear = x.Clear or false
+	x.Visited = x.Visited or false
+	x.AdjacentDisplayFlags = x.AdjacentDisplayFlags or 5
 	setmetatable(x, maproommeta)
 	MinimapAPI.Level[#MinimapAPI.Level + 1] = x
 	x:SetPosition(x.Position)
@@ -1518,6 +1510,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 					Hidden = v.Hidden,
 					NoUpdate = v.NoUpdate,
 					Text = v.Text,
+					TextColor = v.TextColor and KColor(v.TextColor.R, v.TextColor.G, v.TextColor.B, v.TextColor.A),
 				}
 			end
 			if saved.playerMapPosX and saved.playerMapPosY then
@@ -1557,6 +1550,7 @@ function MinimapAPI:GetSaveTable(menuexit)
 				DisplayPositionX = v.DisplayPosition and v.DisplayPosition.X,
 				DisplayPositionY = v.DisplayPosition and v.DisplayPosition.Y,
 				Text = v.Text,
+				TextColor = v.TextColor and {R = v.TextColor.Red, G = v.TextColor.Green, B = v.TextColor.Blue, A = v.TextColor.Alpha},
 			}
 		end
 	end
@@ -1567,7 +1561,7 @@ local addRenderCall = true
 MinimapAPI:AddCallback(
 	ModCallbacks.MC_POST_GAME_STARTED,
 	function(self)
-		local badload = MinimapAPI:IsBadLoad()
+		badload = MinimapAPI:IsBadLoad()
 		if addRenderCall then
 			MinimapAPI:AddCallback(ModCallbacks.MC_POST_RENDER, renderCallbackFunction)
 			addRenderCall = false
