@@ -189,6 +189,10 @@ function MinimapAPI:GetIconAnimData(id)
 	end
 end
 
+function MinimapAPI:GetDoorSlotValue(doorgroup, doordir)
+	return doorgroup*4 + doordir
+end
+
 local defaultCustomPickupPriority = 12999 --more than vanilla, less than other potential custom pickups
 function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup, priority)
 	local newRoom
@@ -252,17 +256,66 @@ function MinimapAPI:RemoveIcon(id)
 	end
 end
 
-function MinimapAPI:AddRoomShape(id, roomshapesmallanims, roomshapelargeanims, gridpivot, gridsize, positions, iconpositions, iconpositioncenter)
+function MinimapAPI:AddRoomShape(id, roomshapesmallanims, roomshapelargeanims, gridpivot, gridsize, positions, iconpositions, iconpositioncenter, largeiconpositions, largeiconpositioncenter, adjacentcoords, doorslots)
 	MinimapAPI.RoomShapeFrames[id] = {
 		small = roomshapesmallanims,
 		large = roomshapelargeanims,
 	}
 
-	MinimapAPI.RoomShapeGridPivots["bigroom"] = gridpivot
-	MinimapAPI.RoomShapeGridSizes["bigroom"] = gridsize
-	MinimapAPI.RoomShapePositions["bigroom"] = positions
-	MinimapAPI.RoomShapeIconPositions[1]["bigroom"] = {iconpositioncenter}
-	MinimapAPI.RoomShapeIconPositions[2]["bigroom"] = iconpositions
+	MinimapAPI.RoomShapeGridPivots[id] = gridpivot
+	MinimapAPI.RoomShapeGridSizes[id] = gridsize
+	MinimapAPI.RoomShapePositions[id] = positions
+	MinimapAPI.RoomShapeIconPositions[1][id] = {iconpositioncenter}
+	MinimapAPI.RoomShapeIconPositions[2][id] = iconpositions
+	MinimapAPI.LargeRoomShapeIconPositions[1][id] = {largeiconpositioncenter}
+	MinimapAPI.LargeRoomShapeIconPositions[2][id] = largeiconpositions
+	MinimapAPI.LargeRoomShapeIconPositions[3][id] = largeiconpositions
+	
+	MinimapAPI.RoomShapeAdjacentCoords[id] = adjacentcoords
+	MinimapAPI.RoomShapeDoorSlots[id] = doorslots
+	MinimapAPI.RoomShapeDoorCoords[id] = {}
+	
+	if doorslots then
+		for _,doorslot in ipairs(doorslots) do
+			local doorgroup = math.floor(doorslot / 4)
+			local doordir = doorslot % 4
+			local result
+			if doordir == 0 then
+				for i,v in pairs(adjacentcoords) do
+					if v.Y == gridpivot.Y + doorgroup then
+						if not result or (v.X < result.X) then
+							result = v
+						end
+					end
+				end
+			elseif doordir == 1 then
+				for i,v in pairs(adjacentcoords) do
+					if v.X == gridpivot.X + doorgroup then
+						if not result or (v.Y < result.Y) then
+							result = v
+						end
+					end
+				end
+			elseif doordir == 2 then
+				for i,v in pairs(adjacentcoords) do
+					if v.Y == gridpivot.Y + doorgroup then
+						if not result or (v.X > result.X) then
+							result = v
+						end
+					end
+				end
+			elseif doordir == 3 then
+				for i,v in pairs(adjacentcoords) do
+					if v.X == gridpivot.X + doorgroup then
+						if not result or (v.Y > result.Y) then
+							result = v
+						end
+					end
+				end
+			end
+			MinimapAPI.RoomShapeDoorCoords[id][doorslot + 1] = result
+		end
+	end
 end
 
 function MinimapAPI:PickupDetectionEnabled()
