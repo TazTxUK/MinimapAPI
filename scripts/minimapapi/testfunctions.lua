@@ -345,3 +345,65 @@ function MinimapAPI.Debug.Minesweeper()
 	-- for i,v in pairs(MinimapAPI.Level) do MinimapAPI.Debug.MinesweeperDiscover(v) end
 	-- discover(MinimapAPI:GetRoom(Vector(math.random(0,19),math.random(0,19))))
 end
+
+function MinimapAPI.Debug.PeriodicTable()
+	local text = {
+		"H" ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,"He",
+		"Li","Be",""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,"B" ,"C" ,"N" ,"O" ,"F" ,"Ne",
+		"Na","Mg",""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,"Al","Si","P" ,"S" ,"Cl","Ar",
+		"K" ,"Ca","Sc","Ti","V" ,"Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr",
+		"Rb","Sr","Y" ,"Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb","Te","I" ,"Xe",
+		"Cs","Ba","",  "Hf","Ta","W" ,"Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn",
+		"Fr","Ra","",  "Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv","Ts","Og",
+		""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,""  ,
+		""  ,""  ,"La","Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu",""  ,
+		""  ,""  ,"Ac","Th","Pa","U", "Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr",""  ,
+	}
+	local typ = {
+		1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,
+		2,3,0,0,0,0,0,0,0,0,0,0,7,1,1,1,6,5,
+		2,3,0,0,0,0,0,0,0,0,0,0,8,7,1,1,6,5,
+		2,3,4,4,4,4,4,4,4,4,4,4,8,7,7,1,6,5,
+		2,3,4,4,4,4,4,4,4,4,4,4,8,8,7,7,6,5,
+		2,3,0,4,4,4,4,4,4,4,4,4,8,8,8,7,6,5,
+		2,3,0,4,4,4,4,4,4,4,4,4,8,8,8,8,6,5,
+		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,
+		10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+	}
+	local col = {
+		KColor(52/255, 83/255, 211/255, 1),
+		KColor(1,0,0,1),
+		KColor(1,0.5,0,1),
+		KColor(1,1,0,1),
+		KColor(57/255,5/255,126/255,1),
+		KColor(112/255,10/255,1,1),
+		KColor(71/255,156/255,255/255,1),
+		KColor(0/255,156/255,75/255,1),
+		KColor(1,0.8,0.8,1),
+		KColor(1,0.5,0.5,1),
+	}
+	local wid = 18
+	MinimapAPI:ClearMap()
+	for i=1,#text do
+		local v = text[i]
+		local x = (i-1)%wid
+		local y = math.floor((i-1)/wid)
+		if v:len() > 0 then
+			local room = MinimapAPI:AddRoom{
+				Position = Vector(x,y),
+				Text = v,
+				TextColor = col[typ[i]],
+				DisplayFlags = 5,
+				Clear = true,
+			}
+			if v == "Au" then
+				room.PermanentIcons = {"TreasureRoom"}
+				room.Text = nil
+			elseif v == "Ag" then
+				room.PermanentIcons = {"TreasureRoomGreed"}
+				room.Text = nil
+			end
+		end
+	end
+end

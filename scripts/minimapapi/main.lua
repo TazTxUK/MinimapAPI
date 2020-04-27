@@ -192,7 +192,16 @@ function MinimapAPI:GetIconAnimData(id)
 end
 
 local defaultCustomPickupPriority = 12999 --more than vanilla, less than other potential custom pickups
-function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup, priority)
+function MinimapAPI:AddPickup(id, iconid, name, typ, variant, subtype, call, icongroup, priority)
+	if not name or type(name) ~= "string" then --BACKWARDS COMPAT
+		priority = icongroup
+		icongroup = call
+		call = subtype
+		subtype = variant
+		variant = typ
+		typ = name
+		name = nil
+	end
 	local newRoom
 	if type(id) == "table" and iconid == nil then
 		local t = id
@@ -207,7 +216,8 @@ function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup
 			SubType = t.SubType or -1,
 			Call = t.Call,
 			IconGroup = t.IconGroup,
-			Priority = t.Priority or defaultCustomPickupPriority
+			Priority = t.Priority or defaultCustomPickupPriority,
+			Name = t.Name,
 		}
 	else
 		if type(iconid) == "table" then
@@ -220,7 +230,8 @@ function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup
 			SubType = subtype or -1,
 			Call = call,
 			IconGroup = icongroup,
-			Priority = priority or defaultCustomPickupPriority
+			Priority = priority or defaultCustomPickupPriority,
+			Name = name,
 		}
 	end
 	MinimapAPI.PickupList[id] = newRoom
@@ -293,6 +304,7 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 	local ents = Isaac.GetRoomEntities()
 	local pickupgroupset = {}
 	local addIcons = {}
+	local names = {}
 	for _, ent in ipairs(ents) do
 		local success = false
 		if ent:GetData().MinimapAPIPickupID == nil then
@@ -333,6 +345,10 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 					end
 				end
 			end
+			-- if pickupicon.Name then
+				-- local n = pickupicon.Name
+				-- names[n] = (names[n] or 0) + 1
+			-- end
 		end
 	end
 	for i,v in pairs(pickupgroupset) do
@@ -342,10 +358,15 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 		table.sort(addIcons, function(a,b) return MinimapAPI.PickupList[a].Priority > MinimapAPI.PickupList[b].Priority end)
 	end
 	local r = {}
+	-- local names_t = {}
 	for i,v in ipairs(addIcons) do
 		r[i] = MinimapAPI.PickupList[v].IconID
 	end
-	return r
+	-- for i,v in pairs(names) do
+		-- names_t[#names_t + 1] = {name = i, count = v}
+	-- end
+	-- table.sort(names_t, function(a,b) return a.count == b.count and a.name > b.name or a.count < b.count end)
+	return r--, names_t
 end
 
 function MinimapAPI:RunPlayerPosCallbacks()
@@ -1335,7 +1356,7 @@ local function renderCallbackFunction(self)
 		
 		if currentroomdata and MinimapAPI:PickupDetectionEnabled() then
 			if not currentroomdata.NoUpdate then
-				currentroomdata.ItemIcons = MinimapAPI:GetCurrentRoomPickupIDs()
+				currentroomdata.ItemIcons, currentroomdata.ItemNameList = MinimapAPI:GetCurrentRoomPickupIDs()
 				currentroomdata.DisplayFlags = 5
 				currentroomdata.Clear = gamelevel:GetCurrentRoomDesc().Clear
 				currentroomdata.Visited = true
@@ -1425,6 +1446,7 @@ local function renderCallbackFunction(self)
 		
 		if MinimapAPI.Level then
 			MinimapAPI.SpriteMinimapSmall.Scale = Vector(1, 1)
+			local showRoomContents = MinimapAPI:GetConfig("RoomHoverShowContents")
 			if MinimapAPI:IsLarge() then
 				renderUnboundedMinimap("huge")
 			elseif MinimapAPI:GetConfig("DisplayMode") == 1 then
@@ -1433,7 +1455,25 @@ local function renderCallbackFunction(self)
 				renderBoundedMinimap()
 			elseif MinimapAPI:GetConfig("DisplayMode") == 4 then
 				-- nothing
+				showRoomContents = false
 			end
+			
+			-- if showRoomContents then
+				-- local mouse_pos = Input.GetMousePosition(true)
+				-- for i=#MinimapAPI.Level,1,-1 do
+					-- local v = MinimapAPI.Level[i]
+					-- if MinimapAPI:PointInRoom(v,mouse_pos) then
+						-- if v.ItemNameList then
+							-- local y = mouse_pos.Y + 8
+							-- for _,name in ipairs(v.ItemNameList) do
+								-- font:DrawString(name.name.." x"..name.count,mouse_pos.X+2,y,KColor(1,1,1,1),0,false)
+								-- y = y + 10
+							-- end
+						-- end
+						-- break
+					-- end
+				-- end
+			-- end
 			
 			if MinimapAPI:GetConfig("ShowLevelFlags") then
 				local levelflagoffset

@@ -47,5 +47,23 @@ function MinimapAPI:IsPositionFreeNoAlign(position,roomshape)
 			end
 		end
 	end
-	return true
+	return false
+end
+
+function MinimapAPI:PointInRoom(room,position)
+	for i=1,#(MinimapAPI.RoomShapeRectangles[room.Shape]),2 do
+		for j=1,#(MinimapAPI.RoomShapeRectangles[room.Shape]),2 do
+			local r1p1 = room.Position + MinimapAPI.RoomShapeRectangles[room.Shape][i]
+			local r1p2 = room.Position + MinimapAPI.RoomShapeRectangles[room.Shape][i+1]
+			if (
+				position.X >= r1p1.X and
+				position.X < r1p2.X and
+				position.Y >= r1p1.Y and
+				position.Y < r1p2.Y
+			) then
+				return true
+			end
+		end
+	end
+	return false
 end
