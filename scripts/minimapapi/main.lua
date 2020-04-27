@@ -462,10 +462,10 @@ local maproomfunctions = {
 		return room:GetDisplayFlags() & 1 > 0
 	end,
 	IsShadow = function(room)
-		return (room.DisplayFlags or 0) & 2 > 0
+		return (room:GetDisplayFlags() or 0) & 2 > 0
 	end,
 	IsIconVisible = function(room)
-		return (room.DisplayFlags or 0) & 4 > 0
+		return (room:GetDisplayFlags() or 0) & 4 > 0
 	end,
 	IsVisited = function(room)
 		return room.Visited or false
