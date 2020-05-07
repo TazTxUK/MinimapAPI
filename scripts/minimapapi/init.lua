@@ -7,6 +7,7 @@ require("scripts.minimapapi.config")
 require("scripts.minimapapi.main")
 require("scripts.minimapapi.noalign")
 require("scripts.minimapapi.custom_icons")
+require("scripts.minimapapi.custom_mapflags")
 require("scripts.minimapapi.config_menu")
 require("scripts.minimapapi.testfunctions")
 
