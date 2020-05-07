@@ -1,8 +1,6 @@
 # MinimapAPI
 MinimapAPI is a modding API developed for the game "The Binding of Isaac: Rebirth". Its purpose is to provide a framework that allows other modders to freely edit the ingame Minimap as they please.
 
-When downloading, please make sure to put this in a folder beginning with an exclamation mark (ie !MinimapAPI)
-
 ### Unique Features
 * Dynamically resizable minimap
 * Over 30 new unique custom icons for pickups, slot machines and beggars
