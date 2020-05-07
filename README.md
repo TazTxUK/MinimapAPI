@@ -14,7 +14,8 @@ When downloading, please make sure to put this in a folder beginning with an exc
 ### API Features
 * Add/remove rooms from the minimap
 * Custom pickups
-* Custom icons
+* Custom icons for rooms
+* Custom level flag icons
 * Automatic pickup detection
 * Automatic display flag management
 * Custom color rooms
