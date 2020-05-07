@@ -141,8 +141,6 @@ MinimapAPI.SpriteMinimapSmall = Sprite()
 MinimapAPI.SpriteMinimapSmall:Load("gfx/ui/minimapapi_minimap1.anm2", true)
 MinimapAPI.SpriteMinimapLarge = Sprite()
 MinimapAPI.SpriteMinimapLarge:Load("gfx/ui/minimapapi_minimap2.anm2", true)
-MinimapAPI.SpriteMinimapIcons = Sprite()
-MinimapAPI.SpriteMinimapIcons:Load("gfx/ui/minimapapi_mapitemicons.anm2", true)
 MinimapAPI.SpriteMinimapCustomSmall = Sprite()
 MinimapAPI.SpriteMinimapCustomSmall:Load("gfx/ui/minimapapi/custom_minimap1.anm2", true)
 MinimapAPI.SpriteMinimapCustomLarge = Sprite()
@@ -252,6 +250,29 @@ function MinimapAPI:RemoveIcon(id)
 		local v = MinimapAPI.IconList[i]
 		if v.ID == id then
 			table.remove(MinimapAPI.IconList, i)
+		end
+	end
+end
+
+function MinimapAPI:AddMapFlag(id, condition, sprite, anim, frame)
+	MinimapAPI:RemoveMapFlag(id)
+	local x = {
+		ID = id,
+		condition = condition,
+		sprite = sprite,
+		anim = anim,
+		frame = frame,
+		color = color
+	}
+	MinimapAPI.MapFlags[#MinimapAPI.MapFlags + 1] = x
+	return x
+end
+
+function MinimapAPI:RemoveMapFlag(id)
+	for i = #MinimapAPI.MapFlags, 1, -1 do
+		local v = MinimapAPI.MapFlags[i]
+		if v.ID == id then
+			table.remove(MinimapAPI.MapFlags, i)
 		end
 	end
 end
@@ -971,35 +992,30 @@ local function updateMinimapIcon(spr, t)
 end
 
 local function renderMinimapLevelFlags(renderOffset)
-	local gameLvl = Game():GetLevel()
-	
 	local flags = {}
-	
-	local offset=Vector(0,0)
-	if gameLvl:GetStateFlag(LevelStateFlag.STATE_MAP_EFFECT) then 
-		flags[#flags + 1] = 2
-	end
-	if gameLvl:GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT) then 
-		flags[#flags + 1] = 1
-	end
-	if gameLvl:GetStateFlag(LevelStateFlag.STATE_COMPASS_EFFECT) then 
-		flags[#flags + 1] = 0
-	end
-	if Isaac.GetPlayer(0):HasCollectible(CollectibleType.COLLECTIBLE_RESTOCK) or Game():IsGreedMode() then 
-		flags[#flags + 1] = 4
-	end
-	
 	-- local offset = Vector(math.floor((#flags-1)/4)*-16,0)
-	local offset = Vector(0,0)
-	for i,v in ipairs(flags) do
-		MinimapAPI.SpriteMinimapIcons:SetFrame("icons", v)
-		MinimapAPI.SpriteMinimapIcons:Render(renderOffset+offset, zvec, zvec)
-		offset=offset+Vector(0,16)
-		-- if offset.Y >= 48 then
-			-- offset = offset + Vector(16,-48)
-		-- end
+	local offset=Vector(0,0)
+
+
+	for _, mapFlag in ipairs(MinimapAPI.MapFlags) do
+	    if (mapFlag.condition()) then
+	    	local frame
+
+	    	-- Frame can be a function for indicators that might change, like zodiac indicator
+	    	if type(mapFlag.frame) == "function" then
+	    		frame = mapFlag.frame()
+	    	else
+	    		frame = mapFlag.frame
+	    	end
+
+	    	mapFlag.sprite:SetFrame(mapFlag.anim, frame)
+	    	mapFlag.sprite:Render(renderOffset+offset, zvec, zvec)
+	    	offset=offset+Vector(0,16)
+	    	-- if offset.Y >= 48 then
+	    		-- offset = offset + Vector(16,-48)
+	    	-- end
+	    end
 	end
-	
 end
 
 local function renderUnboundedMinimap(size,hide)
