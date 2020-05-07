@@ -363,3 +363,14 @@ MinimapAPI.RoomShapeDoorSlots ={
 	{0,1,2,3,4,5,6,7}, -- ROOMSHAPE_LBL  
 	{0,1,2,3,4,5,6,7} -- ROOMSHAPE_LBR  
 }
+
+-- Map indicators, Added each flag from custom_mapflags.lua
+MinimapAPI.MapFlags = {
+	--[[ 
+	id: used to identify the flag
+	condition: return true to render the indicator
+	sprite: Mods should supply their own Sprite object where they load a custom anm2
+	anim: the name of the animation. "icons" for the regular icons
+	frame: frame of the icon. Can also be a function that returns a frame for indicators that might change frames (like zodiac indicator)
+	--]]
+}
