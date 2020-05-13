@@ -12,11 +12,11 @@
 - Smooth minimap movement (1.0 is instant, 0.1 is very slow)
 - New map mode: Small full map (display all rooms in small form!)
 - Powerful API that allows a lot of manipulation of the minimap
+- Add Map Curse Icons (restock, curses)
 - And loads of other QoL improvements
 
 [h1][b]Planned Features:[/b][/h1]
--Add Map Curse Icons (restock, curses)
--- Change position of the Map Curse icons (left, bottom[vanilla])
+- Change position of the Map Curse icons (left, bottom[vanilla])
 - Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
 - Draw new pickup icons (where applicable):
 -- Trapdoor (Grid Entity icons not implemented)
