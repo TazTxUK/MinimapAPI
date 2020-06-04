@@ -552,7 +552,11 @@ local maproomfunctions = {
 		room:UpdateAdjacentRoomsCache()
 	end,
 	GetDisplayFlags = function(room)
+		local roomDesc = room.Descriptor
 		local df = room.DisplayFlags or 0
+		if roomDesc then
+			df = df | roomDesc.DisplayFlags
+		end
 		if room.Type and room.Type > 1 and not room.Hidden and Isaac.GetPlayer(0):GetEffects():HasCollectibleEffect(21) then
 			df = df | 6
 		end
@@ -564,6 +568,7 @@ local maproomfunctions = {
 	SetDisplayFlags = function(room,df)
 		if room.Descriptor then
 			room.Descriptor.DisplayFlags = df
+			room.DisplayFlags = df
 		else
 			room.DisplayFlags = df
 		end
