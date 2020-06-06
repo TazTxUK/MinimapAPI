@@ -40,6 +40,7 @@ if modconfigexists then
 			PickupFirstComeFirstServe = false,
 			PickupNoGrouping = false,
 			ShowGridDistances = false,
+			HighlightFurthestRoom = false,
 		},
 		{ --vanilla
 			ShowIcons = true,
@@ -64,6 +65,7 @@ if modconfigexists then
 			PickupFirstComeFirstServe = false,
 			PickupNoGrouping = false,
 			ShowGridDistances = false,
+			HighlightFurthestRoom = false,
 		},
 		{ --all
 			ShowIcons = true,
@@ -88,6 +90,7 @@ if modconfigexists then
 			PickupFirstComeFirstServe = false,
 			PickupNoGrouping = true,
 			ShowGridDistances = true,
+			HighlightFurthestRoom = true,
 		},
 		{
 			ShowIcons = true,
@@ -112,6 +115,7 @@ if modconfigexists then
 			PickupFirstComeFirstServe = false,
 			PickupNoGrouping = false,
 			ShowGridDistances = false,
+			HighlightFurthestRoom = false,
 		},
 	}
 	
@@ -327,6 +331,28 @@ if modconfigexists then
 			Info = {
 				"Rooms will have their distance",
 				"shown on them"
+			}
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Map(2)",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.HighlightFurthestRoom
+			end,
+			Display = function()
+				return "Highlight Furthest Room: " .. (MinimapAPI.Config.HighlightFurthestRoom and "ON" or "OFF")
+			end,
+			OnChange = function(newVal)
+				MinimapAPI.Config.HighlightFurthestRoom = newVal
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"The room furthest from the starting room",
+				"will be highlighted when having a map."
 			}
 		}
 	)

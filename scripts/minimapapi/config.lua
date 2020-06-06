@@ -42,6 +42,7 @@ MinimapAPI.Config = {
 	["BorderBgColorA"] = 1,
 	["ExternalMap"] = false,
 	["ShowGridDistances"] = false,
+	["HighlightFurthestRoom"] = false,
 	["SyncPositionWithMCM"] = true,
 	
 	["ConfigPreset"] = 1,

@@ -100,6 +100,7 @@ local badload = false
 local font = Font()
 font:Load("font/pftempestasevencondensed.fnt")
 local rooms
+local startingRoom
 local playerMapPos = Vector(0, 0)
 MinimapAPI.Level = {}
 MinimapAPI.OverrideVoid = false
@@ -853,6 +854,7 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_LEVEL,	function(self)
 	MinimapAPI:LoadDefaultMap()
 	updatePlayerPos()
 	MinimapAPI:UpdateExternalMap()
+	startingRoom = MinimapAPI:GetCurrentRoom()
 end)
 
 function MinimapAPI:UpdateUnboundedMapOffset()
@@ -1023,6 +1025,7 @@ local function renderMinimapLevelFlags(renderOffset)
 	end
 end
 
+local furthestRoom = nil
 local function renderUnboundedMinimap(size,hide)
 	if MinimapAPI:GetConfig("OverrideLost") or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
 		MinimapAPI:UpdateUnboundedMapOffset()
@@ -1115,6 +1118,29 @@ local function renderUnboundedMinimap(size,hide)
 				if room.PlayerDistance then
 					local s = tostring(room.PlayerDistance)
 					font:DrawString(s, room.RenderOffset.X + 7, room.RenderOffset.Y + 3, KColor(0.2, 0.2, 0.2, 1), 0, false)
+				end
+			end
+		end
+		
+		if size == "huge" and MinimapAPI:GetConfig("HighlightFurthestRoom") then
+			local currentRoom = MinimapAPI:GetCurrentRoom()
+			if currentRoom == startingRoom then
+				local furthestDist = 1
+				for _, room in pairs(MinimapAPI.Level) do
+					local dist = room.PlayerDistance
+					if dist then
+						if furthestDist < dist and room:GetDisplayFlags() & 0x2 == 0 then
+							furthestRoom = room
+							furthestDist = dist
+						end
+					end
+				end
+			end
+			if furthestRoom ~= nil then
+				if furthestRoom:GetDisplayFlags() ~=5 then
+					furthestRoom.Color = Color(1, 0, 0, 1, 0, 0, 0)
+				else
+					furthestRoom.Color = Color(1, 1, 1, 1, 0, 0, 0)
 				end
 			end
 		end
@@ -1427,7 +1453,7 @@ local function renderCallbackFunction(self)
 			return
 		end
 		
-		if currentroomdata and MinimapAPI:GetConfig("ShowGridDistances") then
+		if currentroomdata and (MinimapAPI:GetConfig("ShowGridDistances") or MinimapAPI:GetConfig("HighlightFurthestRoom")) then
 			for _,room in ipairs(MinimapAPI.Level) do
 				room.PlayerDistance = nil
 			end
