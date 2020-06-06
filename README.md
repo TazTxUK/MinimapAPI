@@ -33,4 +33,5 @@ Go to the wiki section or [click here](https://github.com/TazTxUK/MinimapAPI/wik
 
 ### Known issues:
 * Curse of the Lost questionmark isnt drawn
+* Using "Glowing Hourglass" to undo a card that reveals the map, will still display the map
 * See [Issues](https://github.com/TazTxUK/MinimapAPI/issues)
