@@ -104,6 +104,7 @@ local startingRoom
 local playerMapPos = Vector(0, 0)
 MinimapAPI.Level = {}
 MinimapAPI.OverrideVoid = false
+MinimapAPI.changedRoomsWithShowMap ={}
 
 local mapheldframes = 0
 
@@ -882,6 +883,13 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_USE_ITEM, function(self, colltype, rng)
 	if colltype == CollectibleType.COLLECTIBLE_CRYSTAL_BALL then
 		MinimapAPI:EffectCrystalBall()
 		MinimapAPI:UpdateExternalMap()
+	elseif colltype == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
+		if MinimapAPI.lastCardUsedRoom == MinimapAPI:GetCurrentRoom() then
+			for i,v in ipairs(MinimapAPI.changedRoomsWithShowMap) do
+				MinimapAPI.Level[v[1]].DisplayFlags = v[2]
+			end
+			MinimapAPI:UpdateExternalMap()
+		end
 	end
 end)
 
@@ -915,6 +923,7 @@ end
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 	updatePlayerPos()
+	MinimapAPI.lastCardUsedRoom = nil
 	-- for i,v in ipairs(MinimapAPI.Level) do
 		-- if not v.NoUpdate then
 			-- v:UpdateType()
@@ -924,7 +933,9 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 end)
 
 function MinimapAPI:ShowMap()
+	MinimapAPI.changedRoomsWithShowMap = {}
 	for i,v in ipairs(MinimapAPI.Level) do
+		table.insert(MinimapAPI.changedRoomsWithShowMap, {i,v.DisplayFlags})
 		if v.Hidden then
 			v.DisplayFlags = 6
 		else
@@ -937,6 +948,7 @@ end
 MinimapAPI:AddCallback( ModCallbacks.MC_USE_CARD, function(self, card)
 	if card == Card.CARD_WORLD or card == Card.CARD_SUN or card == Card.RUNE_ANSUZ then
 		MinimapAPI:ShowMap()
+		MinimapAPI.lastCardUsedRoom = MinimapAPI:GetCurrentRoom()
 	end
 end)
 
