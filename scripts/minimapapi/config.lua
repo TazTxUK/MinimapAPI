@@ -48,4 +48,5 @@ MinimapAPI.Config = {
 	["ConfigPreset"] = 1,
 	
 	["CustomPresets"] = {},
+	["VanillaSecretRoomDisplay"] = false,
 }

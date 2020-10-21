@@ -1110,7 +1110,15 @@ local function renderUnboundedMinimap(size,hide)
 				else
 					anim = "RoomUnvisited"
 				end
-				if type(frame) == "table" then
+				if MinimapAPI:GetConfig("VanillaSecretRoomDisplay") and (v.PermanentIcons[1] == "SecretRoom" or v.PermanentIcons[1] == "SuperSecretRoom") and anim == "RoomUnvisited" then
+					-- skip room rendering for secret rooms so only shadow is visible
+					if not MinimapAPI:GetConfig("ShowShadows") then
+						spr.Color = Color(0, 0, 0, 1, 0, 0, 0)
+						spr:SetFrame(anim, frame)
+						spr:Render(v.RenderOffset, zvec, zvec)
+						spr.Color = v.Color or defaultRoomColor
+					end
+				elseif type(frame) == "table" then
 					local fr0 = frame[size == "small" and "small" or "large"]
 					local fr1 = fr0[anim] or fr0["RoomUnvisited"]
 					local spr = fr1.sprite or sprite
@@ -1369,7 +1377,7 @@ local function renderBoundedMinimap()
 							end
 						end
 					end
-
+					
 					if displayflags & 0x4 > 0 then
 						local iconcount = #v.PermanentIcons
 						if not incurrent and MinimapAPI:GetConfig("ShowPickupIcons") then

@@ -41,6 +41,7 @@ if modconfigexists then
 			PickupNoGrouping = false,
 			ShowGridDistances = false,
 			HighlightFurthestRoom = false,
+			VanillaSecretRoomDisplay = false,
 		},
 		{ --vanilla
 			ShowIcons = true,
@@ -66,6 +67,7 @@ if modconfigexists then
 			PickupNoGrouping = false,
 			ShowGridDistances = false,
 			HighlightFurthestRoom = false,
+			VanillaSecretRoomDisplay = true,
 		},
 		{ --all
 			ShowIcons = true,
@@ -91,8 +93,9 @@ if modconfigexists then
 			PickupNoGrouping = true,
 			ShowGridDistances = true,
 			HighlightFurthestRoom = true,
+			VanillaSecretRoomDisplay = false,
 		},
-		{
+		{ -- minimal
 			ShowIcons = true,
 			ShowPickupIcons = false,
 			ShowShadows = true,
@@ -116,6 +119,7 @@ if modconfigexists then
 			PickupNoGrouping = false,
 			ShowGridDistances = false,
 			HighlightFurthestRoom = false,
+			VanillaSecretRoomDisplay = false,
 		},
 	}
 	
@@ -375,6 +379,27 @@ if modconfigexists then
 			Info = {
 				"Uses an alternate sprite for",
 				"\"semivisited\" rooms."
+			}
+		}
+	)
+	MCM.AddSetting(
+		"Minimap API",
+		"Map(2)",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.VanillaSecretRoomDisplay
+			end,
+			Display = function()
+				return "Vanilla secretroom display: " .. (MinimapAPI.Config.VanillaSecretRoomDisplay and "ON" or "OFF")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.VanillaSecretRoomDisplay = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"Enable this to display newly discovered",
+				"secret rooms as a shadows instead of a normal rooms.",
 			}
 		}
 	)
