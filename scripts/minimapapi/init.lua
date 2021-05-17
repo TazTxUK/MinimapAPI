@@ -1,5 +1,5 @@
 
-MinimapAPI = RegisterMod("Minimap API",1)
+MinimapAPI = require("scripts.minimapapi")
 
 require("scripts.minimapapi.version")
 require("scripts.minimapapi.data")

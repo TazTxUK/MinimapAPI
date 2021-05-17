@@ -143,8 +143,10 @@ MinimapAPI.SpriteMinimapSmall = Sprite()
 MinimapAPI.SpriteMinimapSmall:Load("gfx/ui/minimapapi_minimap1.anm2", true)
 MinimapAPI.SpriteMinimapLarge = Sprite()
 MinimapAPI.SpriteMinimapLarge:Load("gfx/ui/minimapapi_minimap2.anm2", true)
-MinimapAPI.SpriteMinimapIcons = Sprite()
-MinimapAPI.SpriteMinimapIcons:Load("gfx/ui/minimapapi_icons.anm2", true)
+
+MinimapAPI.SpriteIcons = Sprite()
+MinimapAPI.SpriteIcons:Load("gfx/ui/minimapapi_icons.anm2", true)
+
 MinimapAPI.SpriteMinimapCustomSmall = Sprite()
 MinimapAPI.SpriteMinimapCustomSmall:Load("gfx/ui/minimapapi/custom_minimap1.anm2", true)
 MinimapAPI.SpriteMinimapCustomLarge = Sprite()
@@ -1168,7 +1170,8 @@ local function renderUnboundedMinimap(size,hide)
 		end
 
 		if MinimapAPI:GetConfig("ShowIcons") then
-			local sprite = MinimapAPI.SpriteMinimapIcons
+			local sprite = MinimapAPI.SpriteIcons
+			
 			for i, v in pairs(MinimapAPI.Level) do
 				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI:GetConfig("ShowCurrentRoomItems")
 				local displayflags = v:GetDisplayFlags()
@@ -1414,6 +1417,8 @@ local function renderCallbackFunction(self)
 		
 		font:DrawString("(This tends to happen when the mod is first installed, or when",70,60,KColor(1,0.5,0.5,1),0,false)
 		font:DrawString("it is re-enabled via the mod menu)",70,70,KColor(1,0.5,0.5,1),0,false)
+		
+		font:DrawString("You will also need to restart the game after disabling the mod.",90,60,KColor(1,0.5,0.5,1),0,false)
 		return
 	end
 	
