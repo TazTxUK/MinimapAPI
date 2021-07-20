@@ -176,9 +176,14 @@ MinimapAPI.RoomTypeIconIDs = {
     "BarrenRoom",
     "ChestRoom",
     "DiceRoom",
-    nil,
+    nil, -- black market
     nil,-- "GreedExit",
-    "TreasureRoomGreed"
+	"Planetarium",
+	nil, -- Teleporter
+	nil, -- Teleporter_Exit
+	nil, -- doesnt exist
+	nil, -- doesnt exist
+	"UltraSecretRoom"
 }
 
 MinimapAPI.UnknownRoomTypeIconIDs = {
@@ -206,6 +211,11 @@ MinimapAPI.UnknownRoomTypeIconIDs = {
     nil,
     nil,
     nil,
+	nil, -- Teleporter
+	nil, -- Teleporter_Exit
+	nil, -- doesnt exist
+	nil, -- doesnt exist
+	"UltraSecretRoom"
 }
 
 local RT = RoomType
@@ -214,6 +224,7 @@ MinimapAPI.RoomTypeDisplayFlagsAdjacent = {
 	[RT.ROOM_MINIBOSS] = 1,
 	[RT.ROOM_SECRET] = 0,
 	[RT.ROOM_SUPERSECRET] = 0,
+	[RT.ROOM_ULTRASECRET] = 0,
 	[RT.ROOM_LIBRARY] = 3,
 	[RT.ROOM_SACRIFICE] = 1,
 	[RT.ROOM_ISAACS] = 3,
@@ -233,6 +244,7 @@ MinimapAPI.PickupSlotMachineNotBroken = slotNotDead
 MinimapAPI.PickupDresserNotDead = dresserNotDead
 
 MinimapAPI.PickupList = {
+	["RottenHeart"] = {IconID="RottenHeart",Type=5,Variant=12,SubType=4,Call=notCollected,IconGroup="hearts",Priority=11000},
 	["WhiteHeart"] = {IconID="WhiteHeart",Type=5,Variant=10,SubType=4,Call=notCollected,IconGroup="hearts",Priority=10900},
 	["GoldHeart"] = {IconID="GoldHeart",Type=5,Variant=10,SubType=7,Call=notCollected,IconGroup="hearts",Priority=10800},
 	["BoneHeart"] = {IconID="BoneHeart",Type=5,Variant=10,SubType=11,Call=notCollected,IconGroup="hearts",Priority=10700},
@@ -244,8 +256,12 @@ MinimapAPI.PickupList = {
 	["DoubleHeart"] = {IconID="Heart",Type=5,Variant=10,SubType=5,Call=notCollected,IconGroup="hearts",Priority=10100},
 	["Heart"] = {IconID="Heart",Type=5,Variant=10,SubType=1,Call=notCollected,IconGroup="hearts",Priority=10100},
 	["HalfHeart"] = {IconID="HalfHeart",Type=5,Variant=10,SubType=2,Call=notCollected,IconGroup="hearts",Priority=10000},
+	
 	["Item"] = {IconID="Item",Type=5,Variant=100,SubType=-1,Call=function(pickup) return pickup.SubType ~= 0 end,IconGroup="collectibles",Priority=9000},
 	["Trinket"] = {IconID="Trinket",Type=5,Variant=350,SubType=-1,IconGroup="collectibles",Priority=8000},
+	
+	["MegaChest"] = {IconID="MegaChest",Type=5,Variant=57,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7800},
+	["WoodenChest"] = {IconID="WoodenChest",Type=5,Variant=56,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7700},
 	["EternalChest"] = {IconID="EternalChest",Type=5,Variant=53,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7600},
 	["GoldChest"] = {IconID="GoldChest",Type=5,Variant=60,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7500},
 	["RedChest"] = {IconID="RedChest",Type=5,Variant=360,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7400},
@@ -253,64 +269,116 @@ MinimapAPI.PickupList = {
 	["StoneChest"] = {IconID="StoneChest",Type=5,Variant=51,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=7200},
 	["SpikedChest"] = {IconID="SpikedChest",Type=5,Variant=52,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=7100},
 	["MimicChest"] = {IconID="SpikedChest",Type=5,Variant=54,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=7000},
-	["GrabBag"] = {IconID="Sack",Type=5,Variant=69,SubType=-1,Call=notCollected,IconGroup="grabbags",Priority=6500},
+	
+	["BlackGrabBag"] = {IconID="BlackSack",Type=5,Variant=69,SubType=2,Call=notCollected,IconGroup="grabbags",Priority=6600},
+	["GrabBag"] = {IconID="Sack",Type=5,Variant=69,SubType=1,Call=notCollected,IconGroup="grabbags",Priority=6500},
 	["Pill"] = {IconID="Pill",Type=5,Variant=70,SubType=-1,Call=notCollected,IconGroup="pills",Priority=6000},
-	["Key"] = {IconID="Key",Type=5,Variant=30,SubType=-1,Call=notCollected,IconGroup="keys",Priority=5000},
-	["Bomb"] = {IconID="Bomb",Type=5,Variant=40,SubType=-1,Call=notCollected,IconGroup="bombs",Priority=4000},
+	["GoldenKey"] = {IconID="GoldenKey",Type=5,Variant=30,SubType=2,Call=notCollected,IconGroup="keys",Priority=5300},
+	["ChargedKey"] = {IconID="ChargedKey",Type=5,Variant=30,SubType=4,Call=notCollected,IconGroup="keys",Priority=5200},
+	["Key"] = {IconID="Key",Type=5,Variant=30,SubType=1,Call=notCollected,IconGroup="keys",Priority=5000},
+	["GoldenBomb"] = {IconID="GoldenBomb",Type=5,Variant=40,SubType=4,Call=notCollected,IconGroup="bombs",Priority=4200},
+	["Bomb"] = {IconID="Bomb",Type=5,Variant=40,SubType=1,Call=notCollected,IconGroup="bombs",Priority=4000},
 	["Coin"] = {IconID="Coin",Type=5,Variant=20,SubType=-1,Call=notCollected,IconGroup="coins",Priority=3000},
+	["GoldenBattery"] = {IconID="GoldenBattery",Type=5,Variant=90,SubType=4,Call=notCollected,IconGroup="batteries",Priority=2200},
 	["Battery"] = {IconID="Battery",Type=5,Variant=90,SubType=-1,Call=notCollected,IconGroup="batteries",Priority=2000},
 	["Card"] = {IconID="Card",Type=5,Variant=300,SubType=-1,Call=notCollected,IconGroup="cards",Priority=1000},
-	["Slot"] = {IconID="Slot",Type=6,Variant=-1,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=0},
+	
+	["Confessional"] = {IconID="Confessional",Type=6,Variant=17,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=700},
+	["CraneGame"] = {IconID="CraneGame",Type=6,Variant=16,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=600},
+	["RestockMachine"] = {IconID="RestockMachine",Type=6,Variant=10,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=500},
+	["DressingTable"] = {IconID="DressingTable",Type=6,Variant=12,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=400},
+	["DonationMachine"] = {IconID="DonationMachine",Type=6,Variant=8,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=300},
+	["FortuneMachine"] = {IconID="Slot",Type=6,Variant=3,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=200},
+	["BloodDonationMachine"] = {IconID="BloodDonationMachine",Type=6,Variant=2,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=100},
+	["Slot"] = {IconID="Slot",Type=6,Variant=1,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=0},
+
+	["ChargeBeggar"] = {IconID="ChargeBeggar",Type=6,Variant=13,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=700},
+	["RottenBeggar"] = {IconID="RottenBeggar",Type=6,Variant=18,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=600},
+	["BombBeggar"] = {IconID="BombBeggar",Type=6,Variant=9,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=500},
+	["KeyBeggar"] = {IconID="KeyBeggar",Type=6,Variant=7,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=400},
+	["DemonShellGame"] = {IconID="DemonBeggar",Type=6,Variant=15,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=300},
+	["DemonBeggar"] = {IconID="DemonBeggar",Type=6,Variant=5,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=200},
+	["ShellGame"] = {IconID="Beggar",Type=6,Variant=6,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=100},
+	["Beggar"] = {IconID="Beggar",Type=6,Variant=4,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=0},
 }
 
 MinimapAPI.IconList = {
 	{ID="Shop",anim="IconShop",frame=0},
 	{ID="TreasureRoom",anim="IconTreasureRoom",frame=0},
-    {ID="Boss",anim="IconBoss",frame=0},
-    {ID="Miniboss",anim="IconMiniboss",frame=0},
-    {ID="SecretRoom",anim="IconSecretRoom",frame=0},
-    {ID="SuperSecretRoom",anim="IconSuperSecretRoom",frame=0},
-    {ID="Arcade",anim="IconArcade",frame=0},
-    {ID="CurseRoom",anim="IconCurseRoom",frame=0},
-    {ID="AmbushRoom",anim="IconAmbushRoom",frame=0},
-    {ID="Library",anim="IconLibrary",frame=0},
-    {ID="SacrificeRoom",anim="IconSacrificeRoom",frame=0},
-    {ID="AngelRoom",anim="IconAngelRoom",frame=0},
-    {ID="BossAmbushRoom",anim="IconBossAmbushRoom",frame=0},
-    {ID="IsaacsRoom",anim="IconIsaacsRoom",frame=0},
-    {ID="BarrenRoom",anim="IconBarrenRoom",frame=0},
-    {ID="ChestRoom",anim="IconChestRoom",frame=0},
-    {ID="DiceRoom",anim="IconDiceRoom",frame=0},
-    --{ID="GreedExit",anim="",frame=0},  --currently no icon
-    {ID="TreasureRoomGreed",anim="IconTreasureRoomGreed",frame=0},
+	{ID="Boss",anim="IconBoss",frame=0},
+	{ID="Miniboss",anim="IconMiniboss",frame=0},
+	{ID="SecretRoom",anim="IconSecretRoom",frame=0},
+	{ID="SuperSecretRoom",anim="IconSuperSecretRoom",frame=0},
+	{ID="Arcade",anim="IconArcade",frame=0},
+	{ID="CurseRoom",anim="IconCurseRoom",frame=0},
+	{ID="AmbushRoom",anim="IconAmbushRoom",frame=0},
+	{ID="Library",anim="IconLibrary",frame=0},
+	{ID="SacrificeRoom",anim="IconSacrificeRoom",frame=0},
+	{ID="AngelRoom",anim="IconAngelRoom",frame=0},
+	{ID="BossAmbushRoom",anim="IconBossAmbushRoom",frame=0},
+	{ID="IsaacsRoom",anim="IconIsaacsRoom",frame=0},
+	{ID="BarrenRoom",anim="IconBarrenRoom",frame=0},
+	{ID="ChestRoom",anim="IconChestRoom",frame=0},
+	{ID="DiceRoom",anim="IconDiceRoom",frame=0},
+	--{ID="GreedExit",anim="",frame=0},  --currently no icon
+	{ID="Planetarium",anim="IconPlanetarium",frame=0},
+	{ID="UltraSecretRoom",anim="IconUltraSecretRoom",frame=0},
+	--Quests
+	{ID="MirrorRoom",anim="IconMirrorRoom",frame=0},
+	{ID="MinecartRoom",anim="IconMinecartRoom",frame=0},
 	--Unknowns
-    {ID="LockedRoom",anim="IconLockedRoom",frame=0},
+	{ID="LockedRoom",anim="IconLockedRoom",frame=0},
 	--Pickups
-	{ID="WhiteHeart",anim="IconWhiteHeart",frame=0},
-	{ID="GoldHeart",anim="IconGoldHeart",frame=0},
-	{ID="BoneHeart",anim="IconBoneHeart",frame=0},
-	{ID="BlackHeart",anim="IconBlackHeart"},
-	{ID="BlueHeart",anim="IconBlueHeart",frame=0},
-	{ID="BlendedHeart",anim="IconBlendedHeart",frame=0},
-	{ID="HalfBlueHeart",anim="IconHalfBlueHeart",frame=0},
-	{ID="Heart",anim="IconHeart",frame=0},
-	{ID="HalfHeart",anim="IconHalfHeart",frame=0},
+	{ID="RottenHeart",anim="IconHeart",frame=2},
+	{ID="WhiteHeart",anim="IconHeart",frame=9},
+	{ID="GoldHeart",anim="IconHeart",frame=8},
+	{ID="BoneHeart",anim="IconHeart",frame=7},
+	{ID="BlackHeart",anim="IconHeart",frame=6},
+	{ID="BlueHeart",anim="IconHeart",frame=5},
+	{ID="BlendedHeart",anim="IconHeart",frame=4},
+	{ID="HalfBlueHeart",anim="IconHeart",frame=3},
+	{ID="Heart",anim="IconHeart",frame=1},
+	{ID="HalfHeart",anim="IconHeart",frame=0},
 	{ID="Item",anim="IconItem",frame=0},
 	{ID="Trinket",anim="IconTrinket",frame=0},
-	{ID="EternalChest",anim="IconEternalChest",frame=0},
-	{ID="GoldChest",anim="IconGoldChest",frame=0},
-	{ID="RedChest",anim="IconRedChest",frame=0},
-	{ID="Chest",anim="IconChest",frame=0},
-	{ID="StoneChest",anim="IconStoneChest",frame=0},
-	{ID="SpikedChest",anim="IconSpikedChest",frame=0},
 	{ID="Pill",anim="IconPill",frame=0},
 	{ID="Key",anim="IconKey",frame=0},
+	{ID="GoldenKey",anim="IconKey",frame=1},
+	{ID="ChargedKey",anim="IconKey",frame=2},
 	{ID="Bomb",anim="IconBomb",frame=0},
+	{ID="GoldenBomb",anim="IconBomb",frame=1},
 	{ID="Coin",anim="IconCoin",frame=0},
 	{ID="Battery",anim="IconBattery",frame=0},
+	{ID="GoldenBattery",anim="IconBattery",frame=1},
 	{ID="Card",anim="IconCard",frame=0},
-	{ID="Slot",anim="IconSlot",frame=0},
+	{ID="BlackSack",anim="IconSack",frame=1},
 	{ID="Sack",anim="IconSack",frame=0},
+	--Chests
+	{ID="MegaChest",anim="IconChest",frame=7},
+	{ID="WoodenChest",anim="IconChest",frame=6},
+	{ID="EternalChest",anim="IconChest",frame=4},
+	{ID="GoldChest",anim="IconChest",frame=1},
+	{ID="RedChest",anim="IconChest",frame=3},
+	{ID="Chest",anim="IconChest",frame=0},
+	{ID="StoneChest",anim="IconStoneChest",frame=5},
+	{ID="SpikedChest",anim="IconSpikedChest",frame=2},
+	--Slots
+	{ID="DressingTable",anim="IconSlot",frame=0},
+	{ID="DonationMachine",anim="IconSlot",frame=1},
+	{ID="Slot",anim="IconSlot",frame=2},
+	{ID="BloodDonationMachine",anim="IconSlot",frame=3},
+	{ID="FortuneMachine",anim="IconSlot",frame=4},
+	{ID="CraneGame",anim="IconSlot",frame=5},
+	{ID="RestockMachine",anim="IconSlot",frame=6},
+	{ID="Confessional",anim="IconSlot",frame=7},
+	{ID="Beggar",anim="IconBeggar",frame=0},
+	{ID="RottenBeggar",anim="IconBeggar",frame=1},
+	{ID="DemonBeggar",anim="IconBeggar",frame=2},
+	{ID="KeyBeggar",anim="IconBeggar",frame=3},
+	{ID="BombBeggar",anim="IconBeggar",frame=4},
+	{ID="ChargeBeggar",anim="IconBeggar",frame=5},
+	--Misc
+	{ID="Ladder",anim="IconLadder",frame=0},
 }
 
 MinimapAPI.RoomShapeAdjacentCoords = {

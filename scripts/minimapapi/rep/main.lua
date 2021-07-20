@@ -469,6 +469,7 @@ function MinimapAPI:LoadDefaultMap()
 	rooms = Game():GetLevel():GetRooms()
 	MinimapAPI.Level = {}
 	local treasure_room_count = 0
+	local curLevelStage = Game():GetLevel():GetStage()
 	for i = 0, #rooms - 1 do
 		local v = rooms:Get(i)
 		local t = {
@@ -501,11 +502,19 @@ function MinimapAPI:LoadDefaultMap()
 				end
 			end
 		end
+		if curLevelStage == LevelStage.STAGE1_2 and string.find(v.Data.Name, "Mirror Room") then
+			t.PermanentIcons = {"MirrorRoom"}
+			t.LockedIcons = {"MirrorRoom"}
+		else if curLevelStage == LevelStage.STAGE2_2 and string.find(v.Data.Name, "Secret Entrance") then
+			t.PermanentIcons = {"MinecartRoom"}
+			t.LockedIcons = {"MinecartRoom"}
+		end
+		end
 		MinimapAPI:AddRoom(t)
 	end
 	if not (MinimapAPI:GetConfig("OverrideVoid") or MinimapAPI.OverrideVoid) then
 		if not Game():IsGreedMode() then
-			if Game():GetLevel():GetStage() == LevelStage.STAGE7 then
+			if curLevelStage == LevelStage.STAGE7 then
 				for i,v in ipairs(MinimapAPI.Level) do
 					if v.Shape == RoomShape.ROOMSHAPE_2x2 and v.Descriptor.Data.Type == RoomType.ROOM_BOSS then
 						if not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP0)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.LEFT0)) then
