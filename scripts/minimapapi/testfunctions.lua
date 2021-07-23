@@ -352,7 +352,5 @@ function MinimapAPI.Debug.PeriodicTable()
 end
 
 function MinimapAPI.Debug.A()
-	local str = ""
-	local alphabet = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
 	
 end

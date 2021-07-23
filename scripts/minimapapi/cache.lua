@@ -8,7 +8,7 @@ local mod = cache.Mod
 cache.Game = Game()
 cache.HUD = cache.Game:GetHUD()
 
-local STAGE3_2 = LevelStage.STAGE3_2
+local STAGE1_2 = LevelStage.STAGE1_2
 local STAGETYPE_REPENTANCE = StageType.STAGETYPE_REPENTANCE
 local STAGETYPE_REPENTANCE_B = StageType.STAGETYPE_REPENTANCE_B
 
@@ -32,6 +32,8 @@ function cache.ReloadRoomCache()
 		else
 			cache.Dimension = 1
 		end
+		
+		cache.MirrorDimension = cache.Dimension == 1 and cache.Stage == STAGE1_2 and (cache.StageType == STAGETYPE_REPENTANCE or cache.StageType == STAGETYPE_REPENTANCE_B)
 	end
 end
 cache.ReloadRoomCache()
