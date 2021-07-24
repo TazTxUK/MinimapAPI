@@ -880,6 +880,7 @@ function MinimapAPI:UpdateMinimapCenterOffset(force)
 	local currentroom = MinimapAPI:GetCurrentRoom()
 	if currentroom and currentroom then
 		roomCenterOffset = playerMapPos - MinimapAPI.RoomShapeGridPivots[currentroom.Shape] + MinimapAPI:GetRoomShapeGridSize(currentroom.Shape) / 2
+		roomCenterOffset = roomCenterOffset * Vector(MinimapAPI.GlobalScaleX, 1)
 	elseif force then
 		roomCenterOffset = playerMapPos + Vector(0.5, 0.5)
 	end
@@ -1346,7 +1347,7 @@ local function renderBoundedMinimap()
 		offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 1, MinimapAPI:GetConfig("PositionY") - 2)
 	end
 	do
-		local frameWidth = ((MinimapAPI:GetConfig("MapFrameWidth") + frameTL.X) / dframeHorizBarSize.X) * MinimapAPI.GlobalScaleX
+		local frameWidth = ((MinimapAPI:GetConfig("MapFrameWidth") + frameTL.X) / dframeHorizBarSize.X) -- * MinimapAPI.GlobalScaleX
 		
 		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,MinimapAPI:GetConfig("BorderColorA"),math.floor(MinimapAPI:GetConfig("BorderColorR")*255),math.floor(MinimapAPI:GetConfig("BorderColorG")*255),math.floor(MinimapAPI:GetConfig("BorderColorB")*255))
 		MinimapAPI.SpriteMinimapSmall.Scale = Vector(frameWidth, 1)
@@ -1363,13 +1364,13 @@ local function renderBoundedMinimap()
 		
 		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,MinimapAPI:GetConfig("BorderBgColorA"),math.floor(MinimapAPI:GetConfig("BorderBgColorR")*255),math.floor(MinimapAPI:GetConfig("BorderBgColorG")*255),math.floor(MinimapAPI:GetConfig("BorderBgColorB")*255))
 		MinimapAPI.SpriteMinimapSmall.Scale =
-			Vector(((MinimapAPI:GetConfig("MapFrameWidth") - frameTL.X) / dframeCenterSize.X) * MinimapAPI.GlobalScaleX, (MinimapAPI:GetConfig("MapFrameHeight") - frameTL.Y) / dframeCenterSize.Y)
+			Vector(((MinimapAPI:GetConfig("MapFrameWidth") - frameTL.X) / dframeCenterSize.X), (MinimapAPI:GetConfig("MapFrameHeight") - frameTL.Y) / dframeCenterSize.Y)
 		MinimapAPI.SpriteMinimapSmall:SetFrame("MinimapAPIFrameCenter", 0)
 		MinimapAPI.SpriteMinimapSmall:Render(offsetVec + frameTL, zvec, zvec)
 		
 		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,MinimapAPI:GetConfig("BorderColorA"),0,0,0)
 		
-		MinimapAPI.SpriteMinimapSmall.Scale = Vector(((MinimapAPI:GetConfig("MapFrameWidth") + frameTL.X) / dframeHorizBarSize.X) * MinimapAPI.GlobalScaleX, 1)
+		MinimapAPI.SpriteMinimapSmall.Scale = Vector(((MinimapAPI:GetConfig("MapFrameWidth") + frameTL.X) / dframeHorizBarSize.X), 1)
 		MinimapAPI.SpriteMinimapSmall:SetFrame("MinimapAPIFrameShadowS", 0)
 		MinimapAPI.SpriteMinimapSmall:Render(offsetVec + Vector(frameTL.X, frameTL.Y + MinimapAPI:GetFrameBR().Y), zvec, zvec)
 
@@ -1384,15 +1385,17 @@ local function renderBoundedMinimap()
 	if MinimapAPI:GetConfig("OverrideLost") or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
 		MinimapAPI:UpdateMinimapCenterOffset()
 		
-		for i, v in ipairs(MinimapAPI:GetLevel()) do
-			local roomOffset = (v.DisplayPosition or v.Position) - roomCenterOffset
-			roomOffset.X = roomOffset.X * roomSize.X
-			roomOffset.Y = roomOffset.Y * roomSize.Y
-			v.TargetRenderOffset = offsetVec + roomOffset + MinimapAPI:GetFrameCenterOffset() + roomAnimPivot
-			if v.RenderOffset then
-				v.RenderOffset = v.TargetRenderOffset * MinimapAPI:GetConfig("SmoothSlidingSpeed") + v.RenderOffset * (1 - MinimapAPI:GetConfig("SmoothSlidingSpeed"))
-			else
-				v.RenderOffset = v.TargetRenderOffset
+		for _, level in pairs(MinimapAPI.Levels) do
+			for i, v in ipairs(level) do
+				local roomOffset = (v.DisplayPosition or v.Position) * Vector(MinimapAPI.GlobalScaleX, 1) - roomCenterOffset
+				roomOffset.X = roomOffset.X * roomSize.X
+				roomOffset.Y = roomOffset.Y * roomSize.Y
+				v.TargetRenderOffset = offsetVec + roomOffset + MinimapAPI:GetFrameCenterOffset() + roomAnimPivot
+				if v.RenderOffset then
+					v.RenderOffset = v.TargetRenderOffset * MinimapAPI:GetConfig("SmoothSlidingSpeed") + v.RenderOffset * (1 - MinimapAPI:GetConfig("SmoothSlidingSpeed"))
+				else
+					v.RenderOffset = v.TargetRenderOffset
+				end
 			end
 		end
 		
@@ -1403,7 +1406,7 @@ local function renderBoundedMinimap()
 				local displayflags = v:GetDisplayFlags()
 				if displayflags > 0 then
 					for n, pos in ipairs(MinimapAPI:GetRoomShapePositions(v.Shape)) do
-						pos = Vector(pos.X * roomSize.X, pos.Y * roomSize.Y)
+						pos = Vector(pos.X * roomSize.X * MinimapAPI.GlobalScaleX, pos.Y * roomSize.Y)
 						local actualRoomPixelSize = outlinePixelSize
 						local brcutoff = v.RenderOffset - offsetVec + pos + actualRoomPixelSize - MinimapAPI:GetFrameBR()
 						if brcutoff.X < actualRoomPixelSize.X and brcutoff.Y < actualRoomPixelSize.Y then 
@@ -1484,7 +1487,7 @@ local function renderBoundedMinimap()
 								if not loc then return end
 
 								local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
-								local spr = icontb.sprite or MinimapAPI.SpriteMinimapSmall
+								local spr = icontb.sprite or MinimapAPI.SpriteIcons
 								updateMinimapIcon(spr, icontb)
 								local brcutoff = v.RenderOffset - offsetVec + iconlocOffset + iconPixelSize - MinimapAPI:GetFrameBR()
 								local tlcutoff = frameTL - (v.RenderOffset - offsetVec + iconlocOffset)
@@ -1675,7 +1678,11 @@ local function renderCallbackFunction(self)
 			elseif MinimapAPI:GetConfig("DisplayMode") == 1 then
 				renderUnboundedMinimap("small")
 			elseif MinimapAPI:GetConfig("DisplayMode") == 2 then
-				renderBoundedMinimap()
+				if MinimapAPI.GlobalScaleX < 1 then
+					renderUnboundedMinimap("small")
+				else
+					renderBoundedMinimap()
+				end
 			elseif MinimapAPI:GetConfig("DisplayMode") == 4 then
 				renderUnboundedMinimap("small",true)
 			end
@@ -1683,7 +1690,7 @@ local function renderCallbackFunction(self)
 			if MinimapAPI:GetConfig("ShowLevelFlags") then
 				local levelflagoffset
 				local islarge = MinimapAPI:IsLarge()
-				if not islarge and MinimapAPI:GetConfig("DisplayMode") == 2 then
+				if not islarge and MinimapAPI:GetConfig("DisplayMode") == 2 and MinimapAPI.GlobalScaleX >= 1 then
 					levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 9,8)
 				elseif not islarge and MinimapAPI:GetConfig("DisplayMode") == 4 then
 					levelflagoffset = Vector(screen_size.X - 9,8)
@@ -1695,7 +1702,7 @@ local function renderCallbackFunction(self)
 								minx = math.min(minx, v.RenderOffset.X)
 							else
 								local size = (MinimapAPI.IsLarge() and largeRoomSize or roomSize).X
-								minx = math.min(minx, v.RenderOffset.X + MinimapAPI.GlobalScaleX * MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size - 4)
+								minx = math.min(minx, v.RenderOffset.X + MinimapAPI.GlobalScaleX * MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size - 6)
 							end
 						end
 					end
