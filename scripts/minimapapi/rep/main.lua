@@ -495,10 +495,6 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				Type = v.Data.Type,
 				Level = dimension,
 			}
-			if v.Data.Shape == RoomShape.ROOMSHAPE_LTL then
-				-- t.Position = t.Position + Vector(1,0)
-				for a,b in pairs(t) do GVM.Print(a,b) end
-			end
 			if v.Data.Type == RoomType.ROOM_SECRET or v.Data.Type == RoomType.ROOM_SUPERSECRET then
 				t.Hidden = 1
 			elseif v.Data.Type == RoomType.ROOM_ULTRASECRET then
