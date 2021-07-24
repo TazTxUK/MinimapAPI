@@ -1031,6 +1031,8 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 		MinimapAPI:LoadDefaultMap()
 	end
 	
+	MinimapAPI:CheckForNewRedRooms()
+	
 	updatePlayerPos()
 	MinimapAPI.lastCardUsedRoom = nil
 	-- for i,v in ipairs(MinimapAPI.Level) do
