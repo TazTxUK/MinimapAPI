@@ -482,21 +482,22 @@ function MinimapAPI:LoadDefaultMap(dimension)
 	for i = 0, #rooms - 1 do
 		local v = rooms:Get(i)
 		local hash = GetPtrHash(v)
-		if not added_descriptors[v] and GetPtrHash(cache.Level:GetRoomByIdx(v.GridIndex)) == hash then
+		if not added_descriptors[v] and GetPtrHash(cache.Level:GetRoomByIdx(v.SafeGridIndex)) == hash then
 			added_descriptors[v] = true
 			local t = {
 				Shape = v.Data.Shape,
 				PermanentIcons = {MinimapAPI:GetRoomTypeIconID(v.Data.Type)},
 				LockedIcons = {MinimapAPI:GetUnknownRoomTypeIconID(v.Data.Type)},
 				ItemIcons = {},
-				Position = MinimapAPI:GridIndexToVector(v.GridIndex),
+				Position = MinimapAPI:GridIndexToVector(v.SafeGridIndex),
 				Descriptor = v,
 				AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[v.Data.Type] or 5,
 				Type = v.Data.Type,
 				Level = dimension,
 			}
 			if v.Data.Shape == RoomShape.ROOMSHAPE_LTL then
-				t.Position = t.Position + Vector(1,0)
+				-- t.Position = t.Position + Vector(1,0)
+				for a,b in pairs(t) do GVM.Print(a,b) end
 			end
 			if v.Data.Type == RoomType.ROOM_SECRET or v.Data.Type == RoomType.ROOM_SUPERSECRET then
 				t.Hidden = 1
