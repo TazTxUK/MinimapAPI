@@ -1804,7 +1804,7 @@ MinimapAPI:AddCallback(
 MinimapAPI:AddCallback(
 	ModCallbacks.MC_USE_CARD,
 	function(self, card)
-		if card == Card.CARD_CRACKED_KEY then
+		if card == Card.CARD_CRACKED_KEY or card == Card.CARD_SOUL_CAIN then
 			MinimapAPI:CheckForNewRedRooms()
 		end
 	end
