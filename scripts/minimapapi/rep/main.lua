@@ -93,6 +93,7 @@ local rooms
 local startingRoom
 local playerMapPos = Vector(0, 0)
 MinimapAPI.Levels = {}
+MinimapAPI.CheckedRoomCount = 0
 MinimapAPI.CurrentDimension = 0
 MinimapAPI.OverrideVoid = false
 MinimapAPI.changedRoomsWithShowMap = {}
@@ -474,6 +475,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 	rooms = Game():GetLevel():GetRooms()
 	dimension = dimension or MinimapAPI.CurrentDimension
 	MinimapAPI.Levels[dimension] = {}
+	MinimapAPI.CheckedRoomCount = 0
 	local level = MinimapAPI.Levels[dimension]
 	local treasure_room_count = 0
 	local added_descriptors = {}
@@ -497,7 +499,9 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				t.Position = t.Position + Vector(1,0)
 			end
 			if v.Data.Type == RoomType.ROOM_SECRET or v.Data.Type == RoomType.ROOM_SUPERSECRET then
-				t.Hidden = true
+				t.Hidden = 1
+			elseif v.Data.Type == RoomType.ROOM_ULTRASECRET then
+				t.Hidden = 2
 			end
 			if v.Data.Type == 11 then
 				if MinimapAPI:IsAmbushBoss() then
@@ -523,6 +527,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 			MinimapAPI:AddRoom(t)
 		end
 	end
+	MinimapAPI.CheckedRoomCount = #rooms
 	if not (MinimapAPI:GetConfig("OverrideVoid") or MinimapAPI.OverrideVoid) then
 		if not Game():IsGreedMode() then
 			if cache.Stage == LevelStage.STAGE7 then
@@ -553,12 +558,54 @@ function MinimapAPI:EffectCrystalBall()
 	end
 end
 
+function MinimapAPI:CheckForNewRedRooms(dimension)
+	rooms = Game():GetLevel():GetRooms()
+	dimension = dimension or MinimapAPI.CurrentDimension
+	local level = MinimapAPI.Levels[dimension]
+	local added_descriptors = {}
+	for i = MinimapAPI.CheckedRoomCount, #rooms - 1 do
+		local v = rooms:Get(i)
+		local hash = GetPtrHash(v)
+		if not added_descriptors[v] and GetPtrHash(cache.Level:GetRoomByIdx(v.GridIndex)) == hash then
+			added_descriptors[v] = true
+			local t = {
+				Shape = v.Data.Shape,
+				PermanentIcons = {MinimapAPI:GetRoomTypeIconID(v.Data.Type)},
+				LockedIcons = {MinimapAPI:GetUnknownRoomTypeIconID(v.Data.Type)},
+				ItemIcons = {},
+				Position = MinimapAPI:GridIndexToVector(v.GridIndex),
+				Descriptor = v,
+				AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[v.Data.Type] or 5,
+				Type = v.Data.Type,
+				Level = dimension,
+				Color = Color(1,0.25,0.25,1,0,0,0),
+			}
+			if v.Data.Shape == RoomShape.ROOMSHAPE_LTL then
+				t.Position = t.Position + Vector(1,0)
+			end
+			if v.Data.Type == RoomType.ROOM_SECRET or v.Data.Type == RoomType.ROOM_SUPERSECRET then
+				t.Hidden = 1
+			elseif v.Data.Type == RoomType.ROOM_ULTRASECRET then
+				t.Hidden = 2
+			end
+			if v.Data.Type == 11 then
+				if MinimapAPI:IsAmbushBoss() then
+					t.PermanentIcons[1] = "BossAmbushRoom"
+				end
+			end
+			MinimapAPI:AddRoom(t)
+		end
+	end
+	MinimapAPI.CheckedRoomCount = #rooms
+end
+
 function MinimapAPI:ClearMap(dimension)
 	MinimapAPI.Levels[dimension or MinimapAPI.CurrentDimension] = {}
 end
 
 function MinimapAPI:ClearLevels()
 	MinimapAPI.Levels = {}
+	MinimapAPI.CheckedRoomCount = 0
 end
 
 local maproomfunctions = {
@@ -587,11 +634,17 @@ local maproomfunctions = {
 	GetDisplayFlags = function(room)
 		local roomDesc = room.Descriptor
 		local df = room.DisplayFlags or 0
-		if roomDesc then
-			df = df | roomDesc.DisplayFlags
-		end
-		if room.Type and room.Type > 1 and not room.Hidden and Isaac.GetPlayer(0):GetEffects():HasCollectibleEffect(21) then
-			df = df | 6
+		if room.Hidden == 2 then
+			if not room:IsVisited() then
+				df = 0
+			end
+		else
+			if roomDesc then
+				df = df | roomDesc.DisplayFlags
+			end
+			if room.Type and room.Type > 1 and not room.Hidden and Isaac.GetPlayer(0):GetEffects():HasCollectibleEffect(21) then
+				df = df | 6
+			end
 		end
 		return MinimapAPI:RunDisplayFlagsCallbacks(room,df)
 	end,
@@ -1226,7 +1279,6 @@ local function renderUnboundedMinimap(size,hide)
 
 		if MinimapAPI:GetConfig("ShowIcons") then
 			local sprite = MinimapAPI.SpriteIcons
-			sprite.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
 			
 			for i, v in pairs(MinimapAPI:GetLevel()) do
 				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI:GetConfig("ShowCurrentRoomItems")
@@ -1241,6 +1293,7 @@ local function renderUnboundedMinimap(size,hide)
 							local iconlocOffset = Vector(loc.X * renderRoomSize.X, loc.Y * renderRoomSize.Y)
 							local spr = icontb.sprite or sprite
 							updateMinimapIcon(spr, icontb)
+							spr.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
 							if size == "small" then
 								spr:Render(iconlocOffset + v.RenderOffset, zvec, zvec)
 							else
@@ -1663,6 +1716,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 			local vanillarooms = Game():GetLevel():GetRooms()
 			MinimapAPI:ClearMap()
 			for dim, level in pairs(saved.LevelData) do
+				dim = tonumber(dim)
 				for i, v in ipairs(level) do
 					MinimapAPI:AddRoom{
 						Position = Vector(v.PositionX, v.PositionY),
@@ -1687,6 +1741,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 			if saved.playerMapPosX and saved.playerMapPosY then
 				playerMapPos = Vector(saved.playerMapPosX,saved.playerMapPosY)
 			end
+			MinimapAPI.CheckedRoomCount = saved.CheckedRoomCount or 0
 		else
 			MinimapAPI:LoadDefaultMap()
 		end
@@ -1700,6 +1755,7 @@ function MinimapAPI:GetSaveTable(menuexit)
 	if menuexit then
 		saved.playerMapPosX = playerMapPos.X
 		saved.playerMapPosY = playerMapPos.Y
+		saved.CheckedRoomCount = MinimapAPI.CheckedRoomCount
 		saved.LevelData = {}
 		for idx, level in pairs(MinimapAPI.Levels) do
 			saved.LevelData[idx] = {}
@@ -1728,6 +1784,25 @@ function MinimapAPI:GetSaveTable(menuexit)
 	end
 	return saved
 end
+
+-- RED ROOMS
+MinimapAPI:AddCallback(
+	ModCallbacks.MC_USE_ITEM,
+	function(self, collectibleType)
+		if collectibleType == CollectibleType.COLLECTIBLE_RED_KEY then
+			MinimapAPI:CheckForNewRedRooms()
+		end
+	end
+)
+
+MinimapAPI:AddCallback(
+	ModCallbacks.MC_USE_CARD,
+	function(self, card)
+		if card == Card.CARD_CRACKED_KEY then
+			MinimapAPI:CheckForNewRedRooms()
+		end
+	end
+)
 
 -- LOADING SAVED GAME
 local addRenderCall = true
