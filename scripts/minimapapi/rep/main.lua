@@ -692,7 +692,14 @@ function MinimapAPI:AddRoom(t)
 		Dimension = t.Dimension or MinimapAPI.CurrentDimension,
 	}
 	setmetatable(x, maproommeta)
+	
 	local level = MinimapAPI:GetLevel(x.Dimension)
+	
+	if not level then
+		MinimapAPI.Levels[x.Dimension] = {}
+		level = MinimapAPI.Levels[x.Dimension]
+	end
+	
 	level[#level + 1] = x
 	x:SetPosition(x.Position)
 	return x
@@ -902,7 +909,11 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 	for i = 1, #(level) do
 		local v = level[i]
 		if v:GetDisplayFlags() > 0 then
-			local maxxval = (v.Position.X - MinimapAPI.RoomShapeGridPivots[v.Shape].X + MinimapAPI:GetRoomShapeGridSize(v.Shape).X) * MinimapAPI.GlobalScaleX
+			local maxxval
+			maxxval = (
+				v.Position.X - MinimapAPI.RoomShapeGridPivots[v.Shape].X +
+				(MinimapAPI.GlobalScaleX >= 0 and MinimapAPI:GetRoomShapeGridSize(v.Shape).X or 0)
+			) * MinimapAPI.GlobalScaleX
 			if not maxx or (maxxval > maxx) then
 				maxx = maxxval
 			end
@@ -1129,7 +1140,7 @@ local function renderUnboundedMinimap(size,hide)
 				local displayflags = v:GetDisplayFlags()
 				if displayflags > 0 then
 					for n, pos in ipairs(MinimapAPI:GetRoomShapePositions(v.Shape)) do
-						pos = Vector(pos.X * renderRoomSize.X, pos.Y * renderRoomSize.Y)
+						pos = Vector(pos.X * renderRoomSize.X * MinimapAPI.GlobalScaleX, pos.Y * renderRoomSize.Y)
 						--local actualRoomPixelSize = renderOutlinePixelSize   -- unused
 						sprite.Color = defaultOutlineColor
 						sprite:SetFrame("RoomOutline", 1)
@@ -1233,7 +1244,10 @@ local function renderUnboundedMinimap(size,hide)
 							if size == "small" then
 								spr:Render(iconlocOffset + v.RenderOffset, zvec, zvec)
 							else
-								spr:Render(iconlocOffset + v.RenderOffset - largeRoomAnimPivot + largeIconOffset, zvec, zvec)
+								local pos = iconlocOffset + largeIconOffset - largeRoomAnimPivot
+								pos.X = pos.X * MinimapAPI.GlobalScaleX
+								pos = pos + v.RenderOffset
+								spr:Render(pos, zvec, zvec)
 							end
 							k = k + 1
 						end
@@ -1392,7 +1406,7 @@ local function renderBoundedMinimap()
 					tlcutoff.X - roomPivotOffset.X < roomPixelBR.X and tlcutoff.Y - roomPivotOffset.Y < roomPixelBR.Y then
 						brcutoff:Clamp(0, 0, roomPixelBR.X, roomPixelBR.Y)
 						tlcutoff:Clamp(0, 0, roomPixelBR.X, roomPixelBR.Y)
-						spr.Scale.X = MinimapAPI.GlobalScaleX
+						spr.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
 						spr:Render(v.RenderOffset, tlcutoff, brcutoff)
 					end
 				end
@@ -1423,7 +1437,7 @@ local function renderBoundedMinimap()
 								tlcutoff.X < iconPixelSize.X and tlcutoff.Y < iconPixelSize.Y then
 									brcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
 									tlcutoff:Clamp(0, 0, iconPixelSize.X, iconPixelSize.Y)
-									spr.Scale.X = MinimapAPI.GlobalScaleX
+									spr.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
 									spr:Render(iconlocOffset + v.RenderOffset, tlcutoff, brcutoff)
 									k = k + 1
 								end
@@ -1622,7 +1636,12 @@ local function renderCallbackFunction(self)
 					local minx = screen_size.X
 					for i,v in ipairs(MinimapAPI:GetLevel()) do
 						if v.TargetRenderOffset and v.TargetRenderOffset.Y < 64 then
-							minx = math.min(minx, v.RenderOffset.X)
+							if MinimapAPI.GlobalScaleX >= 0 then
+								minx = math.min(minx, v.RenderOffset.X)
+							else
+								local size = (MinimapAPI.IsLarge() and largeRoomSize or roomSize).X
+								minx = math.min(minx, v.RenderOffset.X + MinimapAPI.GlobalScaleX * MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size - 4)
+							end
 						end
 					end
 					levelflagoffset = Vector(minx-9,8)
@@ -1643,24 +1662,27 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 		if is_save and saved.LevelData and saved.Seed == Game():GetSeeds():GetStartSeed() then
 			local vanillarooms = Game():GetLevel():GetRooms()
 			MinimapAPI:ClearMap()
-			for i, v in ipairs(saved.LevelData) do
-				MinimapAPI:AddRoom{
-					Position = Vector(v.PositionX, v.PositionY),
-					DisplayPosition = (v.DisplayPositionX and v.DisplayPositionY) and Vector(v.DisplayPositionX, v.DisplayPositionY),
-					ID = v.ID,
-					Shape = v.Shape,
-					ItemIcons = v.ItemIcons,
-					PermanentIcons = v.PermanentIcons,
-					LockedIcons = v.LockedIcons,
-					Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
-					DisplayFlags = v.DisplayFlags,
-					Clear = v.Clear,
-					Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, math.floor(v.Color.RO+0.5), math.floor(v.Color.GO+0.5), math.floor(v.Color.BO+0.5)),
-					AdjacentDisplayFlags = v.AdjacentDisplayFlags,
-					Visited = v.Visited,
-					Hidden = v.Hidden,
-					NoUpdate = v.NoUpdate,
-				}
+			for dim, level in pairs(saved.LevelData) do
+				for i, v in ipairs(level) do
+					MinimapAPI:AddRoom{
+						Position = Vector(v.PositionX, v.PositionY),
+						DisplayPosition = (v.DisplayPositionX and v.DisplayPositionY) and Vector(v.DisplayPositionX, v.DisplayPositionY),
+						ID = v.ID,
+						Shape = v.Shape,
+						ItemIcons = v.ItemIcons,
+						PermanentIcons = v.PermanentIcons,
+						LockedIcons = v.LockedIcons,
+						Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
+						DisplayFlags = v.DisplayFlags,
+						Clear = v.Clear,
+						Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, math.floor(v.Color.RO+0.5), math.floor(v.Color.GO+0.5), math.floor(v.Color.BO+0.5)),
+						AdjacentDisplayFlags = v.AdjacentDisplayFlags,
+						Visited = v.Visited,
+						Hidden = v.Hidden,
+						NoUpdate = v.NoUpdate,
+						Dimension = dim,
+					}
+				end
 			end
 			if saved.playerMapPosX and saved.playerMapPosY then
 				playerMapPos = Vector(saved.playerMapPosX,saved.playerMapPosY)
@@ -1679,26 +1701,29 @@ function MinimapAPI:GetSaveTable(menuexit)
 		saved.playerMapPosX = playerMapPos.X
 		saved.playerMapPosY = playerMapPos.Y
 		saved.LevelData = {}
-		for i, v in ipairs(MinimapAPI:GetLevel()) do
-			saved.LevelData[#saved.LevelData + 1] = {
-				PositionX = v.Position.X,
-				PositionY = v.Position.Y,
-				ID = type(v.ID) ~= "userdata" and v.ID,
-				Shape = v.Shape,
-				ItemIcons = v.ItemIcons,
-				PermanentIcons = v.PermanentIcons,
-				LockedIcons = v.LockedIcons,
-				DescriptorListIndex = v.Descriptor and v.Descriptor.ListIndex,
-				DisplayFlags = rawget(v, "DisplayFlags"),
-				Clear = rawget(v, "Clear"),
-				Color = v.Color and {R = v.Color.R, G = v.Color.G, B = v.Color.B, A = v.Color.A, RO = v.Color.RO, GO = v.Color.GO, BO = v.Color.BO},
-				AdjacentDisplayFlags = v.AdjacentDisplayFlags,
-				Visited = v.Visited,
-				Hidden = v.Hidden,
-				NoUpdate = v.NoUpdate,
-				DisplayPositionX = v.DisplayPosition and v.DisplayPosition.X,
-				DisplayPositionY = v.DisplayPosition and v.DisplayPosition.Y,
-			}
+		for idx, level in pairs(MinimapAPI.Levels) do
+			saved.LevelData[idx] = {}
+			for i, v in ipairs(level) do
+				saved.LevelData[idx][#saved.LevelData[idx] + 1] = {
+					PositionX = v.Position.X,
+					PositionY = v.Position.Y,
+					ID = type(v.ID) ~= "userdata" and v.ID,
+					Shape = v.Shape,
+					ItemIcons = v.ItemIcons,
+					PermanentIcons = v.PermanentIcons,
+					LockedIcons = v.LockedIcons,
+					DescriptorListIndex = v.Descriptor and v.Descriptor.ListIndex,
+					DisplayFlags = rawget(v, "DisplayFlags"),
+					Clear = rawget(v, "Clear"),
+					Color = v.Color and {R = v.Color.R, G = v.Color.G, B = v.Color.B, A = v.Color.A, RO = v.Color.RO, GO = v.Color.GO, BO = v.Color.BO},
+					AdjacentDisplayFlags = v.AdjacentDisplayFlags,
+					Visited = v.Visited,
+					Hidden = v.Hidden,
+					NoUpdate = v.NoUpdate,
+					DisplayPositionX = v.DisplayPosition and v.DisplayPosition.X,
+					DisplayPositionY = v.DisplayPosition and v.DisplayPosition.Y,
+				}
+			end
 		end
 	end
 	return saved
