@@ -1571,7 +1571,7 @@ local function renderCallbackFunction(self)
 	MinimapAPI.GlobalScaleX = MinimapAPI.ValueGlobalScaleX
 	
 	screen_size = MinimapAPI:GetScreenSize()
-	if MinimapAPI:GetConfig("DisplayOnNoHUD") or not Game():GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD) then
+	if MinimapAPI:GetConfig("DisplayOnNoHUD") or cache.HUD:IsVisible() then
 		local currentroomdata = MinimapAPI:GetCurrentRoom()
 		local gamelevel = Game():GetLevel()
 		local gameroom = Game():GetRoom()
