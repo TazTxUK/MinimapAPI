@@ -321,6 +321,7 @@ MinimapAPI.IconList = {
 	{ID="BarrenRoom",anim="IconBarrenRoom",frame=0},
 	{ID="ChestRoom",anim="IconChestRoom",frame=0},
 	{ID="DiceRoom",anim="IconDiceRoom",frame=0},
+	{ID="TreasureRoomGreed",anim="IconTreasureRoomGreed",frame=0},
 	--{ID="GreedExit",anim="",frame=0},  --currently no icon
 	{ID="Planetarium",anim="IconPlanetarium",frame=0},
 	{ID="UltraSecretRoom",anim="IconUltraSecretRoom",frame=0},
