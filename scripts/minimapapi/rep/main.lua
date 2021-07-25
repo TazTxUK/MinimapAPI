@@ -40,7 +40,7 @@ function MinimapAPI:GetUnknownRoomTypeIconID(t)
 end
 
 function MinimapAPI:IsAmbushBoss()
-	return cache.Stage ~= cache.AbsoluteStage
+	return cache.Stage <= 8 and cache.Stage % 2 == 1
 end
 
 function MinimapAPI:GetRoomShapeIconPositions(rs, iconcount)
