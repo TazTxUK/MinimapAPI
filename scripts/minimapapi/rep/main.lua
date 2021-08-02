@@ -633,7 +633,11 @@ local maproomfunctions = {
 			if roomDesc and not room.IgnoreDescriptorFlags then
 				df = df | roomDesc.DisplayFlags
 			end
-			if room.Type and room.Type > 1 and not room.Hidden and Isaac.GetPlayer(0):GetEffects():HasCollectibleEffect(21) then
+			local hasCompass = false
+			for i = 0, Game():GetNumPlayers() - 1 do
+				hasCompass = hasCompass or Isaac.GetPlayer(i):GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_COMPASS) 
+			end
+			if room.Type and room.Type > 1 and not room.Hidden and hasCompass then
 				df = df | 6
 			end
 		end
@@ -1578,9 +1582,11 @@ local function renderCallbackFunction(self)
 		local currentroomdata = MinimapAPI:GetCurrentRoom()
 		local gamelevel = Game():GetLevel()
 		local gameroom = Game():GetRoom()
-		local player = Isaac.GetPlayer(0)
-		local hasSpelunkerHat = player:HasCollectible(CollectibleType.COLLECTIBLE_SPELUNKER_HAT) and not MinimapAPI.DisableSpelunkerHat
-		
+		local hasSpelunkerHat = false
+		for i = 0, Game():GetNumPlayers() - 1 do
+			local player = Isaac.GetPlayer(i)
+			hasSpelunkerHat = hasSpelunkerHat or (player:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_SPELUNKER_HAT) and not MinimapAPI.DisableSpelunkerHat)
+		end
 		if currentroomdata and MinimapAPI:PickupDetectionEnabled() then
 			if not currentroomdata.NoUpdate then
 				currentroomdata.ItemIcons = MinimapAPI:GetCurrentRoomPickupIDs()
