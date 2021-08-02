@@ -510,8 +510,12 @@ function MinimapAPI:LoadDefaultMap(dimension)
 			end
 			if (cache.Stage == LevelStage.STAGE1_2 or cache.Stage == LevelStage.STAGE1_1) and string.find(v.Data.Name, "Mirror Room") then
 				t.PermanentIcons = {"MirrorRoom"}
+				t.AdjacentDisplayFlags = 1
+				t.IgnoreDescriptorFlags = true
 			elseif (cache.Stage == LevelStage.STAGE2_2 or cache.Stage == LevelStage.STAGE2_1) and string.find(v.Data.Name, "Secret Entrance") then
 				t.PermanentIcons = {"MinecartRoom"}
+				t.AdjacentDisplayFlags = 1
+				t.IgnoreDescriptorFlags = true
 			end
 			MinimapAPI:AddRoom(t)
 		end
@@ -626,7 +630,7 @@ local maproomfunctions = {
 				df = 0
 			end
 		else
-			if roomDesc then
+			if roomDesc and not room.IgnoreDescriptorFlags then
 				df = df | roomDesc.DisplayFlags
 			end
 			if room.Type and room.Type > 1 and not room.Hidden and Isaac.GetPlayer(0):GetEffects():HasCollectibleEffect(21) then
@@ -730,6 +734,7 @@ function MinimapAPI:AddRoom(t)
 		Hidden = t.Hidden or nil,
 		NoUpdate = t.NoUpdate or nil,
 		Dimension = t.Dimension or MinimapAPI.CurrentDimension,
+		IgnoreDescriptorFlags = t.IgnoreDescriptorFlags,
 	}
 	setmetatable(x, maproommeta)
 	
