@@ -39,10 +39,6 @@ function MinimapAPI:GetUnknownRoomTypeIconID(t)
 	return MinimapAPI.UnknownRoomTypeIconIDs[t]
 end
 
-function MinimapAPI:IsAmbushBoss()
-	return cache.Stage <= 8 and cache.Stage % 2 == 1
-end
-
 function MinimapAPI:GetRoomShapeIconPositions(rs, iconcount)
 	iconcount = iconcount or math.huge
 	local r
@@ -500,10 +496,8 @@ function MinimapAPI:LoadDefaultMap(dimension)
 			elseif v.Data.Type == RoomType.ROOM_ULTRASECRET then
 				t.Hidden = 2
 			end
-			if v.Data.Type == 11 then
-				if MinimapAPI:IsAmbushBoss() then
-					t.PermanentIcons[1] = "BossAmbushRoom"
-				end
+			if v.Data.Type == 11 and v.Data.Subtype == 1 then
+				t.PermanentIcons[1] = "BossAmbushRoom"
 			end
 			if override_greed and Game():IsGreedMode() then
 				if v.Data.Type == RoomType.ROOM_TREASURE then
@@ -583,10 +577,8 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 			elseif v.Data.Type == RoomType.ROOM_ULTRASECRET then
 				t.Hidden = 2
 			end
-			if v.Data.Type == 11 then
-				if MinimapAPI:IsAmbushBoss() then
-					t.PermanentIcons[1] = "BossAmbushRoom"
-				end
+			if v.Data.Type == 11 and v.Data.Subtype == 1 then
+				t.PermanentIcons[1] = "BossAmbushRoom"
 			end
 			MinimapAPI:AddRoom(t)
 		end
