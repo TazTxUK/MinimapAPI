@@ -514,12 +514,10 @@ function MinimapAPI:LoadDefaultMap(dimension)
 					end
 				end
 			end
-			if cache.Stage == LevelStage.STAGE1_2 and string.find(v.Data.Name, "Mirror Room") then
+			if (cache.Stage == LevelStage.STAGE1_2 or cache.Stage == LevelStage.STAGE1_1) and string.find(v.Data.Name, "Mirror Room") then
 				t.PermanentIcons = {"MirrorRoom"}
-				t.LockedIcons = {"MirrorRoom"}
-			elseif cache.Stage == LevelStage.STAGE2_2 and string.find(v.Data.Name, "Secret Entrance") then
+			elseif (cache.Stage == LevelStage.STAGE2_2 or cache.Stage == LevelStage.STAGE2_1) and string.find(v.Data.Name, "Secret Entrance") then
 				t.PermanentIcons = {"MinecartRoom"}
-				t.LockedIcons = {"MinecartRoom"}
 			end
 			MinimapAPI:AddRoom(t)
 		end
