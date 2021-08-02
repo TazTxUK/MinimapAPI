@@ -782,7 +782,7 @@ end
 
 function MinimapAPI:UpdateMinimapCenterOffset(force)
 	local currentroom = MinimapAPI:GetCurrentRoom()
-	if currentroom and currentroom then
+	if currentroom then
 		roomCenterOffset = playerMapPos - MinimapAPI.RoomShapeGridPivots[currentroom.Shape] + MinimapAPI:GetRoomShapeGridSize(currentroom.Shape) / 2
 	elseif force then
 		roomCenterOffset = playerMapPos + Vector(0.5, 0.5)

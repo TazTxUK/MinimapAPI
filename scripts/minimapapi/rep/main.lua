@@ -875,7 +875,7 @@ end
 
 function MinimapAPI:UpdateMinimapCenterOffset(force)
 	local currentroom = MinimapAPI:GetCurrentRoom()
-	if currentroom and currentroom then
+	if currentroom then
 		roomCenterOffset = playerMapPos - MinimapAPI.RoomShapeGridPivots[currentroom.Shape] + MinimapAPI:GetRoomShapeGridSize(currentroom.Shape) / 2
 		roomCenterOffset = roomCenterOffset * Vector(MinimapAPI.GlobalScaleX, 1)
 	elseif force then
@@ -1187,7 +1187,7 @@ local function renderUnboundedMinimap(size,hide)
 		
 		if hide then return end
 		
-		local defaultOutlineColor = Color(1, 1, 1, 1, math.floor(MinimapAPI:GetConfig("DefaultOutlineColorR")*255), math.floor(MinimapAPI:GetConfig("DefaultOutlineColorG")*255), math.floor(MinimapAPI:GetConfig("DefaultOutlineColorB")*255))
+		local defaultOutlineColor = Color(1, 1, 1, 1, MinimapAPI:GetConfig("DefaultOutlineColorR"), MinimapAPI:GetConfig("DefaultOutlineColorG"), MinimapAPI:GetConfig("DefaultOutlineColorB"))
 		if MinimapAPI:GetConfig("ShowShadows") then
 			for i, v in pairs(MinimapAPI:GetLevel()) do
 				local displayflags = v:GetDisplayFlags()
@@ -1346,7 +1346,7 @@ local function renderBoundedMinimap()
 	do
 		local frameWidth = ((MinimapAPI:GetConfig("MapFrameWidth") + frameTL.X) / dframeHorizBarSize.X) -- * MinimapAPI.GlobalScaleX
 		
-		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,MinimapAPI:GetConfig("BorderColorA"),math.floor(MinimapAPI:GetConfig("BorderColorR")*255),math.floor(MinimapAPI:GetConfig("BorderColorG")*255),math.floor(MinimapAPI:GetConfig("BorderColorB")*255))
+		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,MinimapAPI:GetConfig("BorderColorA"),MinimapAPI:GetConfig("BorderColorR"),MinimapAPI:GetConfig("BorderColorG"),MinimapAPI:GetConfig("BorderColorB"))
 		MinimapAPI.SpriteMinimapSmall.Scale = Vector(frameWidth, 1)
 		MinimapAPI.SpriteMinimapSmall:SetFrame("MinimapAPIFrameN", 0)
 		MinimapAPI.SpriteMinimapSmall:Render(offsetVec, zvec, zvec)
@@ -1359,7 +1359,7 @@ local function renderBoundedMinimap()
 		MinimapAPI.SpriteMinimapSmall:SetFrame("MinimapAPIFrameE", 0)
 		MinimapAPI.SpriteMinimapSmall:Render(offsetVec + Vector(MinimapAPI:GetConfig("MapFrameWidth"), 0), zvec, zvec)
 		
-		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,MinimapAPI:GetConfig("BorderBgColorA"),math.floor(MinimapAPI:GetConfig("BorderBgColorR")*255),math.floor(MinimapAPI:GetConfig("BorderBgColorG")*255),math.floor(MinimapAPI:GetConfig("BorderBgColorB")*255))
+		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,MinimapAPI:GetConfig("BorderBgColorA"),MinimapAPI:GetConfig("BorderBgColorR"),MinimapAPI:GetConfig("BorderBgColorG"),MinimapAPI:GetConfig("BorderBgColorB"))
 		MinimapAPI.SpriteMinimapSmall.Scale =
 			Vector(((MinimapAPI:GetConfig("MapFrameWidth") - frameTL.X) / dframeCenterSize.X), (MinimapAPI:GetConfig("MapFrameHeight") - frameTL.Y) / dframeCenterSize.Y)
 		MinimapAPI.SpriteMinimapSmall:SetFrame("MinimapAPIFrameCenter", 0)
@@ -1396,7 +1396,7 @@ local function renderBoundedMinimap()
 			end
 		end
 		
-		local defaultOutlineColor = Color(1, 1, 1, 1, math.floor(MinimapAPI:GetConfig("DefaultOutlineColorR")*255), math.floor(MinimapAPI:GetConfig("DefaultOutlineColorG")*255), math.floor(MinimapAPI:GetConfig("DefaultOutlineColorB")*255))
+		local defaultOutlineColor = Color(1, 1, 1, 1, MinimapAPI:GetConfig("DefaultOutlineColorR"), MinimapAPI:GetConfig("DefaultOutlineColorG"), MinimapAPI:GetConfig("DefaultOutlineColorB"))
 		local roomInView = {}
 		if MinimapAPI:GetConfig("ShowShadows") then
 			for i, v in pairs(MinimapAPI:GetLevel()) do
@@ -1735,7 +1735,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 						Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
 						DisplayFlags = v.DisplayFlags,
 						Clear = v.Clear,
-						Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, math.floor(v.Color.RO+0.5), math.floor(v.Color.GO+0.5), math.floor(v.Color.BO+0.5)),
+						Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO+0.5, v.Color.GO+0.5, v.Color.BO+0.5),
 						AdjacentDisplayFlags = v.AdjacentDisplayFlags,
 						Visited = v.Visited,
 						Hidden = v.Hidden,
