@@ -1244,7 +1244,11 @@ local function renderUnboundedMinimap(size,hide)
 			for _, room in pairs(MinimapAPI:GetLevel()) do
 				if room.PlayerDistance then
 					local s = tostring(room.PlayerDistance)
-					font:DrawString(s, room.RenderOffset.X + 7, room.RenderOffset.Y + 3, KColor(0.2, 0.2, 0.2, 1), 0, false)
+					local offsetX = 7
+					if MinimapAPI.TargetGlobalScaleX <0 then
+						offsetX = offsetX * MinimapAPI.TargetGlobalScaleX * 3 + 2
+					end
+					font:DrawString(s, room.RenderOffset.X + offsetX, room.RenderOffset.Y + 3, KColor(0.2, 0.2, 0.2, 1), 0, false)
 				end
 			end
 		end
