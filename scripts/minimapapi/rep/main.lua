@@ -485,6 +485,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				PermanentIcons = {MinimapAPI:GetRoomTypeIconID(v.Data.Type)},
 				LockedIcons = {MinimapAPI:GetUnknownRoomTypeIconID(v.Data.Type)},
 				ItemIcons = {},
+				VisitedIcons = {},
 				Position = MinimapAPI:GridIndexToVector(v.SafeGridIndex),
 				Descriptor = v,
 				AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[v.Data.Type] or 5,
@@ -509,13 +510,9 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				end
 			end
 			if (cache.Stage == LevelStage.STAGE1_2 or cache.Stage == LevelStage.STAGE1_1) and string.find(v.Data.Name, "Mirror Room") then
-				t.PermanentIcons = {"MirrorRoom"}
-				t.AdjacentDisplayFlags = 1
-				t.IgnoreDescriptorFlags = true
+				t.VisitedIcons = {"MirrorRoom"}
 			elseif (cache.Stage == LevelStage.STAGE2_2 or cache.Stage == LevelStage.STAGE2_1) and string.find(v.Data.Name, "Secret Entrance") then
-				t.PermanentIcons = {"MinecartRoom"}
-				t.AdjacentDisplayFlags = 1
-				t.IgnoreDescriptorFlags = true
+				t.VisitedIcons = {"MinecartRoom"}
 			end
 			MinimapAPI:AddRoom(t)
 		end
@@ -728,6 +725,7 @@ function MinimapAPI:AddRoom(t)
 		PermanentIcons = t.PermanentIcons or {},
 		LockedIcons = t.LockedIcons or {},
 		ItemIcons = t.ItemIcons or {},
+		VisitedIcons = t.VisitedIcons or {},
 		Descriptor = t.Descriptor or nil,
 		Color = t.Color or nil,
 		RenderOffset = nil,
@@ -1005,6 +1003,7 @@ function MinimapAPI:UpdateExternalMap()
 					PermanentIcons = #v.PermanentIcons > 0 and v.PermanentIcons or nil,
 					ItemIcons = #v.ItemIcons > 0 and v.ItemIcons or nil,
 					LockedIcons = #v.LockedIcons > 0 and v.LockedIcons or nil,
+					VisitedIcons = #v.VisitedIcons > 0 and v.VisitedIcons or nil,
 					DisplayFlags = v.DisplayFlags,
 					Clear = v.Clear,
 					Visited = v.Visited,
@@ -1316,6 +1315,9 @@ local function renderUnboundedMinimap(size,hide)
 
 				if displayflags & 0x4 > 0 then
 					local iconcount = #v.PermanentIcons
+					if v:IsVisited() then
+						iconcount = iconcount + #v.VisitedIcons
+					end
 					if not incurrent and MinimapAPI:GetConfig("ShowPickupIcons") then
 						iconcount = iconcount + #v.ItemIcons
 					end
@@ -1324,7 +1326,11 @@ local function renderUnboundedMinimap(size,hide)
 					if size ~= "small" then
 						locs = MinimapAPI:GetLargeRoomShapeIconPositions(v.Shape, iconcount)
 					end
+					
 					renderIcons(v.PermanentIcons, locs)
+					if v:IsVisited() then
+						renderIcons(v.VisitedIcons, locs)
+					end
 					if not incurrent and MinimapAPI:GetConfig("ShowPickupIcons") then
 						renderIcons(v.ItemIcons, locs)
 					end
@@ -1509,6 +1515,9 @@ local function renderBoundedMinimap()
 					
 					if displayflags & 0x4 > 0 then
 						local iconcount = #v.PermanentIcons
+						if v:IsVisited() then
+							iconcount = iconcount + #v.VisitedIcons
+						end
 						if not incurrent and MinimapAPI:GetConfig("ShowPickupIcons") then
 							iconcount = iconcount + #v.ItemIcons
 						end
@@ -1516,6 +1525,9 @@ local function renderBoundedMinimap()
 						local locs = MinimapAPI:GetRoomShapeIconPositions(v.Shape, iconcount)
 
 						renderIcons(v.PermanentIcons, locs)
+						if v:IsVisited() then
+							renderIcons(v.VisitedIcons, locs)
+						end
 						if not incurrent and MinimapAPI:GetConfig("ShowPickupIcons") then
 							renderIcons(v.ItemIcons, locs)
 						end
