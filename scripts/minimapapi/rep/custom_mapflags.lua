@@ -16,12 +16,12 @@ local function TreasureMapCondition()
 end
 
 local function BlueMapCondition()
-	if MindCondition then return false end
+	if MindCondition() then return false end
 	return gameLvl:GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT)
 end
 
 local function CompassCondition()
-	if MindCondition then return false end
+	if MindCondition() then return false end
 
 	return gameLvl:GetStateFlag(LevelStateFlag.STATE_COMPASS_EFFECT)
 end
