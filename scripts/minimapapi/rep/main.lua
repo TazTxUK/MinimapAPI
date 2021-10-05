@@ -1054,7 +1054,6 @@ end
 
 MinimapAPI:AddCallback( ModCallbacks.MC_USE_CARD, function(self, card)
 	if card == Card.CARD_WORLD or card == Card.CARD_SUN or card == Card.RUNE_ANSUZ then
-		MinimapAPI:ShowMap()
 		MinimapAPI.lastCardUsedRoom = MinimapAPI:GetCurrentRoom()
 	end
 end)
