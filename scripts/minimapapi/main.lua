@@ -1420,7 +1420,12 @@ local function renderCallbackFunction(self)
 	end
 	
 	local r = Game():GetRoom()
+	-- Hide in boss intro cutscene
 	if r:GetFrameCount() == 0 and r:GetType() == RoomType.ROOM_BOSS and not r:IsClear() then
+		return
+	end
+	-- Hide in Mega Satan (BossID: 55) / Beast fight
+	if r:GetType() == RoomType.ROOM_BOSS and r:GetBossID() == 55 then
 		return
 	end
 	
