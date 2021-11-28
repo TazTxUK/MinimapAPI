@@ -244,7 +244,7 @@ MinimapAPI.PickupSlotMachineNotBroken = slotNotDead
 MinimapAPI.PickupDresserNotDead = dresserNotDead
 
 MinimapAPI.PickupList = {
-	["RottenHeart"] = {IconID="RottenHeart",Type=5,Variant=12,SubType=4,Call=notCollected,IconGroup="hearts",Priority=11000},
+	["RottenHeart"] = {IconID="RottenHeart",Type=5,Variant=10,SubType=12,Call=notCollected,IconGroup="hearts",Priority=11000},
 	["WhiteHeart"] = {IconID="WhiteHeart",Type=5,Variant=10,SubType=4,Call=notCollected,IconGroup="hearts",Priority=10900},
 	["GoldHeart"] = {IconID="GoldHeart",Type=5,Variant=10,SubType=7,Call=notCollected,IconGroup="hearts",Priority=10800},
 	["BoneHeart"] = {IconID="BoneHeart",Type=5,Variant=10,SubType=11,Call=notCollected,IconGroup="hearts",Priority=10700},
