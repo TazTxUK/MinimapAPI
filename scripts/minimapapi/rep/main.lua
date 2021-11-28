@@ -637,7 +637,7 @@ local maproomfunctions = {
 	GetDisplayFlags = function(room)
 		local roomDesc = room.Descriptor
 		local df = room.DisplayFlags or 0
-		if room.Hidden == 2 then
+		if room.Hidden == 2 and roomDesc.DisplayFlags == 0 then -- if red room is hidden and DFs not set
 			if not room:IsVisited() then
 				df = 0
 			end
@@ -1032,6 +1032,7 @@ function MinimapAPI:UpdateExternalMap()
 					DisplayFlags = v.DisplayFlags,
 					Clear = v.Clear,
 					Visited = v.Visited,
+					Type = v.Type
 				}
 				if v.Color then
 					x.Color = {R = v.Color.R, G = v.Color.G, B = v.Color.B, A = v.Color.A, RO = v.Color.RO, GO = v.Color.GO, BO = v.Color.BO}
@@ -1782,6 +1783,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 						Position = Vector(v.PositionX, v.PositionY),
 						DisplayPosition = (v.DisplayPositionX and v.DisplayPositionY) and Vector(v.DisplayPositionX, v.DisplayPositionY),
 						ID = v.ID,
+						Type = v.Type,
 						Shape = v.Shape,
 						ItemIcons = v.ItemIcons,
 						PermanentIcons = v.PermanentIcons,
@@ -1827,6 +1829,7 @@ function MinimapAPI:GetSaveTable(menuexit)
 					ID = type(v.ID) ~= "userdata" and v.ID,
 					Shape = v.Shape,
 					ItemIcons = v.ItemIcons,
+					Type = v.Type,
 					PermanentIcons = v.PermanentIcons,
 					LockedIcons = v.LockedIcons,
 					VisitedIcons = v.VisitedIcons,
