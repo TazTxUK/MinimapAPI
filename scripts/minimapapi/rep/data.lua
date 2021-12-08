@@ -260,6 +260,8 @@ MinimapAPI.PickupList = {
 	["Item"] = {IconID="Item",Type=5,Variant=100,SubType=-1,Call=function(pickup) return pickup.SubType ~= 0 end,IconGroup="collectibles",Priority=9000},
 	["Trinket"] = {IconID="Trinket",Type=5,Variant=350,SubType=-1,IconGroup="collectibles",Priority=8000},
 	
+	["BlackGrabBag"] = {IconID="BlackSack",Type=5,Variant=69,SubType=2,Call=notCollected,IconGroup="chests",Priority=6600},
+	["GrabBag"] = {IconID="Sack",Type=5,Variant=69,SubType=1,Call=notCollected,IconGroup="chests",Priority=6500},
 	["MegaChest"] = {IconID="MegaChest",Type=5,Variant=57,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7800},
 	["WoodenChest"] = {IconID="WoodenChest",Type=5,Variant=56,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7700},
 	["EternalChest"] = {IconID="EternalChest",Type=5,Variant=53,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=7600},
@@ -271,8 +273,6 @@ MinimapAPI.PickupList = {
 	["HauntedChest"] = {IconID="SpikedChest",Type=5,Variant=58,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=7100},
 	["MimicChest"] = {IconID="SpikedChest",Type=5,Variant=54,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=7000},
 	
-	["BlackGrabBag"] = {IconID="BlackSack",Type=5,Variant=69,SubType=2,Call=notCollected,IconGroup="grabbags",Priority=6600},
-	["GrabBag"] = {IconID="Sack",Type=5,Variant=69,SubType=1,Call=notCollected,IconGroup="grabbags",Priority=6500},
 	["Pill"] = {IconID="Pill",Type=5,Variant=70,SubType=-1,Call=notCollected,IconGroup="pills",Priority=6000},
 	["GoldenKey"] = {IconID="GoldenKey",Type=5,Variant=30,SubType=2,Call=notCollected,IconGroup="keys",Priority=5300},
 	["ChargedKey"] = {IconID="ChargedKey",Type=5,Variant=30,SubType=4,Call=notCollected,IconGroup="keys",Priority=5200},
@@ -283,6 +283,7 @@ MinimapAPI.PickupList = {
 	["GoldenBattery"] = {IconID="GoldenBattery",Type=5,Variant=90,SubType=4,Call=notCollected,IconGroup="batteries",Priority=2200},
 	["Battery"] = {IconID="Battery",Type=5,Variant=90,SubType=-1,Call=notCollected,IconGroup="batteries",Priority=2000},
 	["Card"] = {IconID="Card",Type=5,Variant=300,SubType=-1,Call=notCollected,IconGroup="cards",Priority=1000},
+	["Poop"] = {IconID="Poop",Type=5,Variant=42,SubType=0,Call=notCollected,IconGroup="bombs",Priority=1200},
 	
 	["Confessional"] = {IconID="Confessional",Type=6,Variant=17,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=700},
 	["CraneGame"] = {IconID="CraneGame",Type=6,Variant=16,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=600},
@@ -353,15 +354,17 @@ MinimapAPI.IconList = {
 	{ID="Battery",anim="IconBattery",frame=0},
 	{ID="GoldenBattery",anim="IconBattery",frame=1},
 	{ID="Card",anim="IconCard",frame=0},
-	{ID="BlackSack",anim="IconSack",frame=1},
-	{ID="Sack",anim="IconSack",frame=0},
+	{ID="Poop",anim="IconPoop",frame=0},
 	--Chests
+	
 	{ID="MegaChest",anim="IconChest",frame=9},
 	{ID="WoodenChest",anim="IconChest",frame=6},
 	{ID="EternalChest",anim="IconChest",frame=7},
 	{ID="GoldChest",anim="IconChest",frame=8},
 	{ID="RedChest",anim="IconChest",frame=5},
 	{ID="Chest",anim="IconChest",frame=4},
+	{ID="BlackSack",anim="IconChest",frame=3},
+	{ID="Sack",anim="IconChest",frame=2},
 	{ID="StoneChest",anim="IconChest",frame=1},
 	{ID="SpikedChest",anim="IconChest",frame=0},
 	--Slots
