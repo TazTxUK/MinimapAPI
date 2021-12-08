@@ -51,7 +51,6 @@ for i=0,16 do
 	MinimapAPI:AddIcon("Soul"..(i + 81), MinimapAPI.CustomIcons, "CustomIconSouls", i)
 end
 
-MinimapAPI:AddIcon("SmallPoopNugget", MinimapAPI.CustomIcons, "CustomIconPoop", 0)
 MinimapAPI:AddIcon("BigPoopNugget", MinimapAPI.CustomIcons, "CustomIconPoop", 1)
 
 MinimapAPI:AddPickup("PillBlueBlue","PillBlueBlue",5,70,PillColor.PILL_BLUE_BLUE,MinimapAPI.PickupNotCollected,"pills",6100)
@@ -108,7 +107,6 @@ for i=81,97 do
 end
 
 MinimapAPI:AddPickup("BigPoopNugget","BigPoopNugget",5,42,1,MinimapAPI.PickupNotCollected,"bombs",1200)
-MinimapAPI:AddPickup("SmallPoopNugget","SmallPoopNugget",5,42,0,MinimapAPI.PickupNotCollected,"bombs",1100)
 
 MinimapAPI:AddPickup("Trophy","CheckeredFlag",5,370,-1,nil,"trophies",13000)
 MinimapAPI:AddPickup("BigChest","CheckeredFlag",5,340,-1,nil,"trophies",13000)

@@ -351,7 +351,7 @@ function MinimapAPI:EnablePickupDetection()
 end
 
 function MinimapAPI:IsLarge()
-	return mapheldframes > 7 or MinimapAPI:GetConfig("DisplayMode") == 3
+	return mapheldframes > 15 or MinimapAPI:GetConfig("DisplayMode") == 3
 end
 
 function MinimapAPI:PlayerInRoom(roomdata)
@@ -1120,7 +1120,7 @@ function MinimapAPI:NextMapDisplayMode()
 	end
 end
 
-MinimapAPI:AddCallback( ModCallbacks.MC_POST_UPDATE, function(self)
+MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 	local mapPressed = false
 	for i = 0, Game():GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
@@ -1129,7 +1129,7 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_UPDATE, function(self)
 	if mapPressed then
 		mapheldframes = mapheldframes + 1
 	elseif mapheldframes > 0 then
-		if mapheldframes < 8 then
+		if mapheldframes < 16 then
 			MinimapAPI:NextMapDisplayMode()
 		end
 		mapheldframes = 0
