@@ -1,4 +1,4 @@
 local MinimapAPI = require "scripts.minimapapi"
 
 MinimapAPI.Version = "Master" --branch
-MinimapAPI.ReleaseVersion = 22
+MinimapAPI.ReleaseVersion = 23

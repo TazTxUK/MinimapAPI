@@ -7,7 +7,7 @@
 
 [h1][b]Features:[/b][/h1]
 - Dynamically resizable minimap
-- Over 40 new unique custom icons for pickups, slot machines and beggars
+- Over 50 new unique custom icons for pickups, slot machines and beggars
 - Highly configurable: Turn on/off parts of the minimap, like shadows or icons
 - Smooth minimap movement (1.0 is instant, 0.1 is very slow)
 - New map mode: Small full map (display all rooms in small form!)
@@ -25,10 +25,14 @@
 
 [h1][b]if you see two minimaps, restart your game![/b][/h1]
 
+[h1]Special Thanks:[/h1]
+- Kittenchilly and Mewlala for helping on development of this mod
+- Chinpokomon_ for the White Fireplace Icon 
+
 [b][url=https://github.com/TazTxUK/MinimapAPI]visit this project on GitHub![/url][/b]
 
 [b][url=https://github.com/TazTxUK/MinimapAPI/wiki]A Documentation can be found here[/url][/b]</description>
-    <version>1.22</version>
+    <version>1.23</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Floors"/>
