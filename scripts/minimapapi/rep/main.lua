@@ -366,7 +366,7 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 	local addIcons = {}
 	for _, ent in ipairs(ents) do
 		local success = false
-		if ent:GetData().MinimapAPIPickupID == nil then
+		if type(ent:GetData()) == "table" and ent:GetData().MinimapAPIPickupID == nil then
 			for i, v in pairs(MinimapAPI.PickupList) do
 				local currentid = MinimapAPI.PickupList[ent:GetData().MinimapAPIPickupID]
 				if not currentid or (currentid.Priority < v.Priority) then
@@ -388,7 +388,7 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 			end
 		end
 
-		local id = ent:GetData().MinimapAPIPickupID
+		local id = type(ent:GetData()) == "table" and ent:GetData().MinimapAPIPickupID
 		local pickupicon = MinimapAPI.PickupList[id]
 		if pickupicon then
 			local ind = MinimapAPI:GetConfig("PickupNoGrouping") and (#pickupgroupset + 1) or pickupicon.IconGroup
