@@ -1792,7 +1792,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 						Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
 						DisplayFlags = v.DisplayFlags,
 						Clear = v.Clear,
-						Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO+0.5, v.Color.GO+0.5, v.Color.BO+0.5),
+						Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO),
 						AdjacentDisplayFlags = v.AdjacentDisplayFlags,
 						Visited = v.Visited,
 						Hidden = v.Hidden,
