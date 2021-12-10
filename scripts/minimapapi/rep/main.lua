@@ -351,7 +351,7 @@ function MinimapAPI:EnablePickupDetection()
 end
 
 function MinimapAPI:IsLarge()
-	return mapheldframes > 15 or MinimapAPI:GetConfig("DisplayMode") == 3
+	return mapheldframes > 16 or MinimapAPI:GetConfig("DisplayMode") == 3
 end
 
 function MinimapAPI:PlayerInRoom(roomdata)
@@ -1129,7 +1129,7 @@ MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 	if mapPressed then
 		mapheldframes = mapheldframes + 1
 	elseif mapheldframes > 0 then
-		if mapheldframes < 16 then
+		if mapheldframes <= 16 then
 			MinimapAPI:NextMapDisplayMode()
 		end
 		mapheldframes = 0
@@ -1870,6 +1870,7 @@ MinimapAPI:AddCallback(
 )
 
 -- LOADING SAVED GAME
+local isFirstGame = true
 local addRenderCall = true
 MinimapAPI:AddCallback(
 	ModCallbacks.MC_POST_GAME_STARTED,
@@ -1889,6 +1890,10 @@ MinimapAPI:AddCallback(
 			MinimapAPI:UpdateExternalMap()
 		else
 			MinimapAPI:LoadDefaultMap()
+		end
+		if isFirstGame then
+			MinimapAPI.Config.DisplayMode = 1
+			isFirstGame = false
 		end
 	end
 )
