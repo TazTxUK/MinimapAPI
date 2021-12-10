@@ -1,5 +1,4 @@
 local MinimapAPI = require("scripts.minimapapi")
-local SHExists, ScreenHelper = pcall(require, "scripts.screenhelper")
 local cache = require("scripts.minimapapi.cache")
 
 local json = require("json")
@@ -14,9 +13,70 @@ end
 
 local errorBadArgument = "Bad argument %s to '%s': expected %s, got %s"
 
---Returns screen size as Vector
-function MinimapAPI:GetScreenSize()
-	return (Isaac.WorldToScreen(Vector(320, 280)) - Game():GetRoom():GetRenderScrollOffset() - Game().ScreenShakeOffset) * 2
+function MinimapAPI:GetScreenSize() --based off of code from kilburn
+
+	local game = Game()
+	local room = game:GetRoom()
+
+	local pos = room:WorldToScreenPosition(Vector.Zero) - room:GetRenderScrollOffset() - game.ScreenShakeOffset
+
+	local rx = pos.X + 60 * 26 / 40
+	local ry = pos.Y + 140 * (26 / 40)
+
+	return Vector(rx*2 + 13*26, ry*2 + 7*26)
+
+end
+
+function MinimapAPI:GetScreenCenter()
+	return MinimapAPI:GetScreenSize() / 2
+end
+
+function MinimapAPI:GetScreenBottomRight(offset)
+
+	offset = offset or (Options.HUDOffset * 10)
+	
+	local pos = MinimapAPI:GetScreenSize()
+	local hudOffset = Vector(-offset * 2.2, -offset * 1.6)
+	pos = pos + hudOffset
+
+	return pos
+	
+end
+
+function MinimapAPI:GetScreenBottomLeft(offset)
+
+	offset = offset or (Options.HUDOffset * 10)
+	
+	local pos = Vector(0, MinimapAPI:GetScreenBottomRight(0).Y)
+	local hudOffset = Vector(offset * 2.2, -offset * 1.6)
+	pos = pos + hudOffset
+	
+	return pos
+	
+end
+
+function MinimapAPI:GetScreenTopRight(offset)
+
+	offset = offset or (Options.HUDOffset * 10)
+	
+	local pos = Vector(MinimapAPI:GetScreenBottomRight(0).X, 0)
+	local hudOffset = Vector(-offset * 2.2, offset * 1.2)
+	pos = pos + hudOffset
+
+	return pos
+	
+end
+
+function MinimapAPI:GetScreenTopLeft(offset)
+
+	offset = offset or (Options.HUDOffset * 10)
+	
+	local pos = Vector.Zero
+	local hudOffset = Vector(offset * 2, offset * 1.2)
+	pos = pos + hudOffset
+	
+	return pos
+	
 end
 
 function MinimapAPI:GetRoomShapeFrame(rs)
@@ -1177,15 +1237,9 @@ local furthestRoom = nil
 local function renderUnboundedMinimap(size,hide)
 	if MinimapAPI:GetConfig("OverrideLost") or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
 		MinimapAPI:UpdateUnboundedMapOffset()
-		local offsetVec
-
-		if MinimapAPI:GetConfig("SyncPositionWithMCM") and SHExists then
-			local screen_size = ScreenHelper.GetScreenTopRight()
-			offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), screen_size.Y + MinimapAPI:GetConfig("PositionY"))
-		else
-			offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), MinimapAPI:GetConfig("PositionY"))
-		end
-
+		local screen_size = MinimapAPI:GetScreenTopRight()
+		local offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), screen_size.Y + MinimapAPI:GetConfig("PositionY"))
+		
 		local renderRoomSize = size == "small" and roomSize or largeRoomSize
 		local renderAnimPivot = size == "small" and roomAnimPivot or largeRoomAnimPivot
 		local sprite = size == "small" and MinimapAPI.SpriteMinimapSmall or MinimapAPI.SpriteMinimapLarge
@@ -1374,13 +1428,8 @@ local function renderUnboundedMinimap(size,hide)
 end
 
 local function renderBoundedMinimap()
-	local offsetVec
-	if MinimapAPI:GetConfig("SyncPositionWithMCM") and SHExists then
-		local screen_size = ScreenHelper.GetScreenTopRight()
-		offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 1, screen_size.Y + MinimapAPI:GetConfig("PositionY") - 2)
-	else
-		offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 1, MinimapAPI:GetConfig("PositionY") - 2)
-	end
+	local screen_size = MinimapAPI:GetScreenTopRight()
+	local offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 1, screen_size.Y + MinimapAPI:GetConfig("PositionY") - 2)
 	do
 		local frameWidth = ((MinimapAPI:GetConfig("MapFrameWidth") + frameTL.X) / dframeHorizBarSize.X) -- * MinimapAPI.GlobalScaleX
 
