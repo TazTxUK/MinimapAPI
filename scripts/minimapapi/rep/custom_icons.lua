@@ -47,7 +47,7 @@ MinimapAPI:AddIcon("DiceShard", MinimapAPI.CustomIcons, "CustomIconDiceShard", 0
 MinimapAPI:AddIcon("Rune", MinimapAPI.CustomIcons, "CustomIconRune", 0)
 
 MinimapAPI:AddIcon("KeyShard", MinimapAPI.CustomIcons, "CustomIconKeyShard", 0)
-for i=0,16 do 
+for i=0,16 do
 	MinimapAPI:AddIcon("Soul"..(i + 81), MinimapAPI.CustomIcons, "CustomIconSouls", i)
 end
 
@@ -81,13 +81,13 @@ MinimapAPI:AddPickup("KeyRing","KeyRing",5,30,3,MinimapAPI.PickupNotCollected,"k
 MinimapAPI:AddPickup("DoubleBomb","DoubleBomb",5,40,2,MinimapAPI.PickupNotCollected,"bombs",4100)
 
 MinimapAPI:AddPickup("Card","TarotCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",1000)
-for i=23,31 do 
+for i=23,31 do
 	MinimapAPI:AddPickup("RedCard"..i,"RedCard",5,300,i,MinimapAPI.PickupNotCollected,"cards",1100)
 end
-for i=32,35 do 
+for i=32,35 do
 	MinimapAPI:AddPickup("Rune"..i,"Rune",5,300,i,MinimapAPI.PickupNotCollected,"runes",1100)
 end
-for i=36,39 do 
+for i=36,39 do
 	MinimapAPI:AddPickup("Rune"..i,"RuneRight",5,300,i,MinimapAPI.PickupNotCollected,"runes",1100)
 end
 MinimapAPI:AddPickup("Rune40","RuneBlank",5,300,40,MinimapAPI.PickupNotCollected,"runes",1200)--Blank rune
@@ -106,7 +106,7 @@ MinimapAPI:AddPickup("DiceShard","DiceShard",5,300,49,MinimapAPI.PickupNotCollec
 MinimapAPI:AddPickup("KeyShard","KeyShard",5,300,78,MinimapAPI.PickupNotCollected,"cards",1200)
 MinimapAPI:AddPickup("QueenOfHearts","RedCard",5,300,79,MinimapAPI.PickupNotCollected,"cards",1200)
 
-for i=81,97 do 
+for i=81,97 do
 	MinimapAPI:AddPickup("Soul"..i,"Soul"..i,5,300,i,MinimapAPI.PickupNotCollected,"runes",1300)
 end
 
