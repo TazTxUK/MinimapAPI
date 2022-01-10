@@ -55,6 +55,8 @@ MinimapAPI:AddIcon("BigPoopNugget", MinimapAPI.CustomIcons, "CustomIconPoop", 1)
 
 MinimapAPI:AddIcon("WhiteFireplace", MinimapAPI.CustomIcons, "CustomIconWhiteFireplace", 0)
 
+MinimapAPI:AddIcon("AscentExit", MinimapAPI.CustomIcons, "CustomIconAscentExit", 0)
+
 MinimapAPI:AddPickup("PillBlueBlue","PillBlueBlue",5,70,PillColor.PILL_BLUE_BLUE,MinimapAPI.PickupNotCollected,"pills",6100)
 MinimapAPI:AddPickup("PillOrangeOrange","PillOrangeOrange",5,70,PillColor.PILL_ORANGE_ORANGE,MinimapAPI.PickupNotCollected,"pills",6100)
 MinimapAPI:AddPickup("PillWhiteWhite","PillWhiteWhite",5,70,PillColor.PILL_WHITE_WHITE,MinimapAPI.PickupNotCollected,"pills",6100)
@@ -115,3 +117,5 @@ MinimapAPI:AddPickup("BigChest","CheckeredFlag",5,340,-1,nil,"trophies",13000)
 MinimapAPI:AddPickup("Shovel","Shovel",5,110,-1,nil,"trophies",13000)
 
 MinimapAPI:AddPickup("WhiteFireplace","WhiteFireplace",33,4,-1,nil,"quest",100)
+
+MinimapAPI:AddPickup("AscentExit","AscentExit",1000,39,-1,function(p) return Game():GetLevel():IsAscent() end,"quest",100)
