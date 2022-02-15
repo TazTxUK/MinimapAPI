@@ -597,17 +597,33 @@ function MinimapAPI:LoadDefaultMap(dimension)
 		if not Game():IsGreedMode() then
 			if cache.Stage == LevelStage.STAGE7 then
 				for i,v in ipairs(MinimapAPI:GetLevel()) do
-					if v.Shape == RoomShape.ROOMSHAPE_2x2 and v.Descriptor.Data.Type == RoomType.ROOM_BOSS then
-						if not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP0)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.LEFT0)) then
-							--
-						elseif not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP1)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT0)) then
-							v.DisplayPosition = v.Position + Vector(1,0)
-						elseif not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT1)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.DOWN1)) then
-							v.DisplayPosition = v.Position + Vector(1,1)
-						elseif not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.LEFT1)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.DOWN0)) then
-							v.DisplayPosition = v.Position + Vector(0,1)
+					if v.Descriptor.Data.Type == RoomType.ROOM_BOSS then
+						if v.Shape == RoomShape.ROOMSHAPE_2x2 then
+							if not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP0)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.LEFT0)) then
+								--
+							elseif not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP1)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT0)) then
+								v.DisplayPosition = v.Position + Vector(1,0)
+							elseif not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT1)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.DOWN1)) then
+								v.DisplayPosition = v.Position + Vector(1,1)
+							elseif not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.LEFT1)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.DOWN0)) then
+								v.DisplayPosition = v.Position + Vector(0,1)
+							end
+							v.Shape = RoomShape.ROOMSHAPE_1x1
+						elseif v.Shape == RoomShape.ROOMSHAPE_2x1 then
+							if not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP0)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.LEFT0)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.DOWN0)) then
+								--
+							elseif not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP1)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT0)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.DOWN1)) then
+								v.DisplayPosition = v.Position + Vector(1,0)
+							end
+							v.Shape = RoomShape.ROOMSHAPE_1x1
+						elseif v.Shape == RoomShape.ROOMSHAPE_1x2 then
+							if not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.LEFT0)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP0)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT0)) then
+								--
+							elseif not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT1)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.DOWN0)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.LEFT1)) then
+								v.DisplayPosition = v.Position + Vector(0,1)
+							end
+							v.Shape = RoomShape.ROOMSHAPE_1x1
 						end
-						v.Shape = RoomShape.ROOMSHAPE_1x1
 					end
 				end
 			end
