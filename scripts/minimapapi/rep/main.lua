@@ -1635,7 +1635,8 @@ end
 
 MinimapAPI.DisableSpelunkerHat = false
 
-local function renderCallbackFunction(self)
+local function renderCallbackFunction(self, shaderName)
+	if shaderName ~= "UI_DrawMinimapAPI_DummyShader" then return end
 	if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then return end
 
 	if badload then
@@ -1942,7 +1943,7 @@ MinimapAPI:AddCallback(
 	function(self, is_save)
 		badload = MinimapAPI:IsBadLoad()
 		if addRenderCall then
-			MinimapAPI:AddCallback(ModCallbacks.MC_POST_RENDER, renderCallbackFunction)
+			MinimapAPI:AddCallback(ModCallbacks.MC_GET_SHADER_PARAMS, renderCallbackFunction)
 			addRenderCall = false
 		end
 		if MinimapAPI:HasData() then
