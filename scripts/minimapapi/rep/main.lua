@@ -226,16 +226,19 @@ function MinimapAPI:ShallowCopy(t)
 	return t2
 end
 
-function MinimapAPI:DeepCopy(t)
-	local t2 = {}
-	for i, v in pairs(t) do
-		if type(v) == "table" then
-			t2[i] = MinimapAPI:DeepCopy(v)
-		else
-			t2[i] = v
-		end
-	end
-	return t2
+function MinimapAPI:DeepCopy(orig)
+	local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[MinimapAPI:DeepCopy(orig_key)] = MinimapAPI:DeepCopy(orig_value)
+        end
+        setmetatable(copy, MinimapAPI:DeepCopy(getmetatable(orig)))
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
 end
 
 function MinimapAPI:GetIconAnimData(id)
@@ -761,7 +764,7 @@ local maproomfunctions = {
 		for i,v in ipairs(MinimapAPI.RoomShapeAdjacentCoords[room.Shape]) do
 			local roomatpos = MinimapAPI:GetRoomAtPosition(room.Position + v)
 			if roomatpos then
-				room.AdjacentRooms[#room.AdjacentRooms + 1] = roomatpos
+				room.AdjacentRooms[#room.AdjacentRooms + 1] = MinimapAPI:DeepCopy(roomatpos)
 				roomatpos:AddAdjacentRoom(room)
 			end
 		end
@@ -1077,6 +1080,8 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 	end
 end
 
+local lastLayout = {}
+
 MinimapAPI:AddCallback(	ModCallbacks.MC_USE_ITEM, function(self, colltype, rng)
 	if colltype == CollectibleType.COLLECTIBLE_CRYSTAL_BALL then
 		MinimapAPI:EffectCrystalBall()
@@ -1090,6 +1095,7 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_USE_ITEM, function(self, colltype, rng)
 			end
 			MinimapAPI:UpdateExternalMap()
 		end
+		MinimapAPI.Levels = MinimapAPI:DeepCopy(lastLayout)
 	end
 end)
 
@@ -1123,9 +1129,12 @@ function MinimapAPI:UpdateExternalMap()
 	end
 end
 
+
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 	MinimapAPI.CurrentDimension = cache.Dimension
 	MinimapAPI:RunDimensionCallbacks()
+	
+	lastLayout = MinimapAPI:DeepCopy(MinimapAPI.Levels)
 
 	if not MinimapAPI:GetLevel() then
 		MinimapAPI:LoadDefaultMap()
