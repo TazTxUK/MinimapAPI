@@ -1081,6 +1081,8 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_USE_ITEM, function(self, colltype, rng)
 	if colltype == CollectibleType.COLLECTIBLE_CRYSTAL_BALL then
 		MinimapAPI:EffectCrystalBall()
 		MinimapAPI:UpdateExternalMap()
+	elseif colltype == CollectibleType.COLLECTIBLE_RED_KEY then
+			MinimapAPI:CheckForNewRedRooms()
 	elseif colltype == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
 		if MinimapAPI.lastCardUsedRoom == MinimapAPI:GetCurrentRoom() then
 			for i,v in ipairs(MinimapAPI.changedRoomsWithShowMap) do
@@ -1133,11 +1135,7 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 
 	updatePlayerPos()
 	MinimapAPI.lastCardUsedRoom = nil
-	-- for i,v in ipairs(MinimapAPI.Level) do
-		-- if not v.NoUpdate then
-			-- v:UpdateType()
-		-- end
-	-- end
+	
 	MinimapAPI:UpdateExternalMap()
 end)
 
@@ -1157,6 +1155,8 @@ end
 MinimapAPI:AddCallback( ModCallbacks.MC_USE_CARD, function(self, card)
 	if card == Card.CARD_WORLD or card == Card.CARD_SUN or card == Card.RUNE_ANSUZ then
 		MinimapAPI.lastCardUsedRoom = MinimapAPI:GetCurrentRoom()
+	elseif card == Card.CARD_CRACKED_KEY or card == Card.CARD_SOUL_CAIN then
+		MinimapAPI:CheckForNewRedRooms()
 	end
 end)
 
@@ -1914,25 +1914,6 @@ function MinimapAPI:GetSaveTable(menuexit)
 	end
 	return saved
 end
-
--- RED ROOMS
-MinimapAPI:AddCallback(
-	ModCallbacks.MC_USE_ITEM,
-	function(self, collectibleType)
-		if collectibleType == CollectibleType.COLLECTIBLE_RED_KEY then
-			MinimapAPI:CheckForNewRedRooms()
-		end
-	end
-)
-
-MinimapAPI:AddCallback(
-	ModCallbacks.MC_USE_CARD,
-	function(self, card)
-		if card == Card.CARD_CRACKED_KEY or card == Card.CARD_SOUL_CAIN then
-			MinimapAPI:CheckForNewRedRooms()
-		end
-	end
-)
 
 -- LOADING SAVED GAME
 local isFirstGame = true
