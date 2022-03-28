@@ -569,6 +569,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[v.Data.Type] or 5,
 				Type = v.Data.Type,
 				Level = dimension,
+				Color = v.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 			}
 			if v.Data.Type == RoomType.ROOM_SECRET or v.Data.Type == RoomType.ROOM_SUPERSECRET then
 				t.Hidden = 1
@@ -662,7 +663,7 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 				AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[v.Data.Type] or 5,
 				Type = v.Data.Type,
 				Level = dimension,
-				Color = Color(1,0.25,0.25,1,0,0,0),
+				Color = v.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 			}
 			if v.Data.Shape == RoomShape.ROOMSHAPE_LTL then
 				t.Position = t.Position + Vector(1,0)
