@@ -8,6 +8,7 @@ local mod = cache.Mod
 cache.Game = Game()
 cache.HUD = cache.Game:GetHUD()
 
+local STAGE1_1 = LevelStage.STAGE1_1
 local STAGE1_2 = LevelStage.STAGE1_2
 local STAGETYPE_REPENTANCE = StageType.STAGETYPE_REPENTANCE
 local STAGETYPE_REPENTANCE_B = StageType.STAGETYPE_REPENTANCE_B
@@ -33,7 +34,7 @@ function cache.ReloadRoomCache()
 			cache.Dimension = 1
 		end
 		
-		cache.MirrorDimension = cache.Dimension == 1 and cache.Stage == STAGE1_2 and (cache.StageType == STAGETYPE_REPENTANCE or cache.StageType == STAGETYPE_REPENTANCE_B)
+		cache.MirrorDimension = cache.Dimension == 1 and (cache.Stage == STAGE1_1 and cache.Level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH == LevelCurse.CURSE_OF_LABYRINTH or cache.Stage == STAGE1_2) and (cache.StageType == STAGETYPE_REPENTANCE or cache.StageType == STAGETYPE_REPENTANCE_B)
 	end
 end
 cache.ReloadRoomCache()

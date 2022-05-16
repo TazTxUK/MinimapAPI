@@ -1405,14 +1405,13 @@ local function renderUnboundedMinimap(size,hide)
 							local spr = icontb.sprite or sprite
 							updateMinimapIcon(spr, icontb)
 							spr.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
-							if size == "small" then
-								spr:Render(iconlocOffset + v.RenderOffset, zvec, zvec)
-							else
-								local pos = iconlocOffset + largeIconOffset - largeRoomAnimPivot
-								pos.X = pos.X * MinimapAPI.GlobalScaleX
-								pos = pos + v.RenderOffset
-								spr:Render(pos, zvec, zvec)
+							local pos = iconlocOffset
+							if size ~= "small" then
+								pos = pos + largeIconOffset - largeRoomAnimPivot
 							end
+							pos.X = pos.X * MinimapAPI.GlobalScaleX
+							pos = pos + v.RenderOffset
+							spr:Render(pos, zvec, zvec)
 							k = k + 1
 						end
 					end
