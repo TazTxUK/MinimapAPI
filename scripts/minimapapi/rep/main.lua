@@ -12,10 +12,10 @@ local function getType(obj)
 end
 
 local errorBadArgument = "Bad argument %s to '%s': expected %s, got %s"
+local game = Game()
 
 function MinimapAPI:GetScreenSize() --based off of code from kilburn
 
-	local game = Game()
 	local room = game:GetRoom()
 
 	local pos = room:WorldToScreenPosition(Vector.Zero) - room:GetRenderScrollOffset() - game.ScreenShakeOffset
@@ -546,7 +546,7 @@ local function sign(x)
 end
 
 function MinimapAPI:LoadDefaultMap(dimension)
-	rooms = Game():GetLevel():GetRooms()
+	rooms = game:GetLevel():GetRooms()
 	dimension = dimension or MinimapAPI.CurrentDimension
 	MinimapAPI.Levels[dimension] = {}
 	MinimapAPI.CheckedRoomCount = 0
@@ -579,7 +579,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 			if v.Data.Type == 11 and v.Data.Subtype == 1 then
 				t.PermanentIcons[1] = "BossAmbushRoom"
 			end
-			if override_greed and Game():IsGreedMode() then
+			if override_greed and game:IsGreedMode() then
 				if v.Data.Type == RoomType.ROOM_TREASURE then
 					treasure_room_count = treasure_room_count + 1
 					if treasure_room_count == 1 then
@@ -598,7 +598,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 	end
 	MinimapAPI.CheckedRoomCount = #rooms
 	if not (MinimapAPI:GetConfig("OverrideVoid") or MinimapAPI.OverrideVoid) then
-		if not Game():IsGreedMode() then
+		if not game:IsGreedMode() then
 			if cache.Stage == LevelStage.STAGE7 then
 				for i,v in ipairs(MinimapAPI:GetLevel()) do
 					if v.Descriptor.Data.Type == RoomType.ROOM_BOSS then
@@ -644,7 +644,7 @@ function MinimapAPI:EffectCrystalBall()
 end
 
 function MinimapAPI:CheckForNewRedRooms(dimension)
-	rooms = Game():GetLevel():GetRooms()
+	rooms = game:GetLevel():GetRooms()
 	dimension = dimension or MinimapAPI.CurrentDimension
 	local level = MinimapAPI.Levels[dimension]
 	local added_descriptors = {}
@@ -676,6 +676,7 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 			if v.Data.Type == 11 and v.Data.Subtype == 1 then
 				t.PermanentIcons[1] = "BossAmbushRoom"
 			end
+			
 			MinimapAPI:AddRoom(t)
 		end
 	end
@@ -726,7 +727,7 @@ local maproomfunctions = {
 				df = df | roomDesc.DisplayFlags
 			end
 			local hasCompass = false
-			for i = 0, Game():GetNumPlayers() - 1 do
+			for i = 0, game:GetNumPlayers() - 1 do
 				hasCompass = hasCompass or Isaac.GetPlayer(i):GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_COMPASS)
 			end
 			if room.Type and room.Type > 1 and not room.Hidden and hasCompass then
@@ -1081,7 +1082,6 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 	end
 end
 
-local lastLayout = {}
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_USE_ITEM, function(self, colltype, rng)
 	if colltype == CollectibleType.COLLECTIBLE_CRYSTAL_BALL then
@@ -1096,7 +1096,6 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_USE_ITEM, function(self, colltype, rng)
 			end
 			MinimapAPI:UpdateExternalMap()
 		end
-		MinimapAPI.Levels = MinimapAPI:DeepCopy(lastLayout)
 	end
 end)
 
@@ -1134,16 +1133,16 @@ end
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 	MinimapAPI.CurrentDimension = cache.Dimension
 	MinimapAPI:RunDimensionCallbacks()
-	
-	lastLayout = MinimapAPI:DeepCopy(MinimapAPI.Levels)
-
 	if not MinimapAPI:GetLevel() then
 		MinimapAPI:LoadDefaultMap()
 	end
-
-	MinimapAPI:CheckForNewRedRooms()
-
+	
+	if not (game:GetLevel():GetStartingRoomIndex() == game:GetLevel():GetCurrentRoomIndex() and game:GetLevel():GetCurrentRoomDesc().VisitedCount == 1) then
+		-- only check if not in level transition
+		MinimapAPI:CheckForNewRedRooms()
+	end
 	updatePlayerPos()
+	
 	MinimapAPI.lastCardUsedRoom = nil
 	
 	MinimapAPI:UpdateExternalMap()
@@ -1208,7 +1207,7 @@ end
 
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 	local mapPressed = false
-	for i = 0, Game():GetNumPlayers() - 1 do
+	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
 		mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
 	end
@@ -1261,7 +1260,7 @@ end
 
 local furthestRoom = nil
 local function renderUnboundedMinimap(size,hide)
-	if MinimapAPI:GetConfig("OverrideLost") or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
+	if MinimapAPI:GetConfig("OverrideLost") or game:GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
 		MinimapAPI:UpdateUnboundedMapOffset()
 		local screen_size = MinimapAPI:GetScreenTopRight()
 		local offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), screen_size.Y + MinimapAPI:GetConfig("PositionY"))
@@ -1491,7 +1490,7 @@ local function renderBoundedMinimap()
 		MinimapAPI.SpriteMinimapSmall.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
 	end
 
-	if MinimapAPI:GetConfig("OverrideLost") or Game():GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
+	if MinimapAPI:GetConfig("OverrideLost") or game:GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
 		MinimapAPI:UpdateMinimapCenterOffset()
 
 		for _, level in pairs(MinimapAPI.Levels) do
@@ -1658,7 +1657,7 @@ local function renderCallbackFunction(self)
 		return
 	end
 
-	local r = Game():GetRoom()
+	local r = game:GetRoom()
 	-- Hide in boss intro cutscene
 	if r:GetFrameCount() == 0 and r:GetType() == RoomType.ROOM_BOSS and not r:IsClear() then
 		return
@@ -1668,7 +1667,7 @@ local function renderCallbackFunction(self)
 		return
 	end
 	-- Hide in Beast fight
-	if r:GetType() == RoomType.ROOM_DUNGEON and Game():GetLevel():GetAbsoluteStage() == LevelStage.STAGE8 then
+	if r:GetType() == RoomType.ROOM_DUNGEON and game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE8 then
 		return
 	end
 
@@ -1700,10 +1699,10 @@ local function renderCallbackFunction(self)
 	screen_size = MinimapAPI:GetScreenSize()
 	if MinimapAPI:GetConfig("DisplayOnNoHUD") or cache.HUD:IsVisible() then
 		local currentroomdata = MinimapAPI:GetCurrentRoom()
-		local gamelevel = Game():GetLevel()
-		local gameroom = Game():GetRoom()
+		local gamelevel = game:GetLevel()
+		local gameroom = game:GetRoom()
 		local hasSpelunkerHat = false
-		for i = 0, Game():GetNumPlayers() - 1 do
+		for i = 0, game:GetNumPlayers() - 1 do
 			local player = Isaac.GetPlayer(i)
 			hasSpelunkerHat = hasSpelunkerHat or (player:GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_SPELUNKER_HAT) and not MinimapAPI.DisableSpelunkerHat)
 		end
@@ -1847,8 +1846,8 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 		for i,v in pairs(saved.Config) do
 			MinimapAPI.Config[i] = v
 		end
-		if is_save and saved.LevelData and saved.Seed == Game():GetSeeds():GetStartSeed() then
-			local vanillarooms = Game():GetLevel():GetRooms()
+		if is_save and saved.LevelData and saved.Seed == game:GetSeeds():GetStartSeed() then
+			local vanillarooms = game:GetLevel():GetRooms()
 			MinimapAPI:ClearMap()
 			for dim, level in pairs(saved.LevelData) do
 				dim = tonumber(dim)
@@ -1888,7 +1887,7 @@ end
 function MinimapAPI:GetSaveTable(menuexit)
 	local saved = {}
 	saved.Config = MinimapAPI.Config
-	saved.Seed = Game():GetSeeds():GetStartSeed()
+	saved.Seed = game:GetSeeds():GetStartSeed()
 	if menuexit then
 		saved.playerMapPosX = playerMapPos.X
 		saved.playerMapPosY = playerMapPos.Y
