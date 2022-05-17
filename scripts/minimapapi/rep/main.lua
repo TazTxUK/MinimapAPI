@@ -146,7 +146,6 @@ local badload = false
 local font = Font()
 font:Load("font/pftempestasevencondensed.fnt")
 local rooms
-local startingRoom
 local playerMapPos = Vector(0, 0)
 MinimapAPI.Levels = {}
 MinimapAPI.CheckedRoomCount = 0
@@ -1053,7 +1052,6 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_LEVEL,	function(self)
 	MinimapAPI:LoadDefaultMap()
 	updatePlayerPos()
 	MinimapAPI:UpdateExternalMap()
-	startingRoom = MinimapAPI:GetCurrentRoom()
 end)
 
 function MinimapAPI:UpdateUnboundedMapOffset()
@@ -1366,15 +1364,13 @@ local function renderUnboundedMinimap(size,hide)
 
 		if size == "huge" and MinimapAPI:GetConfig("HighlightFurthestRoom") then
 			local currentRoom = MinimapAPI:GetCurrentRoom()
-			if currentRoom == startingRoom then
-				local furthestDist = 1
-				for _, room in pairs(MinimapAPI:GetLevel()) do
-					local dist = room.PlayerDistance
-					if dist then
-						if furthestDist < dist and room:GetDisplayFlags() & 0x2 == 0 then
-							furthestRoom = room
-							furthestDist = dist
-						end
+			local furthestDist = 1
+			for _, room in pairs(MinimapAPI:GetLevel()) do
+				local dist = room.PlayerDistance
+				if dist then
+					if furthestDist < dist and room:GetDisplayFlags() & 0x2 == 0 then
+						furthestRoom = room
+						furthestDist = dist
 					end
 				end
 			end
