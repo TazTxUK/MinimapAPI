@@ -256,7 +256,7 @@ function MinimapAPI:RemoveIcon(id)
 	end
 end
 
-function MinimapAPI:AddMapFlag(id, condition, sprite, anim, frame)
+function MinimapAPI:AddMapFlag(id, condition, sprite, anim, frame, color)
 	MinimapAPI:RemoveMapFlag(id)
 	local x = {
 		ID = id,
