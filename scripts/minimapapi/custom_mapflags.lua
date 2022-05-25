@@ -21,7 +21,7 @@ local function RestockCondition()
 	if Game():IsGreedMode() then return true end
 
 	for p = 0, Game():GetNumPlayers() - 1 do
-		player = Game():GetPlayer(p)
+		local player = Game():GetPlayer(p)
 
 		if player:HasCollectible(CollectibleType.COLLECTIBLE_RESTOCK) then
 			return true
