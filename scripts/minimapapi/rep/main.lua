@@ -566,7 +566,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 	local treasure_room_count = 0
 	local added_descriptors = {}
 	for i = 0, #rooms - 1 do
-		local v = GetRoomDescFromListIndex(i)
+		local v = GetRoomDescFromListIndex(i, dimension)
 		local hash = GetPtrHash(v)
 		if not added_descriptors[v] and GetPtrHash(cache.Level:GetRoomByIdx(v.SafeGridIndex)) == hash then
 			added_descriptors[v] = true
@@ -661,7 +661,7 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 	local level = MinimapAPI.Levels[dimension]
 	local added_descriptors = {}
 	for i = MinimapAPI.CheckedRoomCount, #rooms - 1 do
-		local v = GetRoomDescFromListIndex(i)
+		local v = GetRoomDescFromListIndex(i, dimension)
 		local hash = GetPtrHash(v)
 		if not added_descriptors[v] and GetPtrHash(cache.Level:GetRoomByIdx(v.GridIndex)) == hash then
 			added_descriptors[v] = true
@@ -1870,7 +1870,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 						PermanentIcons = v.PermanentIcons,
 						LockedIcons = v.LockedIcons,
 						VisitedIcons = v.VisitedIcons,
-						Descriptor = v.DescriptorListIndex and GetRoomDescFromListIndex(v.DescriptorListIndex),
+						Descriptor = v.DescriptorListIndex and GetRoomDescFromListIndex(v.DescriptorListIndex, dim),
 						DisplayFlags = v.DisplayFlags,
 						Clear = v.Clear,
 						Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO),

@@ -464,14 +464,14 @@ end
 -- Level rooms:Get returns a constant room descriptor, 
 -- we need the mutable one returned by GetFromGridIdx
 -- for SetDisplayFlags to work
-local function GetRoomDescFromListIndex(listIndex, dimension)
+local function GetRoomDescFromListIndex(listIndex)
 	local level = Game():GetLevel()
     local constDesc = REVEL.level:GetRooms():Get(listIndex)
     if not constDesc then
         error(("GetRoomDescFromListIndex: bad index %d"):format(listIndex), 2)
     end
     local gridIndex = constDesc.GridIndex
-    return level:GetRoomByIdx(gridIndex, dimension)
+    return level:GetRoomByIdx(gridIndex)
 end
 
 function MinimapAPI:LoadDefaultMap()
