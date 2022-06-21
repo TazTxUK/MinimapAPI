@@ -466,7 +466,7 @@ end
 -- for SetDisplayFlags to work
 local function GetRoomDescFromListIndex(listIndex)
 	local level = Game():GetLevel()
-    local constDesc = REVEL.level:GetRooms():Get(listIndex)
+    local constDesc = level:GetRooms():Get(listIndex)
     if not constDesc then
         error(("GetRoomDescFromListIndex: bad index %d"):format(listIndex), 2)
     end

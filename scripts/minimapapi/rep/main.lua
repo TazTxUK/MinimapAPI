@@ -548,8 +548,10 @@ end
 -- we need the mutable one returned by GetFromGridIdx
 -- for SetDisplayFlags to work
 local function GetRoomDescFromListIndex(listIndex, dimension)
-	local level = Game():GetLevel()
-    local constDesc = REVEL.level:GetRooms():Get(listIndex)
+	local level = game:GetLevel()
+    local constDesc = level:GetRooms():Get(listIndex)
+	-- return constDesc
+
     if not constDesc then
         error(("GetRoomDescFromListIndex: bad index %d"):format(listIndex), 2)
     end
