@@ -461,12 +461,25 @@ function MinimapAPI:InstanceOf(obj, class)
 	end
 end
 
+-- Level rooms:Get returns a constant room descriptor, 
+-- we need the mutable one returned by GetFromGridIdx
+-- for SetDisplayFlags to work
+local function GetRoomDescFromListIndex(listIndex, dimension)
+	local level = Game():GetLevel()
+    local constDesc = REVEL.level:GetRooms():Get(listIndex)
+    if not constDesc then
+        error(("GetRoomDescFromListIndex: bad index %d"):format(listIndex), 2)
+    end
+    local gridIndex = constDesc.GridIndex
+    return level:GetRoomByIdx(gridIndex, dimension)
+end
+
 function MinimapAPI:LoadDefaultMap()
 	rooms = Game():GetLevel():GetRooms()
 	MinimapAPI.Level = {}
 	local treasure_room_count = 0
 	for i = 0, #rooms - 1 do
-		local v = rooms:Get(i)
+		local v = GetRoomDescFromListIndex(i)
 		local t = {
 			Shape = v.Data.Shape,
 			PermanentIcons = {MinimapAPI:GetRoomTypeIconID(v.Data.Type)},
@@ -1579,7 +1592,6 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 			MinimapAPI.Config[i] = v
 		end
 		if is_save and saved.LevelData and saved.Seed == Game():GetSeeds():GetStartSeed() then
-			local vanillarooms = Game():GetLevel():GetRooms()
 			MinimapAPI:ClearMap()
 			for i, v in ipairs(saved.LevelData) do
 				MinimapAPI:AddRoom{
@@ -1590,7 +1602,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 					ItemIcons = v.ItemIcons,
 					PermanentIcons = v.PermanentIcons,
 					LockedIcons = v.LockedIcons,
-					Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
+					Descriptor = v.DescriptorListIndex and GetRoomDescFromListIndex(v.DescriptorListIndex),
 					DisplayFlags = v.DisplayFlags,
 					Clear = v.Clear,
 					Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, math.floor(v.Color.RO+0.5), math.floor(v.Color.GO+0.5), math.floor(v.Color.BO+0.5)),

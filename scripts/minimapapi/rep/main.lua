@@ -544,6 +544,19 @@ local function sign(x)
 	end
 end
 
+-- Level rooms:Get returns a constant room descriptor, 
+-- we need the mutable one returned by GetFromGridIdx
+-- for SetDisplayFlags to work
+local function GetRoomDescFromListIndex(listIndex, dimension)
+	local level = Game():GetLevel()
+    local constDesc = REVEL.level:GetRooms():Get(listIndex)
+    if not constDesc then
+        error(("GetRoomDescFromListIndex: bad index %d"):format(listIndex), 2)
+    end
+    local gridIndex = constDesc.GridIndex
+    return level:GetRoomByIdx(gridIndex, dimension)
+end
+
 function MinimapAPI:LoadDefaultMap(dimension)
 	rooms = game:GetLevel():GetRooms()
 	dimension = dimension or MinimapAPI.CurrentDimension
@@ -553,7 +566,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 	local treasure_room_count = 0
 	local added_descriptors = {}
 	for i = 0, #rooms - 1 do
-		local v = rooms:Get(i)
+		local v = GetRoomDescFromListIndex(i)
 		local hash = GetPtrHash(v)
 		if not added_descriptors[v] and GetPtrHash(cache.Level:GetRoomByIdx(v.SafeGridIndex)) == hash then
 			added_descriptors[v] = true
@@ -648,7 +661,7 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 	local level = MinimapAPI.Levels[dimension]
 	local added_descriptors = {}
 	for i = MinimapAPI.CheckedRoomCount, #rooms - 1 do
-		local v = rooms:Get(i)
+		local v = GetRoomDescFromListIndex(i)
 		local hash = GetPtrHash(v)
 		if not added_descriptors[v] and GetPtrHash(cache.Level:GetRoomByIdx(v.GridIndex)) == hash then
 			added_descriptors[v] = true
@@ -1843,7 +1856,6 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 			MinimapAPI.Config[i] = v
 		end
 		if is_save and saved.LevelData and saved.Seed == game:GetSeeds():GetStartSeed() then
-			local vanillarooms = game:GetLevel():GetRooms()
 			MinimapAPI:ClearMap()
 			for dim, level in pairs(saved.LevelData) do
 				dim = tonumber(dim)
@@ -1858,7 +1870,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 						PermanentIcons = v.PermanentIcons,
 						LockedIcons = v.LockedIcons,
 						VisitedIcons = v.VisitedIcons,
-						Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
+						Descriptor = v.DescriptorListIndex and GetRoomDescFromListIndex(v.DescriptorListIndex),
 						DisplayFlags = v.DisplayFlags,
 						Clear = v.Clear,
 						Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO),
