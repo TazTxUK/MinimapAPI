@@ -717,6 +717,8 @@ end
 ---@field NoUpdate boolean
 ---@field Dimension integer
 ---@field IgnoreDescriptorFlags boolean
+---@field TargetRenderOffset Vector
+---@field PlayerDistance number
 ---@field private AdjacentRooms MinimapAPI.Room[]
 local maproomfunctions = {}
 function maproomfunctions:IsVisible()
@@ -1990,7 +1992,7 @@ local function renderCallbackFunction(self)
 							if MinimapAPI.GlobalScaleX >= 0 then
 								minx = math.min(minx, v.RenderOffset.X)
 							else
-								local size = (MinimapAPI.IsLarge() and largeRoomSize or roomSize).X
+								local size = (MinimapAPI:IsLarge() and largeRoomSize or roomSize).X
 								minx = math.min(minx, v.RenderOffset.X + MinimapAPI.GlobalScaleX * MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size - 6)
 							end
 						end
