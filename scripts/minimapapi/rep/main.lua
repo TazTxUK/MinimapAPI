@@ -220,80 +220,6 @@ function MinimapAPI:SetLevel(level, key)
 	MinimapAPI.Levels[key or MinimapAPI.CurrentDimension] = level
 end
 
-function MinimapAPI:ShallowCopy(t)
-	local t2 = {}
-	for i, v in pairs(t) do
-		t2[i] = v
-	end
-	return t2
-end
-
----@param obj1 table
----@param obj2 table
----@return boolean
-local function CopyTableEquals(obj1, obj2)
-	local meta1 = getmetatable(obj1)
-	if meta1 then
-		if meta1.__type == "MinimapAPI.Room" then
-			local meta2 = getmetatable(obj2)
-			return meta2 and meta2.__type == "MinimapAPI.Room" and obj1:IsSameRoom(obj2)
-		end
-	end
-	return obj1 == obj2
-end
-
--- Track tables/objects to avoid copying the same reference
--- in two different new tables (for instance, orig table has
--- reference to table B which has reference to table A, leading
--- to infinite loop)
--- In case of rooms and such, it copying the room (for example in
--- AdjacentRooms) also ends up in that entry not being updated when the
--- original room object changes
-local DeepCopyObjectCache = {}
-function MinimapAPI:DeepCopy(orig, depth)
-	depth = depth or 0
-
-	-- New call of DeepCopy, reset copy cache
-	if depth == 0 then
-		DeepCopyObjectCache = {}
-	end
-
-	local orig_type = type(orig)
-    local copy
-
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-			local isTable = type(orig_value) == "table"
-			local new
-			if isTable then
-				-- Try see if the same reference is already cached
-				new = DeepCopyObjectCache[new]
-				-- Find a already cached reference that is the same
-				if not new then
-					for cached, _ in pairs(DeepCopyObjectCache) do
-						if CopyTableEquals(orig_value, cached) then
-							new = cached
-							break
-						end
-					end
-				end
-			end
-			if not new then
-				new = MinimapAPI:DeepCopy(orig_value, depth + 1)
-				if isTable then
-					DeepCopyObjectCache[new] = new
-				end
-			end
-            copy[MinimapAPI:DeepCopy(orig_key, depth + 1)] = new
-        end
-        setmetatable(copy, MinimapAPI:DeepCopy(getmetatable(orig), depth + 1))
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
-
 function MinimapAPI:GetIconAnimData(id)
 	for i, v in ipairs(MinimapAPI.IconList) do
 		if v.ID == id then
@@ -604,7 +530,6 @@ end
 local function GetRoomDescFromListIndex(listIndex, dimension)
 	local level = game:GetLevel()
     local constDesc = level:GetRooms():Get(listIndex)
-	-- return constDesc
 
     if not constDesc then
         error(("GetRoomDescFromListIndex: bad index %d"):format(listIndex), 2)
@@ -770,6 +695,7 @@ function MinimapAPI:ClearLevels()
 	MinimapAPI.CheckedRoomCount = 0
 end
 
+
 ---@class MinimapAPI.Room
 ---@field Position Vector
 ---@field DisplayPosition Vector
@@ -790,7 +716,8 @@ end
 ---@field Hidden boolean
 ---@field NoUpdate boolean
 ---@field Dimension integer
----@field IgnoreDescriptorFlags any
+---@field IgnoreDescriptorFlags boolean
+---@field private AdjacentRooms MinimapAPI.Room[]
 local maproomfunctions = {}
 function maproomfunctions:IsVisible()
 	return self:GetDisplayFlags() & 1 > 0
@@ -867,7 +794,7 @@ function maproomfunctions:UpdateAdjacentRoomsCache()
 		local roomatpos = MinimapAPI:GetRoomAtPosition(self.Position + v)
 		if roomatpos then
 			x = x + 1
-			self.AdjacentRooms[#self.AdjacentRooms + 1] = MinimapAPI:DeepCopy(roomatpos)
+			self.AdjacentRooms[#self.AdjacentRooms + 1] = MinimapAPI:CopyRoom(roomatpos)
 			roomatpos:AddAdjacentRoom(self)
 		end
 	end
@@ -959,6 +886,125 @@ function MinimapAPI:AddRoom(t)
 	level[#level + 1] = x
 	x:SetPosition(x.Position)
 	return x
+end
+
+---@param obj1 table
+---@param obj2 table
+---@return boolean
+local function CopyTableEquals(obj1, obj2)
+	local meta1 = getmetatable(obj1)
+	if meta1 then
+		if meta1.__type == "MinimapAPI.Room" then
+			local meta2 = getmetatable(obj2)
+			return meta2 and meta2.__type == "MinimapAPI.Room" and obj1:IsSameRoom(obj2)
+		end
+	end
+	return obj1 == obj2
+end
+
+-- Track tables/objects to avoid copying the same reference
+-- in two different new tables (for instance, orig table has
+-- reference to table B which has reference to table A, leading
+-- to infinite loop)
+-- In case of rooms and such, it copying the room (for example in
+-- AdjacentRooms) also ends up in that entry not being updated when the
+-- original room object changes
+local DeepCopyObjectCache = {}
+
+local function IsMinimapAPIRoom(obj)
+	return type(obj) == "table" and getmetatable(obj) and getmetatable(obj).__type == "MinimapAPI.Room"
+end
+
+local function DeepCopy(orig, depth)
+	depth = depth or 0
+
+	-- New call of DeepCopy, reset copy cache
+	if depth == 0 then
+		DeepCopyObjectCache = {}
+	end
+
+	local orig_type = type(orig)
+    local copy
+
+    if orig_type == 'table' then
+		if IsMinimapAPIRoom(orig) then
+			return MinimapAPI:CopyRoom(orig, depth)
+		end
+
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+			local isTable = type(orig_value) == "table"
+			local new
+			if isTable then
+				-- Try see if the same reference is already cached
+				new = DeepCopyObjectCache[new]
+				-- Find a already cached reference that is the same
+				if not new then
+					for cached, _ in pairs(DeepCopyObjectCache) do
+						if CopyTableEquals(orig_value, cached) then
+							new = cached
+							break
+						end
+					end
+				end
+			end
+			if not new then
+				if IsMinimapAPIRoom(orig_value) then
+					new = MinimapAPI:CopyRoom(orig_value, depth + 1)
+				else
+					new = DeepCopy(orig_value, depth + 1)
+				end
+
+				if isTable then
+					DeepCopyObjectCache[new] = new
+				end
+			end
+            copy[DeepCopy(orig_key, depth + 1)] = new
+        end
+        setmetatable(copy, DeepCopy(getmetatable(orig), depth + 1))
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
+end
+
+local TableKeysToCopy = {
+	"PermanentIcons",
+	"LockedIcons", 
+	"VisitedIcons",
+	"ItemIcons",
+}
+
+---@param orig MinimapAPI.Room
+---@param depth? integer
+---@return MinimapAPI.Room
+function MinimapAPI:CopyRoom(orig, depth)
+	depth = depth or 0
+	assert(IsMinimapAPIRoom(orig), "orig must be MinimapAPI room")
+	
+	-- New call of DeepCopy, reset copy cache
+	if depth == 0 then
+		DeepCopyObjectCache = {}
+	end
+
+	---@type MinimapAPI.Room
+	local copy = {}
+
+	for k, v in pairs(orig) do
+		if type(v) ~= "table" then
+			copy[k] = v
+		end
+	end
+
+	for _, key in pairs(TableKeysToCopy) do
+		copy[key] = DeepCopy(orig[key], depth + 1)
+	end
+
+	-- Do NOT copy adjacent rooms cache, can just be recalculated
+
+	setmetatable(copy, maproommeta)
+
+	return copy
 end
 
 local function removeAdjacentRoomRefs(room)
