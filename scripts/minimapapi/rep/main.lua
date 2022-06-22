@@ -147,6 +147,7 @@ local font = Font()
 font:Load("font/pftempestasevencondensed.fnt")
 local rooms
 local playerMapPos = Vector(0, 0)
+---@type table<any, MinimapAPI.Room[]>
 MinimapAPI.Levels = {}
 MinimapAPI.CheckedRoomCount = 0
 MinimapAPI.CurrentDimension = 0
@@ -209,6 +210,8 @@ function MinimapAPI:GetConfig(option)
 	return MinimapAPI.OverrideConfig[option] ~= nil and MinimapAPI.OverrideConfig[option] or MinimapAPI.Config[option]
 end
 
+---@param key? any
+---@return MinimapAPI.Room[]
 function MinimapAPI:GetLevel(key)
 	return MinimapAPI.Levels[key or MinimapAPI.CurrentDimension]
 end
@@ -225,15 +228,66 @@ function MinimapAPI:ShallowCopy(t)
 	return t2
 end
 
-function MinimapAPI:DeepCopy(orig)
+---@param obj1 table
+---@param obj2 table
+---@return boolean
+local function CopyTableEquals(obj1, obj2)
+	local meta1 = getmetatable(obj1)
+	if meta1 then
+		if meta1.__type == "MinimapAPI.Room" then
+			local meta2 = getmetatable(obj2)
+			return meta2 and meta2.__type == "MinimapAPI.Room" and obj1:IsSameRoom(obj2)
+		end
+	end
+	return obj1 == obj2
+end
+
+-- Track tables/objects to avoid copying the same reference
+-- in two different new tables (for instance, orig table has
+-- reference to table B which has reference to table A, leading
+-- to infinite loop)
+-- In case of rooms and such, it copying the room (for example in
+-- AdjacentRooms) also ends up in that entry not being updated when the
+-- original room object changes
+local DeepCopyObjectCache = {}
+function MinimapAPI:DeepCopy(orig, depth)
+	depth = depth or 0
+
+	-- New call of DeepCopy, reset copy cache
+	if depth == 0 then
+		DeepCopyObjectCache = {}
+	end
+
 	local orig_type = type(orig)
     local copy
+
     if orig_type == 'table' then
         copy = {}
         for orig_key, orig_value in next, orig, nil do
-            copy[MinimapAPI:DeepCopy(orig_key)] = MinimapAPI:DeepCopy(orig_value)
+			local isTable = type(orig_value) == "table"
+			local new
+			if isTable then
+				-- Try see if the same reference is already cached
+				new = DeepCopyObjectCache[new]
+				-- Find a already cached reference that is the same
+				if not new then
+					for cached, _ in pairs(DeepCopyObjectCache) do
+						if CopyTableEquals(orig_value, cached) then
+							new = cached
+							break
+						end
+					end
+				end
+			end
+			if not new then
+				new = MinimapAPI:DeepCopy(orig_value, depth + 1)
+				if isTable then
+					DeepCopyObjectCache[new] = new
+				end
+			end
+            copy[MinimapAPI:DeepCopy(orig_key, depth + 1)] = new
         end
-        setmetatable(copy, MinimapAPI:DeepCopy(getmetatable(orig)))
+        setmetatable(copy, MinimapAPI:DeepCopy(getmetatable(orig), depth + 1))
     else -- number, string, boolean, etc
         copy = orig
     end
@@ -556,7 +610,17 @@ local function GetRoomDescFromListIndex(listIndex, dimension)
         error(("GetRoomDescFromListIndex: bad index %d"):format(listIndex), 2)
     end
     local gridIndex = constDesc.GridIndex
-    return level:GetRoomByIdx(gridIndex, dimension)
+	if dimension then
+		return level:GetRoomByIdx(gridIndex, dimension)
+	else
+		local maxDim = 2
+		for dim = 0, maxDim do
+			local roomDesc = level:GetRoomByIdx(gridIndex, dim)
+			if roomDesc.ListIndex == listIndex then
+				return roomDesc
+			end
+		end
+	end
 end
 
 function MinimapAPI:LoadDefaultMap(dimension)
@@ -706,124 +770,159 @@ function MinimapAPI:ClearLevels()
 	MinimapAPI.CheckedRoomCount = 0
 end
 
-local maproomfunctions = {
-	IsVisible = function(room)
-		return room:GetDisplayFlags() & 1 > 0
-	end,
-	IsShadow = function(room)
-		return (room:GetDisplayFlags() or 0) & 2 > 0
-	end,
-	IsIconVisible = function(room)
-		return (room:GetDisplayFlags() or 0) & 4 > 0
-	end,
-	IsVisited = function(room)
-		return room.Visited or false
-	end,
-	GetPosition = function(room)
-		return room.Position
-	end,
-	GetDisplayPosition = function(room)
-		return room.DisplayPosition
-	end,
-	SetPosition = function(room, pos)
-		room.Position = pos
-		room:UpdateAdjacentRoomsCache()
-	end,
-	GetDisplayFlags = function(room)
-		local roomDesc = room.Descriptor
-		local df = room.DisplayFlags or 0
-		if room.Hidden == 2 and roomDesc.DisplayFlags == 0 then -- if red room is hidden and DFs not set
-			if not room:IsVisited() then
-				df = 0
-			end
-		else
-			if roomDesc and not room.IgnoreDescriptorFlags then
-				df = df | roomDesc.DisplayFlags
-			end
-			local hasCompass = false
-			for i = 0, game:GetNumPlayers() - 1 do
-				hasCompass = hasCompass or Isaac.GetPlayer(i):GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_COMPASS)
-			end
-			if room.Type and room.Type > 1 and not room.Hidden and hasCompass then
-				df = df | 6
-			end
+---@class MinimapAPI.Room
+---@field Position Vector
+---@field DisplayPosition Vector
+---@field Type RoomType
+---@field ID any
+---@field Shape RoomShape
+---@field PermanentIcons table
+---@field LockedIcons table
+---@field ItemIcons table
+---@field VisitedIcons table
+---@field Descriptor RoomDescriptor
+---@field Color Color
+---@field RenderOffset Vector
+---@field DisplayFlags integer
+---@field Clear boolean
+---@field Visited boolean
+---@field AdjacentDisplayFlags integer
+---@field Hidden boolean
+---@field NoUpdate boolean
+---@field Dimension integer
+---@field IgnoreDescriptorFlags any
+local maproomfunctions = {}
+function maproomfunctions:IsVisible()
+	return self:GetDisplayFlags() & 1 > 0
+end
+function maproomfunctions:IsShadow()
+	return (self:GetDisplayFlags() or 0) & 2 > 0
+end
+function maproomfunctions:IsIconVisible()
+	return (self:GetDisplayFlags() or 0) & 4 > 0
+end
+function maproomfunctions:IsVisited()
+	return self.Visited or false
+end
+function maproomfunctions:GetPosition()
+	return self.Position
+end
+function maproomfunctions:GetDisplayPosition()
+	return self.DisplayPosition
+end
+function maproomfunctions:SetPosition(pos)
+	self.Position = pos
+	self:UpdateAdjacentRoomsCache()
+end
+function maproomfunctions:GetDisplayFlags()
+	local roomDesc = self.Descriptor
+	local df = self.DisplayFlags or 0
+	if self.Hidden == 2 and roomDesc.DisplayFlags == 0 then -- if red self is hidden and DFs not set
+		if not self:IsVisited() then
+			df = 0
 		end
-		return MinimapAPI:RunDisplayFlagsCallbacks(room,df)
-	end,
-	IsClear = function(room)
-		return room.Clear or false
-	end,
-	SetDisplayFlags = function(room,df)
-		if room.Descriptor then
-			room.Descriptor.DisplayFlags = df
-			room.DisplayFlags = df
-		else
-			room.DisplayFlags = df
+	else
+		if roomDesc and not self.IgnoreDescriptorFlags then
+			df = df | roomDesc.DisplayFlags
 		end
-	end,
-	Remove = function(room)
-		local level = MinimapAPI:GetLevel()
-		for i,v in ipairs(level) do
-			if v == room then
-				table.remove(level, i)
-				return room
-			end
+		local hasCompass = false
+		for i = 0, game:GetNumPlayers() - 1 do
+			hasCompass = hasCompass or Isaac.GetPlayer(i):GetEffects():HasCollectibleEffect(CollectibleType.COLLECTIBLE_COMPASS)
 		end
-	end,
-	UpdateAdjacentRoomsCache = function(room)
-		if room.AdjacentRooms then
-			for i,v in ipairs(room:GetAdjacentRooms()) do
-				v:RemoveAdjacentRoom(room)
-			end
+		if self.Type and self.Type > 1 and not self.Hidden and hasCompass then
+			df = df | 6
 		end
-		room.AdjacentRooms = {}
-		for i,v in ipairs(MinimapAPI.RoomShapeAdjacentCoords[room.Shape]) do
-			local roomatpos = MinimapAPI:GetRoomAtPosition(room.Position + v)
-			if roomatpos then
-				room.AdjacentRooms[#room.AdjacentRooms + 1] = MinimapAPI:DeepCopy(roomatpos)
-				roomatpos:AddAdjacentRoom(room)
-			end
+	end
+	return MinimapAPI:RunDisplayFlagsCallbacks(self,df)
+end
+function maproomfunctions:IsClear()
+	return self.Clear or false
+end
+function maproomfunctions:SetDisplayFlags(df)
+	if self.Descriptor then
+		self.Descriptor.DisplayFlags = df
+		self.DisplayFlags = df
+	else
+		self.DisplayFlags = df
+	end
+end
+function maproomfunctions:Remove()
+	local level = MinimapAPI:GetLevel()
+	for i,v in ipairs(level) do
+		if v == self then
+			table.remove(level, i)
+			return self
 		end
-	end,
-	AddAdjacentRoom = function(room, adjroom)
-		local adjrooms = room:GetAdjacentRooms()
-		for i,v in ipairs(adjrooms) do
-			if v == adjroom then return end
+	end
+end
+function maproomfunctions:UpdateAdjacentRoomsCache()
+	if self.AdjacentRooms then
+		for i,v in ipairs(self:GetAdjacentRooms()) do
+			v:RemoveAdjacentRoom(self)
 		end
-		adjrooms[#adjrooms + 1] = adjroom
-	end,
-	RemoveAdjacentRoom = function(room, adjroom)
-		local adjrooms = room:GetAdjacentRooms()
-		for i,v in ipairs(adjrooms) do
-			if v == adjroom then return table.remove(adjrooms,i) end
+	end
+	self.AdjacentRooms = {}
+	local x = 0
+	for i,v in ipairs(MinimapAPI.RoomShapeAdjacentCoords[self.Shape]) do
+		local roomatpos = MinimapAPI:GetRoomAtPosition(self.Position + v)
+		if roomatpos then
+			x = x + 1
+			self.AdjacentRooms[#self.AdjacentRooms + 1] = MinimapAPI:DeepCopy(roomatpos)
+			roomatpos:AddAdjacentRoom(self)
 		end
-	end,
-	GetAdjacentRooms = function(room)
-		if not room.AdjacentRooms then
-			room:UpdateAdjacentRoomsCache()
-		end
-		return room.AdjacentRooms
-	end,
-	Reveal = function(room)
-		if room.Hidden then
-			room.DisplayFlags = room.DisplayFlags | 6
-		else
-			room.DisplayFlags = room.DisplayFlags | 5
-		end
-	end,
-	UpdateType = function(room)
-		if room.Descriptor and room.Descriptor.Data then
-			room.Type = room.Descriptor.Data.Type
-			room.PermanentIcons = {MinimapAPI:GetRoomTypeIconID(room.Type)}
-		end
-	end,
-}
+	end
+end
+function maproomfunctions:AddAdjacentRoom(adjroom)
+	local adjrooms = self:GetAdjacentRooms()
+	for i,v in ipairs(adjrooms) do
+		if v == adjroom then return end
+	end
+	adjrooms[#adjrooms + 1] = adjroom
+end
+function maproomfunctions:RemoveAdjacentRoom(adjroom)
+	local adjrooms = self:GetAdjacentRooms()
+	for i,v in ipairs(adjrooms) do
+		if v == adjroom then return table.remove(adjrooms,i) end
+	end
+end
+function maproomfunctions:GetAdjacentRooms()
+	if not self.AdjacentRooms then
+		self:UpdateAdjacentRoomsCache()
+	end
+	return self.AdjacentRooms
+end
+function maproomfunctions:Reveal()
+	if self.Hidden then
+		self.DisplayFlags = self.DisplayFlags | 6
+	else
+		self.DisplayFlags = self.DisplayFlags | 5
+	end
+end
+function maproomfunctions:UpdateType()
+	if self.Descriptor and self.Descriptor.Data then
+		self.Type = self.Descriptor.Data.Type
+		self.PermanentIcons = {MinimapAPI:GetRoomTypeIconID(self.Type)}
+	end
+end
+--- Checks if the otherRoom is another instance of 
+--- the same room (used for DeepCopy)
+---@param otherRoom MinimapAPI.Room
+function maproomfunctions:IsSameRoom(otherRoom)
+	return self.ID ~= nil and self.ID == otherRoom.ID
+		or self.Descriptor and otherRoom.Descriptor and self.Descriptor.ListIndex == otherRoom.Descriptor.ListIndex
+		or (
+			self.Dimension == otherRoom.Dimension 
+			and self.Position.X == otherRoom.Position.X 
+			and self.Position.Y == otherRoom.Position.Y
+		)
+end
 
 local maproommeta = {
 	__index = maproomfunctions,
 	__type = "MinimapAPI.Room"
 }
 
+---@return MinimapAPI.Room
 function MinimapAPI:AddRoom(t)
 	local defaultPosition = Vector(0,-1)
 	local x = {
@@ -897,6 +996,8 @@ function MinimapAPI:RemoveRoomByID(id)
 	MinimapAPI:UpdateExternalMap()
 end
 
+---@param pos Vector
+---@return MinimapAPI.Room
 function MinimapAPI:GetRoom(pos)
 	assert(MinimapAPI:InstanceOf(pos, Vector), "bad argument #1 to 'GetRoom', expected Vector")
 	local success
@@ -909,6 +1010,8 @@ function MinimapAPI:GetRoom(pos)
 	return success
 end
 
+---@param position Vector
+---@return MinimapAPI.Room
 function MinimapAPI:GetRoomAtPosition(position)
 	assert(MinimapAPI:InstanceOf(position, Vector), "bad argument #1 to 'GetRoomAtPosition', expected Vector")
 	for i, v in ipairs(MinimapAPI:GetLevel()) do
@@ -921,6 +1024,8 @@ function MinimapAPI:GetRoomAtPosition(position)
 	end
 end
 
+---@param ID any
+---@return MinimapAPI.Room
 function MinimapAPI:GetRoomByID(ID)
 	for i, v in ipairs(MinimapAPI:GetLevel()) do
 		if v.ID == ID then
@@ -929,6 +1034,8 @@ function MinimapAPI:GetRoomByID(ID)
 	end
 end
 
+---@param Idx integer
+---@return MinimapAPI.Room
 function MinimapAPI:GetRoomByIdx(Idx)
 	for i, v in ipairs(MinimapAPI:GetLevel()) do
 		if v.Descriptor and v.Descriptor.GridIndex == Idx then
