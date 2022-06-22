@@ -696,10 +696,10 @@ end
 ---@field Type RoomType
 ---@field ID any
 ---@field Shape RoomShape
----@field PermanentIcons table
----@field LockedIcons table
----@field ItemIcons table
----@field VisitedIcons table
+---@field PermanentIcons string[]
+---@field LockedIcons string[]
+---@field ItemIcons string[]
+---@field VisitedIcons string[]
 ---@field Descriptor RoomDescriptor
 ---@field Color Color
 ---@field RenderOffset Vector

@@ -690,6 +690,8 @@ function MinimapAPI:RemoveRoomByID(id)
 	MinimapAPI:UpdateExternalMap()
 end
 
+---@param pos Vector
+---@return MinimapAPI.Room
 function MinimapAPI:GetRoom(pos)
 	assert(MinimapAPI:InstanceOf(pos, Vector), "bad argument #1 to 'GetRoom', expected Vector")
 	local success
@@ -702,6 +704,8 @@ function MinimapAPI:GetRoom(pos)
 	return success
 end
 
+---@param position Vector
+---@return MinimapAPI.Room
 function MinimapAPI:GetRoomAtPosition(position)
 	assert(MinimapAPI:InstanceOf(position, Vector), "bad argument #1 to 'GetRoomAtPosition', expected Vector")
 	for i, v in ipairs(MinimapAPI.Level) do
@@ -714,6 +718,8 @@ function MinimapAPI:GetRoomAtPosition(position)
 	end
 end
 
+---@param ID any
+---@return MinimapAPI.Room
 function MinimapAPI:GetRoomByID(ID)
 	for i, v in ipairs(MinimapAPI.Level) do
 		if v.ID == ID then
@@ -722,6 +728,8 @@ function MinimapAPI:GetRoomByID(ID)
 	end
 end
 
+---@param Idx integer
+---@return MinimapAPI.Room
 function MinimapAPI:GetRoomByIdx(Idx)
 	for i, v in ipairs(MinimapAPI.Level) do
 		if v.Descriptor and v.Descriptor.GridIndex == Idx then
