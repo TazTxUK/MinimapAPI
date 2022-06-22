@@ -161,26 +161,6 @@ function MinimapAPI:SetLevel(level)
 	MinimapAPI.Level = level
 end
 
-function MinimapAPI:ShallowCopy(t)
-	local t2 = {}
-	for i, v in pairs(t) do
-		t2[i] = v
-	end
-	return t2
-end
-
-function MinimapAPI:DeepCopy(t)
-	local t2 = {}
-	for i, v in pairs(t) do
-		if type(v) == "table" then
-			t2[i] = MinimapAPI:DeepCopy(v)
-		else
-			t2[i] = v
-		end
-	end
-	return t2
-end
-
 function MinimapAPI:GetIconAnimData(id)
 	for i, v in ipairs(MinimapAPI.IconList) do
 		if v.ID == id then
