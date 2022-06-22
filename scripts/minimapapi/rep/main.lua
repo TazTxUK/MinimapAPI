@@ -514,20 +514,10 @@ function MinimapAPI:InstanceOf(obj, class)
 	end
 end
 
-local function sign(x)
-	if x < 0 then
-		return -1
-	elseif x > 0 then
-		return 1
-	else
-		return 0
-	end
-end
-
 -- Level rooms:Get returns a constant room descriptor, 
 -- we need the mutable one returned by GetFromGridIdx
--- for SetDisplayFlags to work
-local function GetRoomDescFromListIndex(listIndex, dimension)
+-- for SetDisplayFlags to work GetRoomDescAndDimFromListIndex
+local function GetRoomDescAndDimFromListIndex(listIndex)
 	local level = game:GetLevel()
     local constDesc = level:GetRooms():Get(listIndex)
 
@@ -535,17 +525,15 @@ local function GetRoomDescFromListIndex(listIndex, dimension)
         error(("GetRoomDescFromListIndex: bad index %d"):format(listIndex), 2)
     end
     local gridIndex = constDesc.GridIndex
-	if dimension then
-		return level:GetRoomByIdx(gridIndex, dimension)
-	else
-		local maxDim = 2
-		for dim = 0, maxDim do
-			local roomDesc = level:GetRoomByIdx(gridIndex, dim)
-			if roomDesc.ListIndex == listIndex then
-				return roomDesc
-			end
+	local maxDim = 2
+	for dim = 0, maxDim do
+		local roomDesc = level:GetRoomByIdx(gridIndex, dim)
+		if roomDesc.ListIndex == listIndex then
+			return roomDesc, dim
 		end
 	end
+	
+	error(("GetRoomDescFromListIndex: unknown error with index %d"):format(listIndex), 2)
 end
 
 function MinimapAPI:LoadDefaultMap(dimension)
@@ -557,9 +545,12 @@ function MinimapAPI:LoadDefaultMap(dimension)
 	local treasure_room_count = 0
 	local added_descriptors = {}
 	for i = 0, #rooms - 1 do
-		local v = GetRoomDescFromListIndex(i, dimension)
+		local v, roomDim = GetRoomDescAndDimFromListIndex(i)
 		local hash = GetPtrHash(v)
-		if not added_descriptors[v] and GetPtrHash(cache.Level:GetRoomByIdx(v.SafeGridIndex)) == hash then
+		if roomDim == dimension 
+		and not added_descriptors[v] 
+		and GetPtrHash(cache.Level:GetRoomByIdx(v.SafeGridIndex)) == hash 
+		then
 			added_descriptors[v] = true
 			local t = {
 				Shape = v.Data.Shape,
@@ -571,7 +562,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				Descriptor = v,
 				AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[v.Data.Type] or 5,
 				Type = v.Data.Type,
-				Level = dimension,
+				Dimension = dimension,
 				Color = v.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 			}
 			if v.Data.Type == RoomType.ROOM_SECRET or v.Data.Type == RoomType.ROOM_SUPERSECRET then
@@ -652,9 +643,12 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 	local level = MinimapAPI.Levels[dimension]
 	local added_descriptors = {}
 	for i = MinimapAPI.CheckedRoomCount, #rooms - 1 do
-		local v = GetRoomDescFromListIndex(i, dimension)
+		local v, roomDim = GetRoomDescAndDimFromListIndex(i)
 		local hash = GetPtrHash(v)
-		if not added_descriptors[v] and GetPtrHash(cache.Level:GetRoomByIdx(v.GridIndex)) == hash then
+		if roomDim == dimension 
+		and not added_descriptors[v] 
+		and GetPtrHash(cache.Level:GetRoomByIdx(v.GridIndex)) == hash 
+		then
 			added_descriptors[v] = true
 			local t = {
 				Shape = v.Data.Shape,
@@ -791,11 +785,9 @@ function maproomfunctions:UpdateAdjacentRoomsCache()
 		end
 	end
 	self.AdjacentRooms = {}
-	local x = 0
 	for i,v in ipairs(MinimapAPI.RoomShapeAdjacentCoords[self.Shape]) do
 		local roomatpos = MinimapAPI:GetRoomAtPosition(self.Position + v)
 		if roomatpos then
-			x = x + 1
 			self.AdjacentRooms[#self.AdjacentRooms + 1] = MinimapAPI:CopyRoom(roomatpos)
 			roomatpos:AddAdjacentRoom(self)
 		end
@@ -832,18 +824,6 @@ function maproomfunctions:UpdateType()
 		self.Type = self.Descriptor.Data.Type
 		self.PermanentIcons = {MinimapAPI:GetRoomTypeIconID(self.Type)}
 	end
-end
---- Checks if the otherRoom is another instance of 
---- the same room (used for DeepCopy)
----@param otherRoom MinimapAPI.Room
-function maproomfunctions:IsSameRoom(otherRoom)
-	return self.ID ~= nil and self.ID == otherRoom.ID
-		or self.Descriptor and otherRoom.Descriptor and self.Descriptor.ListIndex == otherRoom.Descriptor.ListIndex
-		or (
-			self.Dimension == otherRoom.Dimension 
-			and self.Position.X == otherRoom.Position.X 
-			and self.Position.Y == otherRoom.Position.Y
-		)
 end
 
 local maproommeta = {
@@ -890,40 +870,12 @@ function MinimapAPI:AddRoom(t)
 	return x
 end
 
----@param obj1 table
----@param obj2 table
----@return boolean
-local function CopyTableEquals(obj1, obj2)
-	local meta1 = getmetatable(obj1)
-	if meta1 then
-		if meta1.__type == "MinimapAPI.Room" then
-			local meta2 = getmetatable(obj2)
-			return meta2 and meta2.__type == "MinimapAPI.Room" and obj1:IsSameRoom(obj2)
-		end
-	end
-	return obj1 == obj2
-end
-
--- Track tables/objects to avoid copying the same reference
--- in two different new tables (for instance, orig table has
--- reference to table B which has reference to table A, leading
--- to infinite loop)
--- In case of rooms and such, it copying the room (for example in
--- AdjacentRooms) also ends up in that entry not being updated when the
--- original room object changes
-local DeepCopyObjectCache = {}
-
 local function IsMinimapAPIRoom(obj)
 	return type(obj) == "table" and getmetatable(obj) and getmetatable(obj).__type == "MinimapAPI.Room"
 end
 
 local function DeepCopy(orig, depth)
 	depth = depth or 0
-
-	-- New call of DeepCopy, reset copy cache
-	if depth == 0 then
-		DeepCopyObjectCache = {}
-	end
 
 	local orig_type = type(orig)
     local copy
@@ -937,28 +889,11 @@ local function DeepCopy(orig, depth)
         for orig_key, orig_value in next, orig, nil do
 			local isTable = type(orig_value) == "table"
 			local new
-			if isTable then
-				-- Try see if the same reference is already cached
-				new = DeepCopyObjectCache[new]
-				-- Find a already cached reference that is the same
-				if not new then
-					for cached, _ in pairs(DeepCopyObjectCache) do
-						if CopyTableEquals(orig_value, cached) then
-							new = cached
-							break
-						end
-					end
-				end
-			end
 			if not new then
 				if IsMinimapAPIRoom(orig_value) then
 					new = MinimapAPI:CopyRoom(orig_value, depth + 1)
 				else
 					new = DeepCopy(orig_value, depth + 1)
-				end
-
-				if isTable then
-					DeepCopyObjectCache[new] = new
 				end
 			end
             copy[DeepCopy(orig_key, depth + 1)] = new
@@ -983,11 +918,6 @@ local TableKeysToCopy = {
 function MinimapAPI:CopyRoom(orig, depth)
 	depth = depth or 0
 	assert(IsMinimapAPIRoom(orig), "orig must be MinimapAPI room")
-	
-	-- New call of DeepCopy, reset copy cache
-	if depth == 0 then
-		DeepCopyObjectCache = {}
-	end
 
 	---@type MinimapAPI.Room
 	local copy = {}
@@ -2017,6 +1947,10 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 			for dim, level in pairs(saved.LevelData) do
 				dim = tonumber(dim)
 				for i, v in ipairs(level) do
+					local desc, roomDim
+					if v.DescriptorListIndex then
+						desc, roomDim = GetRoomDescAndDimFromListIndex(v.DescriptorListIndex)
+					end
 					MinimapAPI:AddRoom{
 						Position = Vector(v.PositionX, v.PositionY),
 						DisplayPosition = (v.DisplayPositionX and v.DisplayPositionY) and Vector(v.DisplayPositionX, v.DisplayPositionY),
@@ -2027,7 +1961,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 						PermanentIcons = v.PermanentIcons,
 						LockedIcons = v.LockedIcons,
 						VisitedIcons = v.VisitedIcons,
-						Descriptor = v.DescriptorListIndex and GetRoomDescFromListIndex(v.DescriptorListIndex, dim),
+						Descriptor = desc,
 						DisplayFlags = v.DisplayFlags,
 						Clear = v.Clear,
 						Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO),
