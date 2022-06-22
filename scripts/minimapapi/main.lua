@@ -161,26 +161,6 @@ function MinimapAPI:SetLevel(level)
 	MinimapAPI.Level = level
 end
 
-function MinimapAPI:ShallowCopy(t)
-	local t2 = {}
-	for i, v in pairs(t) do
-		t2[i] = v
-	end
-	return t2
-end
-
-function MinimapAPI:DeepCopy(t)
-	local t2 = {}
-	for i, v in pairs(t) do
-		if type(v) == "table" then
-			t2[i] = MinimapAPI:DeepCopy(v)
-		else
-			t2[i] = v
-		end
-	end
-	return t2
-end
-
 function MinimapAPI:GetIconAnimData(id)
 	for i, v in ipairs(MinimapAPI.IconList) do
 		if v.ID == id then
@@ -461,12 +441,25 @@ function MinimapAPI:InstanceOf(obj, class)
 	end
 end
 
+-- Level rooms:Get returns a constant room descriptor, 
+-- we need the mutable one returned by GetFromGridIdx
+-- for SetDisplayFlags to work
+local function GetRoomDescFromListIndex(listIndex)
+	local level = Game():GetLevel()
+    local constDesc = level:GetRooms():Get(listIndex)
+    if not constDesc then
+        error(("GetRoomDescFromListIndex: bad index %d"):format(listIndex), 2)
+    end
+    local gridIndex = constDesc.GridIndex
+    return level:GetRoomByIdx(gridIndex)
+end
+
 function MinimapAPI:LoadDefaultMap()
 	rooms = Game():GetLevel():GetRooms()
 	MinimapAPI.Level = {}
 	local treasure_room_count = 0
 	for i = 0, #rooms - 1 do
-		local v = rooms:Get(i)
+		local v = GetRoomDescFromListIndex(i)
 		local t = {
 			Shape = v.Data.Shape,
 			PermanentIcons = {MinimapAPI:GetRoomTypeIconID(v.Data.Type)},
@@ -697,6 +690,8 @@ function MinimapAPI:RemoveRoomByID(id)
 	MinimapAPI:UpdateExternalMap()
 end
 
+---@param pos Vector
+---@return MinimapAPI.Room
 function MinimapAPI:GetRoom(pos)
 	assert(MinimapAPI:InstanceOf(pos, Vector), "bad argument #1 to 'GetRoom', expected Vector")
 	local success
@@ -709,6 +704,8 @@ function MinimapAPI:GetRoom(pos)
 	return success
 end
 
+---@param position Vector
+---@return MinimapAPI.Room
 function MinimapAPI:GetRoomAtPosition(position)
 	assert(MinimapAPI:InstanceOf(position, Vector), "bad argument #1 to 'GetRoomAtPosition', expected Vector")
 	for i, v in ipairs(MinimapAPI.Level) do
@@ -721,6 +718,8 @@ function MinimapAPI:GetRoomAtPosition(position)
 	end
 end
 
+---@param ID any
+---@return MinimapAPI.Room
 function MinimapAPI:GetRoomByID(ID)
 	for i, v in ipairs(MinimapAPI.Level) do
 		if v.ID == ID then
@@ -729,6 +728,8 @@ function MinimapAPI:GetRoomByID(ID)
 	end
 end
 
+---@param Idx integer
+---@return MinimapAPI.Room
 function MinimapAPI:GetRoomByIdx(Idx)
 	for i, v in ipairs(MinimapAPI.Level) do
 		if v.Descriptor and v.Descriptor.GridIndex == Idx then
@@ -1579,7 +1580,6 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 			MinimapAPI.Config[i] = v
 		end
 		if is_save and saved.LevelData and saved.Seed == Game():GetSeeds():GetStartSeed() then
-			local vanillarooms = Game():GetLevel():GetRooms()
 			MinimapAPI:ClearMap()
 			for i, v in ipairs(saved.LevelData) do
 				MinimapAPI:AddRoom{
@@ -1590,7 +1590,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 					ItemIcons = v.ItemIcons,
 					PermanentIcons = v.PermanentIcons,
 					LockedIcons = v.LockedIcons,
-					Descriptor = v.DescriptorListIndex and vanillarooms:Get(v.DescriptorListIndex),
+					Descriptor = v.DescriptorListIndex and GetRoomDescFromListIndex(v.DescriptorListIndex),
 					DisplayFlags = v.DisplayFlags,
 					Clear = v.Clear,
 					Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, math.floor(v.Color.RO+0.5), math.floor(v.Color.GO+0.5), math.floor(v.Color.BO+0.5)),
