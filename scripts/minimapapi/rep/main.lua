@@ -524,7 +524,7 @@ local function GetRoomDescAndDimFromListIndex(listIndex)
     if not constDesc then
         error(("GetRoomDescFromListIndex: bad index %d"):format(listIndex), 2)
     end
-    local gridIndex = constDesc.GridIndex
+    local gridIndex = constDesc.SafeGridIndex
 	local maxDim = 2
 	for dim = 0, maxDim do
 		local roomDesc = level:GetRoomByIdx(gridIndex, dim)
