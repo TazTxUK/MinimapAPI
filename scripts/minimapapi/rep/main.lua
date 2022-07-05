@@ -1203,6 +1203,24 @@ function MinimapAPI:NextMapDisplayMode()
 	end
 end
 
+function MinimapAPI:FirstMapDisplayMode()
+	local modes = {
+		[1] = MinimapAPI:GetConfig("AllowToggleSmallMap"),
+		[2] = MinimapAPI:GetConfig("AllowToggleBoundedMap"),
+		[3] = MinimapAPI:GetConfig("AllowToggleLargeMap"),
+		[4] = MinimapAPI:GetConfig("AllowToggleNoMap"),
+	}
+
+	MinimapAPI.Config.DisplayMode = 1
+
+	for i = 1, 4 do
+		if modes[i] then
+			MinimapAPI.Config.DisplayMode = i
+			break
+		end
+	end
+end
+
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
 	local mapPressed = false
 	for i = 0, game:GetNumPlayers() - 1 do
@@ -1842,6 +1860,8 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 		for i,v in pairs(saved.Config) do
 			MinimapAPI.Config[i] = v
 		end
+		MinimapAPI:FirstMapDisplayMode()
+
 		if is_save and saved.LevelData and saved.Seed == game:GetSeeds():GetStartSeed() then
 			local vanillarooms = game:GetLevel():GetRooms()
 			MinimapAPI:ClearMap()
@@ -1942,7 +1962,7 @@ MinimapAPI:AddCallback(
 			MinimapAPI:LoadDefaultMap()
 		end
 		if isFirstGame then
-			MinimapAPI.Config.DisplayMode = 1
+			MinimapAPI:FirstMapDisplayMode()
 			isFirstGame = false
 		end
 	end

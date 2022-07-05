@@ -988,6 +988,24 @@ function MinimapAPI:NextMapDisplayMode()
 	end
 end
 
+function MinimapAPI:FirstMapDisplayMode()
+	local modes = {
+		[1] = MinimapAPI:GetConfig("AllowToggleSmallMap"),
+		[2] = MinimapAPI:GetConfig("AllowToggleBoundedMap"),
+		[3] = MinimapAPI:GetConfig("AllowToggleLargeMap"),
+		[4] = MinimapAPI:GetConfig("AllowToggleNoMap"),
+	}
+
+	MinimapAPI.Config.DisplayMode = 1
+
+	for i = 1, 4 do
+		if modes[i] then
+			MinimapAPI.Config.DisplayMode = i
+			break
+		end
+	end
+end
+
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_UPDATE, function(self)
 	local player = Isaac.GetPlayer(0)
 	if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
@@ -1578,6 +1596,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 		for i,v in pairs(saved.Config) do
 			MinimapAPI.Config[i] = v
 		end
+		MinimapAPI:FirstMapDisplayMode()
 		if is_save and saved.LevelData and saved.Seed == Game():GetSeeds():GetStartSeed() then
 			local vanillarooms = Game():GetLevel():GetRooms()
 			MinimapAPI:ClearMap()
