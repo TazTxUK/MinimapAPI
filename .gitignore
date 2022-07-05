@@ -2,5 +2,6 @@ save1.dat
 save2.dat
 save3.dat
 disable.it
+disable.it.x
 .luacheckrc
 WIP.lua
