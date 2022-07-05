@@ -152,6 +152,7 @@ if modconfigexists then
 						MinimapAPI.Config[i] = v
 					end
 				end
+				MinimapAPI:FirstMapDisplayMode()
 				MinimapAPI.Config.ConfigPreset = currentNum
 			end,
 		}
