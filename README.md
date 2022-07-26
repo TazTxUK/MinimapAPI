@@ -25,8 +25,7 @@ Go to the wiki section or [click here](https://github.com/TazTxUK/MinimapAPI/wik
 
 ## Backlog / Todo-List
 ### Planned Features:
-* Add Map Curse Icons (restock, curses)
-  * Change position of the Map Curse icons (left, bottom[vanilla])
+* Change position of the Map Curse icons (left, bottom[vanilla])
 * Implement grid entity icons
 * Dynamic room shapes
 
