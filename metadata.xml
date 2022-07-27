@@ -19,8 +19,7 @@
 - Change position of the Map Curse icons (left, bottom[vanilla])
 - Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
 - Draw new pickup icons (where applicable):
--- Trapdoor (Grid Entity icons not implemented)
-- Display mode: Vanilla Borderless
+-- Trapdoor/ladder (Grid Entity icons not implemented)
 - Hovering over a room will display a list of its contents (Thanks JSG!)
 
 [h1][b]if you see two minimaps, restart your game![/b][/h1]
@@ -32,7 +31,7 @@
 [b][url=https://github.com/TazTxUK/MinimapAPI]visit this project on GitHub![/url][/b]
 
 [b][url=https://github.com/TazTxUK/MinimapAPI/wiki]A Documentation can be found here[/url][/b]</description>
-    <version>1.24</version>
+    <version>1.25</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Floors"/>
