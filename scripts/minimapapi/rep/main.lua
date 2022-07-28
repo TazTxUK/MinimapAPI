@@ -788,7 +788,7 @@ function maproomfunctions:UpdateAdjacentRoomsCache()
 	for i,v in ipairs(MinimapAPI.RoomShapeAdjacentCoords[self.Shape]) do
 		local roomatpos = MinimapAPI:GetRoomAtPosition(self.Position + v)
 		if roomatpos then
-			self.AdjacentRooms[#self.AdjacentRooms + 1] = MinimapAPI:CopyRoom(roomatpos)
+			self.AdjacentRooms[#self.AdjacentRooms + 1] = roomatpos
 			roomatpos:AddAdjacentRoom(self)
 		end
 	end
