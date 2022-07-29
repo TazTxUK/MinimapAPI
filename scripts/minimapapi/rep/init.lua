@@ -9,6 +9,7 @@ require("scripts.minimapapi.rep.main")
 require("scripts.minimapapi.rep.noalign")
 require("scripts.minimapapi.rep.custom_icons")
 require("scripts.minimapapi.rep.custom_mapflags")
+require("scripts.minimapapi.rep.nicejourney")
 require("scripts.minimapapi.rep.config_menu")
 require("scripts.minimapapi.rep.testfunctions")
 
