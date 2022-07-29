@@ -7,6 +7,10 @@ local largeRoomPixelSize = Vector(18, 16)
 local RoomSpriteOffset = Vector(4, 4)
 local Game = Game()
 
+local TeleportMarkerSprite = Sprite()
+TeleportMarkerSprite:Load("gfx/ui/minimapapi/teleport_marker.anm2", true)
+TeleportMarkerSprite:SetFrame("Marker", 0)
+
 ---@param room MinimapAPI.Room
 local function TeleportToRoom(room)
     local desc = room.Descriptor
@@ -52,7 +56,7 @@ local function niceJourney_PostRender()
             if mouseCoords.X > boundsTl.X and mouseCoords.X < boundsBr.X
             and mouseCoords.Y > boundsTl.Y and mouseCoords.Y < boundsBr.Y
             then
-                IDebug.RenderCircle(center, true, 7)
+                TeleportMarkerSprite:Render(center)
 
                 if triggered and room ~= MinimapAPI:GetCurrentRoom() then
                     TeleportToRoom(room)
