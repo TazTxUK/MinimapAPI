@@ -1,4 +1,4 @@
-local MinimapAPI = require "scripts.minimapapi"
+local MinimapAPI = require("scripts.minimapapi")
 
 MinimapAPI.Debug = {}
 
@@ -349,8 +349,4 @@ function MinimapAPI.Debug.PeriodicTable()
 			end
 		end
 	end
-end
-
-function MinimapAPI.Debug.A()
-	
 end
