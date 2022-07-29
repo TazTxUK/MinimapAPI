@@ -44,12 +44,12 @@ local _telHandlerTemplate = {}
 ---@return boolean success
 function _telHandlerTemplate:Teleport(room)
 end
+
 ---@param room MinimapAPI.Room
 ---@param cheatMode boolean # If cheat mode (unclear room teleport) is enabled
 ---@return boolean
 function _telHandlerTemplate:CanTeleport(room, cheatMode)
 end
-
 
 ---@param room MinimapAPI.Room
 local function TeleportToRoom(room)
@@ -87,42 +87,42 @@ local function niceJourney_PostRender()
     local allowUnclear = MinimapAPI:GetConfig("MouseTeleportUncleared")
 
     for _, room in pairs(MinimapAPI:GetLevel()) do
-        ---@type MinimapAPI.Room
-        room = room
-
         if (
             (
                 room.TeleportHandler and room.TeleportHandler.CanTeleport
-                and room.TeleportHandler:CanTeleport(room, allowUnclear)
-            )
-            or (
+                    and room.TeleportHandler:CanTeleport(room, allowUnclear)
+                )
+                or (
                 not (room.TeleportHandler and room.TeleportHandler.CanTeleport)
-                and (
+                    and (
                     room:IsVisited() and room:IsClear()
-                    or (allowUnclear and room:IsVisible())
+                        or (allowUnclear and room:IsVisible())
+                    )
                 )
             )
-        )
-        and room ~= MinimapAPI:GetCurrentRoom()
-        and (room.Descriptor or room.TeleportHandler)
+            and room ~= MinimapAPI:GetCurrentRoom()
+            and (room.Descriptor or room.TeleportHandler)
         then
             local rgp = MinimapAPI.RoomShapeGridPivots[room.Shape]
             local rms = MinimapAPI:GetRoomShapeGridSize(room.Shape)
             local size = largeRoomPixelSize * rms
-            local pos = room.RenderOffset + RoomSpriteOffset - rgp * size / 2
-            local center = pos + size / 2
+            local pos = room.RenderOffset + RoomSpriteOffset * Vector(MinimapAPI.GlobalScaleX, 1) - rgp * size / 2
+            local center = pos + size / 2 * Vector(MinimapAPI.GlobalScaleX, 1)
             local boundsTl, boundsBr = pos, pos + size
-
-            -- IDebug.RenderCircle(boundsTl, true, 5)
+            if MinimapAPI.GlobalScaleX == -1 then -- Map is flipped
+                boundsTl, boundsBr = pos - Vector(size.X, 0), pos + Vector(0, size.Y)
+            end
 
             if mouseCoords.X > boundsTl.X and mouseCoords.X < boundsBr.X
-            and mouseCoords.Y > boundsTl.Y and mouseCoords.Y < boundsBr.Y
+                and mouseCoords.Y > boundsTl.Y and mouseCoords.Y < boundsBr.Y
             then
+                TeleportMarkerSprite.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
                 TeleportMarkerSprite:Render(center)
 
                 if triggered then
                     TeleportToRoom(room)
                 end
+                return
             end
         end
     end
@@ -131,12 +131,12 @@ end
 local addRenderCall = true
 
 MinimapAPI:AddCallback(
-	ModCallbacks.MC_POST_GAME_STARTED,
-	function(self, is_save)
-		if addRenderCall then
+    ModCallbacks.MC_POST_GAME_STARTED,
+    function(self, is_save)
+        if addRenderCall then
             MinimapAPI:AddCallback(ModCallbacks.MC_POST_RENDER, niceJourney_PostRender)
-			addRenderCall = false
-		end
+            addRenderCall = false
+        end
     end
 )
 

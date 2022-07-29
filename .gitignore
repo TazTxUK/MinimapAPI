@@ -5,3 +5,5 @@ disable.it
 disable.it.x
 .luacheckrc
 WIP.lua
+.luarc.json
+.vscode
