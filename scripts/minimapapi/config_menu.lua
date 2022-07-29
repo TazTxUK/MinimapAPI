@@ -571,30 +571,6 @@ if modconfigexists then
 		}
 	)
 
-	if not REPENTANCE then -- workaround for ab+
-		MCM.AddSetting(
-			"Minimap API",
-			"Map(1)",
-			{
-				Type = MCM.OptionType.BOOLEAN,
-				CurrentSetting = function()
-					return MinimapAPI.Config.SyncPositionWithMCM
-				end,
-				Display = function()
-					return "Use Screen Helper: " .. (MinimapAPI.Config.SyncPositionWithMCM and "ON" or "OFF")
-				end,
-				OnChange = function(currentBool)
-					MinimapAPI.Config.SyncPositionWithMCM = currentBool
-					MinimapAPI.Config.ConfigPreset = 0
-				end,
-				Info = {
-					"Will try and use screen helper to get",
-					"the corners of the screen if it exists."
-				}
-			}
-		)
-	end
-
 	MCM.AddSetting(
 		"Minimap API",
 		"Map(1)",

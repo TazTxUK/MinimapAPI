@@ -4,12 +4,7 @@ require("scripts.minimapapi.version")
 
 require("scripts.minimapapi.data")
 require("scripts.minimapapi.config")
-
-if REPENTANCE then
-    require("scripts.minimapapi.rep.main")
-else --AFTERBIRTH+
-    require("scripts.minimapapi.main")
-end
+require("scripts.minimapapi.main")
 require("scripts.minimapapi.noalign")
 require("scripts.minimapapi.custom_icons")
 require("scripts.minimapapi.custom_mapflags")
