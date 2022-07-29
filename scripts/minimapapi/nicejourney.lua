@@ -53,7 +53,6 @@ end
 
 ---@param room MinimapAPI.Room
 local function TeleportToRoom(room)
-	print(room.Descriptor)
     if room.TeleportHandler and room.TeleportHandler.Teleport then
         if not room.TeleportHandler:Teleport(room) then
             Sfx:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, 0.8)

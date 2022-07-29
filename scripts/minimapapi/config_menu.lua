@@ -481,47 +481,45 @@ if modconfigexists then
 		}
 	)
 
-	if REPENTANCE then
-		MCM.AddSpace("Minimap API", "Modes")
-		
-		MCM.AddSetting(
-			"Minimap API",
-			"Modes",
-			{
-				Type = MCM.OptionType.BOOLEAN,
-				CurrentSetting = function()
-					return MinimapAPI.Config.MouseTeleport
-				end,
-				Display = function()
-					return "Mouse teleportation: " .. (MinimapAPI.Config.MouseTeleport and "ON" or "OFF")
-				end,
-				OnChange = function(currentBool)
-					MinimapAPI.Config.MouseTeleport = currentBool
-					MinimapAPI.Config.ConfigPreset = 0
-				end,
-				Info = {"Allows you to teleport by clicking on rooms on the map."}
-			}
-		)
-		
-		MCM.AddSetting(
-			"Minimap API",
-			"Modes",
-			{
-				Type = MCM.OptionType.BOOLEAN,
-				CurrentSetting = function()
-					return MinimapAPI.Config.MouseTeleportUncleared
-				end,
-				Display = function()
-					return "Teleport Restrictions: " .. (MinimapAPI.Config.MouseTeleportUncleared and "-" or "Only cleared rooms")
-				end,
-				OnChange = function(currentBool)
-					MinimapAPI.Config.MouseTeleportUncleared = currentBool
-					MinimapAPI.Config.ConfigPreset = 0
-				end,
-				Info = {"Restricts teleportation to discovered rooms"}
-			}
-		)
-	end
+	MCM.AddSpace("Minimap API", "Modes")
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Modes",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.MouseTeleport
+			end,
+			Display = function()
+				return "Mouse teleportation: " .. (MinimapAPI.Config.MouseTeleport and "ON" or "OFF")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.MouseTeleport = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {"Allows you to teleport by clicking on rooms on the map."}
+		}
+	)
+	
+	MCM.AddSetting(
+		"Minimap API",
+		"Modes",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.MouseTeleportUncleared
+			end,
+			Display = function()
+				return "Teleport Restrictions: " .. (MinimapAPI.Config.MouseTeleportUncleared and "-" or "Only cleared rooms")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.MouseTeleportUncleared = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {"Restricts teleportation to discovered rooms"}
+		}
+	)
 
 	MCM.AddSetting(
 		"Minimap API",
