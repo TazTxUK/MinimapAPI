@@ -392,9 +392,6 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 	for i,v in pairs(pickupgroupset) do
 		addIcons[#addIcons + 1] = v
 	end
-	if not MinimapAPI:GetConfig("PickupFirstComeFirstServe") then
-		table.sort(addIcons, function(a,b) return MinimapAPI.PickupList[a].Priority > MinimapAPI.PickupList[b].Priority end)
-	end
 	local r = {}
 	for i,v in ipairs(addIcons) do
 		r[i] = MinimapAPI.PickupList[v].IconID

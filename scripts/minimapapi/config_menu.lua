@@ -37,7 +37,6 @@ if modconfigexists then
 			AllowToggleSmallMap = true,
 			AllowToggleBoundedMap = false,
 			AllowToggleNoMap = false,
-			PickupFirstComeFirstServe = false,
 			PickupNoGrouping = false,
 			ShowGridDistances = false,
 			HighlightFurthestRoom = false,
@@ -65,7 +64,6 @@ if modconfigexists then
 			AllowToggleSmallMap = false,
 			AllowToggleBoundedMap = true,
 			AllowToggleNoMap = false,
-			PickupFirstComeFirstServe = false,
 			PickupNoGrouping = false,
 			ShowGridDistances = false,
 			HighlightFurthestRoom = false,
@@ -93,7 +91,6 @@ if modconfigexists then
 			AllowToggleSmallMap = true,
 			AllowToggleBoundedMap = true,
 			AllowToggleNoMap = false,
-			PickupFirstComeFirstServe = false,
 			PickupNoGrouping = true,
 			ShowGridDistances = true,
 			HighlightFurthestRoom = true,
@@ -121,7 +118,6 @@ if modconfigexists then
 			AllowToggleSmallMap = true,
 			AllowToggleBoundedMap = true,
 			AllowToggleNoMap = false,
-			PickupFirstComeFirstServe = false,
 			PickupNoGrouping = false,
 			ShowGridDistances = false,
 			HighlightFurthestRoom = false,
@@ -673,23 +669,6 @@ if modconfigexists then
 			}
 		}
 	)
-	
-	-- MCM.AddSetting(
-		-- "Minimap API",
-		-- "Pickups",
-		-- {
-			-- Type = MCM.OptionType.BOOLEAN,
-			-- CurrentSetting = function()
-				-- return MinimapAPI.Config.PickupFirstComeFirstServe
-			-- end,
-			-- Display = function()
-				-- return "Sort Pickups By First Appearing: " .. (MinimapAPI.Config.PickupFirstComeFirstServe and "ON" or "OFF")
-			-- end,
-			-- OnChange = function(currentBool)
-				-- MinimapAPI.Config.PickupFirstComeFirstServe = currentBool
-			-- end
-		-- }
-	-- )
 	
 	MCM.AddSetting(
 		"Minimap API",
