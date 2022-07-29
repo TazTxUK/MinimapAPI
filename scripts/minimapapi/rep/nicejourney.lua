@@ -11,6 +11,19 @@ local TeleportMarkerSprite = Sprite()
 TeleportMarkerSprite:Load("gfx/ui/minimapapi/teleport_marker.anm2", true)
 TeleportMarkerSprite:SetFrame("Marker", 0)
 
+local function niceJourney_ExecuteCmd(_, cmd, params)
+    if cmd == "mapitel" then
+        MinimapAPI.Config.MouseTeleport = not MinimapAPI.Config.MouseTeleport
+        if MinimapAPI.Config.MouseTeleport then
+            Isaac.ConsoleOutput("Enabled Nice Journey (MinimapAPI mouse teleport)" .. '\n')
+            Isaac.DebugString("Enabled Nice Journey (MinimapAPI mouse teleport)")
+        else
+            Isaac.ConsoleOutput("Disabled Nice Journey (MinimapAPI mouse teleport)" .. '\n')
+            Isaac.DebugString("Disabled Nice Journey (MinimapAPI mouse teleport)")
+        end
+    end
+end
+
 ---@param room MinimapAPI.Room
 local function TeleportToRoom(room)
     local desc = room.Descriptor
@@ -23,7 +36,7 @@ end
 local WasTriggered = false
 
 local function niceJourney_PostRender()
-    if not MinimapAPI:IsLarge() then
+    if not MinimapAPI:IsLarge() or not MinimapAPI:GetConfig("MouseTeleport") then
         return
     end
 
@@ -66,7 +79,6 @@ local function niceJourney_PostRender()
     end
 end
 
-
 local addRenderCall = true
 
 MinimapAPI:AddCallback(
@@ -78,3 +90,5 @@ MinimapAPI:AddCallback(
 		end
     end
 )
+
+MinimapAPI:AddCallback(ModCallbacks.MC_EXECUTE_CMD, niceJourney_ExecuteCmd)

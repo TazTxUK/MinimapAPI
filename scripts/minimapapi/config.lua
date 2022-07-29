@@ -44,6 +44,7 @@ MinimapAPI.Config = {
 	["ShowGridDistances"] = false,
 	["HighlightFurthestRoom"] = false,
 	["SyncPositionWithMCM"] = true,
+	["MouseTeleport"] = false,
 	
 	["ConfigPreset"] = 1,
 	
