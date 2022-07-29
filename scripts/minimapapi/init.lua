@@ -1,4 +1,3 @@
-
 MinimapAPI = require("scripts.minimapapi")
 
 require("scripts.minimapapi.version")
@@ -21,14 +20,8 @@ else --AFTERBIRTH+
 end
 
 require("scripts.minimapapi.custom_mapflags")
-
-if REPENTANCE then
-    require("scripts.minimapapi.rep.nicejourney")
-    require("scripts.minimapapi.rep.config_menu")
-else --AFTERBIRTH+
-    require("scripts.minimapapi.config_menu")
-end
-
+require("scripts.minimapapi.nicejourney")
+require("scripts.minimapapi.config_menu")
 require("scripts.minimapapi.testfunctions")
 
 

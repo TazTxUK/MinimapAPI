@@ -1,4 +1,4 @@
-local MinimapAPI = require "scripts.minimapapi"
+local MinimapAPI = require("scripts.minimapapi")
 local modconfigexists, MCM = pcall(require, "scripts.modconfig")
 
 if modconfigexists then
@@ -42,6 +42,8 @@ if modconfigexists then
 			ShowGridDistances = false,
 			HighlightFurthestRoom = false,
 			VanillaSecretRoomDisplay = false,
+			MouseTeleport = false,
+			MouseTeleportUncleared = false,
 		},
 		{ --vanilla
 			ShowIcons = true,
@@ -68,6 +70,8 @@ if modconfigexists then
 			ShowGridDistances = false,
 			HighlightFurthestRoom = false,
 			VanillaSecretRoomDisplay = true,
+			MouseTeleport = false,
+			MouseTeleportUncleared = false,
 		},
 		{ --all
 			ShowIcons = true,
@@ -94,6 +98,8 @@ if modconfigexists then
 			ShowGridDistances = true,
 			HighlightFurthestRoom = true,
 			VanillaSecretRoomDisplay = false,
+			MouseTeleport = false,
+			MouseTeleportUncleared = false,
 		},
 		{ -- minimal
 			ShowIcons = true,
@@ -120,6 +126,8 @@ if modconfigexists then
 			ShowGridDistances = false,
 			HighlightFurthestRoom = false,
 			VanillaSecretRoomDisplay = false,
+			MouseTeleport = false,
+			MouseTeleportUncleared = false,
 		},
 	}
 	
@@ -477,6 +485,48 @@ if modconfigexists then
 		}
 	)
 
+	if REPENTANCE then
+		MCM.AddSpace("Minimap API", "Modes")
+		
+		MCM.AddSetting(
+			"Minimap API",
+			"Modes",
+			{
+				Type = MCM.OptionType.BOOLEAN,
+				CurrentSetting = function()
+					return MinimapAPI.Config.MouseTeleport
+				end,
+				Display = function()
+					return "Mouse teleportation: " .. (MinimapAPI.Config.MouseTeleport and "ON" or "OFF")
+				end,
+				OnChange = function(currentBool)
+					MinimapAPI.Config.MouseTeleport = currentBool
+					MinimapAPI.Config.ConfigPreset = 0
+				end,
+				Info = {"Allows you to teleport by clicking on rooms on the map."}
+			}
+		)
+		
+		MCM.AddSetting(
+			"Minimap API",
+			"Modes",
+			{
+				Type = MCM.OptionType.BOOLEAN,
+				CurrentSetting = function()
+					return MinimapAPI.Config.MouseTeleportUncleared
+				end,
+				Display = function()
+					return "Teleport Restrictions: " .. (MinimapAPI.Config.MouseTeleportUncleared and "-" or "Only cleared rooms")
+				end,
+				OnChange = function(currentBool)
+					MinimapAPI.Config.MouseTeleportUncleared = currentBool
+					MinimapAPI.Config.ConfigPreset = 0
+				end,
+				Info = {"Restricts teleportation to discovered rooms"}
+			}
+		)
+	end
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Map(1)",
@@ -525,27 +575,29 @@ if modconfigexists then
 		}
 	)
 
-	MCM.AddSetting(
-		"Minimap API",
-		"Map(1)",
-		{
-			Type = MCM.OptionType.BOOLEAN,
-			CurrentSetting = function()
-				return MinimapAPI.Config.SyncPositionWithMCM
-			end,
-			Display = function()
-				return "Use Screen Helper: " .. (MinimapAPI.Config.SyncPositionWithMCM and "ON" or "OFF")
-			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.SyncPositionWithMCM = currentBool
-				MinimapAPI.Config.ConfigPreset = 0
-			end,
-			Info = {
-				"Will try and use screen helper to get",
-				"the corners of the screen if it exists."
+	if not REPENTANCE then -- workaround for ab+
+		MCM.AddSetting(
+			"Minimap API",
+			"Map(1)",
+			{
+				Type = MCM.OptionType.BOOLEAN,
+				CurrentSetting = function()
+					return MinimapAPI.Config.SyncPositionWithMCM
+				end,
+				Display = function()
+					return "Use Screen Helper: " .. (MinimapAPI.Config.SyncPositionWithMCM and "ON" or "OFF")
+				end,
+				OnChange = function(currentBool)
+					MinimapAPI.Config.SyncPositionWithMCM = currentBool
+					MinimapAPI.Config.ConfigPreset = 0
+				end,
+				Info = {
+					"Will try and use screen helper to get",
+					"the corners of the screen if it exists."
+				}
 			}
-		}
-	)
+		)
+	end
 
 	MCM.AddSetting(
 		"Minimap API",
