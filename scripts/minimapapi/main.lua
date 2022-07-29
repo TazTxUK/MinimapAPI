@@ -216,7 +216,7 @@ function MinimapAPI:SetLevel(level, key)
 end
 
 function MinimapAPI:GetIconAnimData(id)
-	for i, v in ipairs(MinimapAPI.IconList) do
+	for _, v in ipairs(MinimapAPI.IconList) do
 		if v.ID == id then
 			return v
 		end
@@ -338,7 +338,7 @@ function MinimapAPI:AddRoomShape(id, roomshapesmallanims, roomshapelargeanims, g
 			local doordir = doorslot % 4
 			local result
 			if doordir == 0 then
-				for i,v in pairs(adjacentcoords) do
+				for _,v in pairs(adjacentcoords) do
 					if v.Y == gridpivot.Y + doorgroup then
 						if not result or (v.X < result.X) then
 							result = v
@@ -346,7 +346,7 @@ function MinimapAPI:AddRoomShape(id, roomshapesmallanims, roomshapelargeanims, g
 					end
 				end
 			elseif doordir == 1 then
-				for i,v in pairs(adjacentcoords) do
+				for _,v in pairs(adjacentcoords) do
 					if v.X == gridpivot.X + doorgroup then
 						if not result or (v.Y < result.Y) then
 							result = v
@@ -354,7 +354,7 @@ function MinimapAPI:AddRoomShape(id, roomshapesmallanims, roomshapelargeanims, g
 					end
 				end
 			elseif doordir == 2 then
-				for i,v in pairs(adjacentcoords) do
+				for _,v in pairs(adjacentcoords) do
 					if v.Y == gridpivot.Y + doorgroup then
 						if not result or (v.X > result.X) then
 							result = v
@@ -362,7 +362,7 @@ function MinimapAPI:AddRoomShape(id, roomshapesmallanims, roomshapelargeanims, g
 					end
 				end
 			elseif doordir == 3 then
-				for i,v in pairs(adjacentcoords) do
+				for _,v in pairs(adjacentcoords) do
 					if v.X == gridpivot.X + doorgroup then
 						if not result or (v.Y > result.Y) then
 							result = v
@@ -394,8 +394,6 @@ end
 function MinimapAPI:PlayerInRoom(roomdata)
 	return playerMapPos.X == roomdata.Position.X and playerMapPos.Y == roomdata.Position.Y
 end
-
--- MinimapAPI.GridEntityPickupIDs
 
 function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current room ONLY
 	local ents = Isaac.GetRoomEntities()
@@ -438,7 +436,7 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 			end
 		end
 	end
-	for i,v in pairs(pickupgroupset) do
+	for _,v in pairs(pickupgroupset) do
 		addIcons[#addIcons + 1] = v
 	end
 	local r = {}
@@ -449,7 +447,7 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 end
 
 function MinimapAPI:RunPlayerPosCallbacks()
-	for i, v in ipairs(callbacks_playerpos) do
+	for _, v in ipairs(callbacks_playerpos) do
 		local s, ret = pcall(v.call, v.mod, MinimapAPI:GetCurrentRoom(), playerMapPos)
 		if s then
 			if ret then
@@ -463,7 +461,7 @@ function MinimapAPI:RunPlayerPosCallbacks()
 end
 
 function MinimapAPI:RunDisplayFlagsCallbacks(room, df)
-	for i, v in ipairs(callbacks_displayflags) do
+	for _, v in ipairs(callbacks_displayflags) do
 		local s, ret = pcall(v.call, v.mod, room, df)
 		if s then
 			if ret then
@@ -477,7 +475,7 @@ function MinimapAPI:RunDisplayFlagsCallbacks(room, df)
 end
 
 function MinimapAPI:RunDimensionCallbacks()
-	for i, v in ipairs(callbacks_dimension) do
+	for _, v in ipairs(callbacks_dimension) do
 		local s, ret = pcall(v.call, v.mod, MinimapAPI.CurrentDimension)
 		if s then
 			if ret then
@@ -620,7 +618,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 end
 
 function MinimapAPI:EffectCrystalBall()
-	for i,v in ipairs(MinimapAPI:GetLevel()) do
+	for _,v in ipairs(MinimapAPI:GetLevel()) do
 		if v.Type ~= RoomType.ROOM_SUPERSECRET then
 			v:Reveal()
 		end
@@ -1883,16 +1881,15 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 		for i,v in pairs(saved.Config) do
 			MinimapAPI.Config[i] = v
 		end
-		MinimapAPI:FirstMapDisplayMode()
 
 		if is_save and saved.LevelData and saved.Seed == game:GetSeeds():GetStartSeed() then
 			MinimapAPI:ClearMap()
 			for dim, level in pairs(saved.LevelData) do
 				dim = tonumber(dim)
-				for i, v in ipairs(level) do
-					local desc, roomDim
+				for _, v in ipairs(level) do
+					local desc
 					if v.DescriptorListIndex then
-						desc, roomDim = GetRoomDescAndDimFromListIndex(v.DescriptorListIndex)
+						desc, _ = GetRoomDescAndDimFromListIndex(v.DescriptorListIndex)
 					end
 					MinimapAPI:AddRoom{
 						Position = Vector(v.PositionX, v.PositionY),
@@ -1951,7 +1948,8 @@ function MinimapAPI:GetSaveTable(menuexit)
 					DescriptorListIndex = v.Descriptor and v.Descriptor.ListIndex,
 					DisplayFlags = rawget(v, "DisplayFlags"),
 					Clear = rawget(v, "Clear"),
-					Color = v.Color and {R = v.Color.R, G = v.Color.G, B = v.Color.B, A = v.Color.A, RO = v.Color.RO, GO = v.Color.GO, BO = v.Color.BO},
+					Color = v.Color and
+						{ R = v.Color.R, G = v.Color.G, B = v.Color.B, A = v.Color.A, RO = v.Color.RO, GO = v.Color.GO, BO = v.Color.BO },
 					AdjacentDisplayFlags = v.AdjacentDisplayFlags,
 					Visited = v.Visited,
 					Hidden = v.Hidden,
@@ -1979,7 +1977,7 @@ MinimapAPI:AddCallback(
 		if MinimapAPI:HasData() then
 			if not MinimapAPI.DisableSaving then
 				local saved = json.decode(Isaac.LoadModData(MinimapAPI))
-				MinimapAPI:LoadSaveTable(saved,is_save)
+				MinimapAPI:LoadSaveTable(saved, is_save)
 			else
 				MinimapAPI:LoadDefaultMap()
 			end
