@@ -3,14 +3,6 @@ local cache = require("scripts.minimapapi.cache")
 
 local json = require("json")
 
-local function getType(obj)
-	local mt = getmetatable(obj)
-	if mt and mt.__type then
-		return mt.__type
-	end
-	return type(obj)
-end
-
 local errorBadArgument = "Bad argument %s to '%s': expected %s, got %s"
 local game = Game()
 
@@ -869,75 +861,6 @@ function MinimapAPI:AddRoom(t)
 	return x
 end
 
-local function IsMinimapAPIRoom(obj)
-	return type(obj) == "table" and getmetatable(obj) and getmetatable(obj).__type == "MinimapAPI.Room"
-end
-
-local function DeepCopy(orig, depth)
-	depth = depth or 0
-
-	local orig_type = type(orig)
-    local copy
-
-    if orig_type == 'table' then
-		if IsMinimapAPIRoom(orig) then
-			return MinimapAPI:CopyRoom(orig, depth)
-		end
-
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-			local isTable = type(orig_value) == "table"
-			local new
-			if not new then
-				if IsMinimapAPIRoom(orig_value) then
-					new = MinimapAPI:CopyRoom(orig_value, depth + 1)
-				else
-					new = DeepCopy(orig_value, depth + 1)
-				end
-			end
-            copy[DeepCopy(orig_key, depth + 1)] = new
-        end
-        setmetatable(copy, DeepCopy(getmetatable(orig), depth + 1))
-    else -- number, string, boolean, etc
-        copy = orig
-    end
-    return copy
-end
-
-local TableKeysToCopy = {
-	"PermanentIcons",
-	"LockedIcons", 
-	"VisitedIcons",
-	"ItemIcons",
-}
-
----@param orig MinimapAPI.Room
----@param depth? integer
----@return MinimapAPI.Room
-function MinimapAPI:CopyRoom(orig, depth)
-	depth = depth or 0
-	assert(IsMinimapAPIRoom(orig), "orig must be MinimapAPI room")
-
-	---@type MinimapAPI.Room
-	local copy = {}
-
-	for k, v in pairs(orig) do
-		if type(v) ~= "table" then
-			copy[k] = v
-		end
-	end
-
-	for _, key in pairs(TableKeysToCopy) do
-		copy[key] = DeepCopy(orig[key], depth + 1)
-	end
-
-	-- Do NOT copy adjacent rooms cache, can just be recalculated
-
-	setmetatable(copy, maproommeta)
-
-	return copy
-end
-
 local function removeAdjacentRoomRefs(room)
 	if not room.AdjacentRooms then return end
 	for i,v in ipairs(room.AdjacentRooms) do
@@ -1226,7 +1149,6 @@ function MinimapAPI:UpdateExternalMap()
 	end
 end
 
-
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 	MinimapAPI.CurrentDimension = cache.Dimension
 	MinimapAPI:RunDimensionCallbacks()
@@ -1503,7 +1425,6 @@ local function renderUnboundedMinimap(size,hide)
 		end
 
 		if size == "huge" and MinimapAPI:GetConfig("HighlightFurthestRoom") then
-			local currentRoom = MinimapAPI:GetCurrentRoom()
 			local furthestDist = 1
 			for _, room in pairs(MinimapAPI:GetLevel()) do
 				local dist = room.PlayerDistance
