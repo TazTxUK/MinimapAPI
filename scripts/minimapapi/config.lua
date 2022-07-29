@@ -1,4 +1,4 @@
-local MinimapAPI = require "scripts.minimapapi"
+local MinimapAPI = require("scripts.minimapapi")
 
 MinimapAPI.Config = {
 	["Disable"] = false,
@@ -42,7 +42,7 @@ MinimapAPI.Config = {
 	["ExternalMap"] = false,
 	["ShowGridDistances"] = false,
 	["HighlightFurthestRoom"] = false,
-	["SyncPositionWithMCM"] = true,
+	["SyncPositionWithMCM"] = true, -- ab+ only
 	["MouseTeleport"] = false,
 	["MouseTeleportUncleared"] = false,
 	
