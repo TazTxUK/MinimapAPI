@@ -45,6 +45,7 @@ MinimapAPI.Config = {
 	["HighlightFurthestRoom"] = false,
 	["SyncPositionWithMCM"] = true,
 	["MouseTeleport"] = false,
+	["MouseTeleportUncleared"] = false,
 	
 	["ConfigPreset"] = 1,
 	

@@ -6,6 +6,7 @@ local largeRoomPixelSize = Vector(18, 16)
 -- ours
 local RoomSpriteOffset = Vector(4, 4)
 local Game = Game()
+local Sfx = SFXManager()
 
 local TeleportMarkerSprite = Sprite()
 TeleportMarkerSprite:Load("gfx/ui/minimapapi/teleport_marker.anm2", true)
@@ -15,8 +16,17 @@ local function niceJourney_ExecuteCmd(_, cmd, params)
     if cmd == "mapitel" then
         MinimapAPI.Config.MouseTeleport = not MinimapAPI.Config.MouseTeleport
         if MinimapAPI.Config.MouseTeleport then
-            Isaac.ConsoleOutput("Enabled Nice Journey (MinimapAPI mouse teleport)" .. '\n')
-            Isaac.DebugString("Enabled Nice Journey (MinimapAPI mouse teleport)")
+            MinimapAPI.Config.MouseTeleportUncleared = params == "unclear"
+
+            local msg = "Enabled Nice Journey (MinimapAPI mouse teleport)"
+            if MinimapAPI.Config.MouseTeleportUncleared then
+                msg = msg .. " with allowed teleport to uncleared rooms"
+            else
+                msg = msg .. "; uncleared rooms disabled, enable with 'mapitel unclear' to be able to teleport there"
+            end
+
+            Isaac.ConsoleOutput(msg .. '\n')
+            Isaac.DebugString(msg)
         else
             Isaac.ConsoleOutput("Disabled Nice Journey (MinimapAPI mouse teleport)" .. '\n')
             Isaac.DebugString("Disabled Nice Journey (MinimapAPI mouse teleport)")
@@ -24,19 +34,41 @@ local function niceJourney_ExecuteCmd(_, cmd, params)
     end
 end
 
+---Used to handle teleport in custom rooms,
+---may be nil if the room is not custom.
+---Each function can be nil and overrides the default
+---behavior.
+---@class TeleportHandler
+local _telHandlerTemplate = {}
+---@param room MinimapAPI.Room
+---@return boolean success
+function _telHandlerTemplate:Teleport(room)
+end
+---@param room MinimapAPI.Room
+---@param cheatMode boolean # If cheat mode (unclear room teleport) is enabled
+---@return boolean
+function _telHandlerTemplate:CanTeleport(room, cheatMode)
+end
+
+
 ---@param room MinimapAPI.Room
 local function TeleportToRoom(room)
-    local desc = room.Descriptor
-    if desc then
+    if room.TeleportHandler and room.TeleportHandler.Teleport then
+        if not room.TeleportHandler:Teleport(room) then
+            Sfx:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, 0.8)
+        end
+    elseif room.Descriptor then
         Game:GetLevel().LeaveDoor = -1
-        Game:StartRoomTransition(desc.SafeGridIndex, Direction.NO_DIRECTION, RoomTransitionAnim.FADE)
+        Game:StartRoomTransition(room.Descriptor.SafeGridIndex, Direction.NO_DIRECTION, RoomTransitionAnim.FADE)
+    else
+        Sfx:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, 0.8)
     end
 end
 
 local WasTriggered = false
 
 local function niceJourney_PostRender()
-    if not MinimapAPI:IsLarge() or not MinimapAPI:GetConfig("MouseTeleport") then
+    if not MinimapAPI:IsLarge() or not MinimapAPI:GetConfig("MouseTeleport") or Game:IsPaused() then
         return
     end
 
@@ -52,11 +84,28 @@ local function niceJourney_PostRender()
         WasTriggered = false
     end
 
+    local allowUnclear = MinimapAPI:GetConfig("MouseTeleportUncleared")
+
     for _, room in pairs(MinimapAPI:GetLevel()) do
         ---@type MinimapAPI.Room
         room = room
 
-        if room:IsVisited() and room:IsClear() then
+        if (
+            (
+                room.TeleportHandler and room.TeleportHandler.CanTeleport
+                and room.TeleportHandler:CanTeleport(room, allowUnclear)
+            )
+            or (
+                not (room.TeleportHandler and room.TeleportHandler.CanTeleport)
+                and (
+                    room:IsVisited() and room:IsClear()
+                    or (allowUnclear and room:IsVisible())
+                )
+            )
+        )
+        and room ~= MinimapAPI:GetCurrentRoom()
+        and (room.Descriptor or room.TeleportHandler)
+        then
             local rgp = MinimapAPI.RoomShapeGridPivots[room.Shape]
             local rms = MinimapAPI:GetRoomShapeGridSize(room.Shape)
             local size = largeRoomPixelSize * rms
@@ -71,7 +120,7 @@ local function niceJourney_PostRender()
             then
                 TeleportMarkerSprite:Render(center)
 
-                if triggered and room ~= MinimapAPI:GetCurrentRoom() then
+                if triggered then
                     TeleportToRoom(room)
                 end
             end

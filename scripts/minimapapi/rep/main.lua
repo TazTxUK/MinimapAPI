@@ -689,7 +689,6 @@ function MinimapAPI:ClearLevels()
 	MinimapAPI.CheckedRoomCount = 0
 end
 
-
 ---@class MinimapAPI.Room
 ---@field Position Vector
 ---@field DisplayPosition Vector
@@ -700,7 +699,8 @@ end
 ---@field LockedIcons string[]
 ---@field ItemIcons string[]
 ---@field VisitedIcons string[]
----@field Descriptor RoomDescriptor
+---@field Descriptor RoomDescriptor # may be nil for custom rooms
+---@field TeleportHandler TeleportHandler # may be nil, used to handle minimapAPI map teleport for custom rooms
 ---@field Color Color
 ---@field RenderOffset Vector
 ---@field DisplayFlags integer
@@ -831,6 +831,7 @@ local maproommeta = {
 	__type = "MinimapAPI.Room"
 }
 
+---@param t MinimapAPI.Room # Not exactly a `MinimapAPI.Room`, but has same fields
 ---@return MinimapAPI.Room
 function MinimapAPI:AddRoom(t)
 	local defaultPosition = Vector(0,-1)
@@ -855,6 +856,7 @@ function MinimapAPI:AddRoom(t)
 		NoUpdate = t.NoUpdate or nil,
 		Dimension = t.Dimension or MinimapAPI.CurrentDimension,
 		IgnoreDescriptorFlags = t.IgnoreDescriptorFlags,
+		TeleportHandler = t.TeleportHandler,
 	}
 	setmetatable(x, maproommeta)
 
