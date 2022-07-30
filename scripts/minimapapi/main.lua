@@ -3,7 +3,6 @@ local cache = require("scripts.minimapapi.cache")
 
 local json = require("json")
 
-local errorBadArgument = "Bad argument %s to '%s': expected %s, got %s"
 local game = Game()
 local dlcColorMult = REPENTANCE and 1 or 255 -- converts colors into correct value range for the DLCs
 local vectorZero = Vector(0,0)
@@ -665,6 +664,13 @@ function MinimapAPI:LoadDefaultMap(dimension)
 			end
 		end
 	end
+end
+
+function MinimapAPI:IsHUDVisible()
+	if REPENTANCE then
+		return game:GetHUD():IsVisible()
+	end
+	return not game:GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD)
 end
 
 function MinimapAPI:CurrentRoomContainsGridEntity(gridEntityDef)
@@ -1766,50 +1772,43 @@ local function renderCallbackFunction(self)
 		return
 	end
 
-	local r = game:GetRoom()
+	local gameroom = game:GetRoom()
 	-- Hide in boss intro cutscene
-	if r:GetFrameCount() == 0 and r:GetType() == RoomType.ROOM_BOSS and not r:IsClear() then
+	if gameroom:GetFrameCount() == 0 and gameroom:GetType() == RoomType.ROOM_BOSS and not gameroom:IsClear() then
 		return
 	end
 	-- Hide in Mega Satan (BossID: 55) fight
-	if r:GetType() == RoomType.ROOM_BOSS and r:GetBossID() == 55 then
+	if gameroom:GetType() == RoomType.ROOM_BOSS and gameroom:GetBossID() == 55 then
 		return
 	end
 	-- Hide in Beast fight
-	if REPENTANCE and r:GetType() == RoomType.ROOM_DUNGEON and game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE8 then
+	if REPENTANCE and gameroom:GetType() == RoomType.ROOM_DUNGEON and game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE8 then
 		return
 	end
 
 	if MinimapAPI:GetConfig("HideInCombat") == 2 then
-		if not r:IsClear() and r:GetType() == RoomType.ROOM_BOSS then
+		if not gameroom:IsClear() and gameroom:GetType() == RoomType.ROOM_BOSS then
 			return
 		end
 	elseif MinimapAPI:GetConfig("HideInCombat") == 3 then
-		if not r:IsClear() then
+		if not gameroom:IsClear() then
 			return
 		end
 	end
 
 	MinimapAPI.TargetGlobalScaleX = cache.MirrorDimension and -1 or 1
-	--alternative multiplicative method
-	-- MinimapAPI.ValueGlobalScaleX = MinimapAPI.ValueGlobalScaleX * 0.8 + MinimapAPI.TargetGlobalScaleX * 0.2
-	-- if math.abs(MinimapAPI.TargetGlobalScaleX - MinimapAPI.ValueGlobalScaleX) < 0.04 then
-		-- MinimapAPI.ValueGlobalScaleX = MinimapAPI.TargetGlobalScaleX
-	-- end
 
 	if MinimapAPI.ValueGlobalScaleX < MinimapAPI.TargetGlobalScaleX then
 		MinimapAPI.ValueGlobalScaleX = math.min(MinimapAPI.ValueGlobalScaleX + 0.2, MinimapAPI.TargetGlobalScaleX)
 	elseif MinimapAPI.ValueGlobalScaleX > MinimapAPI.TargetGlobalScaleX then
 		MinimapAPI.ValueGlobalScaleX = math.max(MinimapAPI.ValueGlobalScaleX - 0.2, MinimapAPI.TargetGlobalScaleX)
 	end
-	-- MinimapAPI.GlobalScaleX = math.sqrt(math.abs(MinimapAPI.ValueGlobalScaleX)) * sign(MinimapAPI.ValueGlobalScaleX)
 	MinimapAPI.GlobalScaleX = MinimapAPI.ValueGlobalScaleX
 
 	local screen_size = MinimapAPI:GetScreenSize()
-	if MinimapAPI:GetConfig("DisplayOnNoHUD") or cache.IsHUDVisible() then
+	if MinimapAPI:GetConfig("DisplayOnNoHUD") or MinimapAPI:IsHUDVisible() then
 		local currentroomdata = MinimapAPI:GetCurrentRoom()
 		local gamelevel = game:GetLevel()
-		local gameroom = game:GetRoom()
 		local hasSpelunkerHat = false
 		for i = 0, game:GetNumPlayers() - 1 do
 			local player = Isaac.GetPlayer(i)

@@ -17,21 +17,6 @@ local function aabb(r1p1,r1p2,r2p1,r2p2)
 	end
 end
 
-local function rectanglesTouching(r1p1,r1p2,r2p1,r2p2)
-	if
-	(
-		(r2p1.X == r1p2.X) and
-		(r2p1.Y == r1p2.Y) and
-		(r2p2.X == r1p1.X) and
-		(r2p2.Y == r1p1.Y)
-	)
-	then
-		return true
-	else
-		return false
-	end
-end
-
 function MinimapAPI:IsPositionFreeNoAlign(position,roomshape)
 	roomshape = roomshape or 1
 	for _,room in ipairs(MinimapAPI.Level) do

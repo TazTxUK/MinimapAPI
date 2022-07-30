@@ -8,13 +8,6 @@ local mod = cache.Mod
 cache.Game = Game()
 cache.Dimension = 0
 
-function cache.IsHUDVisible()
-	if REPENTANCE then
-		return cache.Game:GetHUD():IsVisible()
-	end
-	return not cache.Game:GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD)
-end
-
 function cache.ReloadRoomCache()
 	cache.Level = cache.Game:GetLevel()
 	cache.Room = cache.Game:GetRoom()
