@@ -974,20 +974,6 @@ function MinimapAPI:RemoveRoomByID(id)
 	MinimapAPI:UpdateExternalMap()
 end
 
----@param pos Vector
----@return MinimapAPI.Room
-function MinimapAPI:GetRoom(pos)
-	assert(MinimapAPI:InstanceOf(pos, Vector), "bad argument #1 to 'GetRoom', expected Vector")
-	local success
-	for i, v in ipairs(MinimapAPI:GetLevel()) do
-		if v.Position.X == pos.X and v.Position.Y == pos.Y then
-			success = v
-			break
-		end
-	end
-	return success
-end
-
 ---@param position Vector
 ---@return MinimapAPI.Room
 function MinimapAPI:GetRoomAtPosition(position)
@@ -1126,7 +1112,7 @@ function MinimapAPI:RemovePlayerPositionCallback(modtable)
 end
 
 function MinimapAPI:GetCurrentRoom() --DOESNT ALWAYS RETURN SOMETHING!!!
-	return MinimapAPI:GetRoom(MinimapAPI:GetPlayerPosition())
+	return MinimapAPI:GetRoomAtPosition(MinimapAPI:GetPlayerPosition())
 end
 
 local function updatePlayerPos()
