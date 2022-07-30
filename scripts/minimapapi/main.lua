@@ -634,6 +634,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				for i,v in ipairs(MinimapAPI:GetLevel()) do
 					if v.Descriptor.Data.Type == RoomType.ROOM_BOSS then
 						if v.Shape == RoomShape.ROOMSHAPE_2x2 then
+							-- Hide delirium room
 							if not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP0)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.LEFT0)) then
 								--
 							elseif not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.UP1)) or not MinimapAPI:IsPositionFree(MinimapAPI:GetPositionRelativeToDoor(v,DoorSlot.RIGHT0)) then
@@ -1143,19 +1144,17 @@ end)
 function MinimapAPI:UpdateUnboundedMapOffset()
 	local maxx
 	local miny
-	local level = MinimapAPI:GetLevel()
-	for i = 1, #(level) do
-		local v = level[i]
-		if v:GetDisplayFlags() > 0 then
-			local maxxval
-			maxxval = (
-				v.Position.X - MinimapAPI.RoomShapeGridPivots[v.Shape].X +
-				(MinimapAPI.GlobalScaleX >= 0 and MinimapAPI:GetRoomShapeGridSize(v.Shape).X or 0)
+	for _, room in ipairs(MinimapAPI:GetLevel()) do
+		if room:GetDisplayFlags() > 0 then
+			local position = room.DisplayPosition or room.Position
+			local maxxval = (
+				position.X - MinimapAPI.RoomShapeGridPivots[room.Shape].X +
+				(MinimapAPI.GlobalScaleX >= 0 and MinimapAPI:GetRoomShapeGridSize(room.Shape).X or 0)
 			) * MinimapAPI.GlobalScaleX
 			if not maxx or (maxxval > maxx) then
 				maxx = maxxval
 			end
-			local minyval = v.Position.Y
+			local minyval = position.Y
 			if not miny or (minyval < miny) then
 				miny = minyval
 			end
@@ -1421,22 +1420,22 @@ local function renderUnboundedMinimap(size,hide)
 		sprite.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
 
 		for _, level in pairs(MinimapAPI.Levels) do
-			for i,v in ipairs(level) do
-				local roomPos = v.DisplayPosition or v.Position
+			for _,room in ipairs(level) do
+				local roomPos = room.DisplayPosition or room.Position
 				local roomOffset = Vector(MinimapAPI.GlobalScaleX * roomPos.X, roomPos.Y) + unboundedMapOffset
 				roomOffset.X = roomOffset.X * renderRoomSize.X
 				roomOffset.Y = roomOffset.Y * renderRoomSize.Y
-				v.TargetRenderOffset = offsetVec + roomOffset + renderAnimPivot
+				room.TargetRenderOffset = offsetVec + roomOffset + renderAnimPivot
 				if hide then
-					v.TargetRenderOffset = v.TargetRenderOffset + Vector(0,-800)
+					room.TargetRenderOffset = room.TargetRenderOffset + Vector(0,-800)
 				end
-				if v.RenderOffset then
-					v.RenderOffset = v.TargetRenderOffset * MinimapAPI:GetConfig("SmoothSlidingSpeed") + v.RenderOffset * (1 - MinimapAPI:GetConfig("SmoothSlidingSpeed"))
+				if room.RenderOffset then
+					room.RenderOffset = room.TargetRenderOffset * MinimapAPI:GetConfig("SmoothSlidingSpeed") + room.RenderOffset * (1 - MinimapAPI:GetConfig("SmoothSlidingSpeed"))
 				else
-					v.RenderOffset = v.TargetRenderOffset
+					room.RenderOffset = room.TargetRenderOffset
 				end
-				if v.RenderOffset:DistanceSquared(v.TargetRenderOffset) <= 1 then
-					v.RenderOffset = v.TargetRenderOffset
+				if room.RenderOffset:DistanceSquared(room.TargetRenderOffset) <= 1 then
+					room.RenderOffset = room.TargetRenderOffset
 				end
 			end
 		end
@@ -1445,57 +1444,57 @@ local function renderUnboundedMinimap(size,hide)
 
 		local defaultOutlineColor = Color(1, 1, 1, 1, MinimapAPI:GetConfig("DefaultOutlineColorR") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorG")*dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorB")*dlcColorMult)
 		if MinimapAPI:GetConfig("ShowShadows") then
-			for i, v in pairs(MinimapAPI:GetLevel()) do
-				local displayflags = v:GetDisplayFlags()
+			for _, room in pairs(MinimapAPI:GetLevel()) do
+				local displayflags = room:GetDisplayFlags()
 				if displayflags > 0 then
-					for n, pos in ipairs(MinimapAPI:GetRoomShapePositions(v.Shape)) do
+					for _, pos in ipairs(MinimapAPI:GetRoomShapePositions(room.Shape)) do
 						pos = Vector(pos.X * renderRoomSize.X * MinimapAPI.GlobalScaleX, pos.Y * renderRoomSize.Y)
 						sprite.Color = defaultOutlineColor
 						sprite:SetFrame("RoomOutline", 1)
-						sprite:Render(v.RenderOffset + pos, zvec, zvec)
+						sprite:Render(room.RenderOffset + pos, zvec, zvec)
 					end
 				end
 			end
 		end
 
 		local defaultRoomColor = Color(MinimapAPI:GetConfig("DefaultRoomColorR"), MinimapAPI:GetConfig("DefaultRoomColorG"), MinimapAPI:GetConfig("DefaultRoomColorB"), 1, 0, 0, 0)
-		for i, v in pairs(MinimapAPI:GetLevel()) do
-			local iscurrent = MinimapAPI:PlayerInRoom(v)
-			local displayflags = v:GetDisplayFlags()
+		for _, room in pairs(MinimapAPI:GetLevel()) do
+			local iscurrent = MinimapAPI:PlayerInRoom(room)
+			local displayflags = room:GetDisplayFlags()
 			if displayflags & 0x1 > 0 then
-				local frame = MinimapAPI:GetRoomShapeFrame(v.Shape)
+				local frame = MinimapAPI:GetRoomShapeFrame(room.Shape)
 				local anim
 				local spr = sprite
 				if iscurrent then
 					anim = "RoomCurrent"
-				elseif v:IsClear() then
+				elseif room:IsClear() then
 					anim = "RoomVisited"
-				elseif MinimapAPI:GetConfig("DisplayExploredRooms") and v:IsVisited() then
+				elseif MinimapAPI:GetConfig("DisplayExploredRooms") and room:IsVisited() then
 					spr = size == "small" and MinimapAPI.SpriteMinimapCustomSmall or MinimapAPI.SpriteMinimapCustomLarge
 					anim = "RoomSemivisited"
 				else
 					anim = "RoomUnvisited"
 				end
 				spr.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
-				if MinimapAPI:GetConfig("VanillaSecretRoomDisplay") and (v.PermanentIcons[1] == "SecretRoom" or v.PermanentIcons[1] == "SuperSecretRoom") and anim == "RoomUnvisited" then
+				if MinimapAPI:GetConfig("VanillaSecretRoomDisplay") and (room.PermanentIcons[1] == "SecretRoom" or room.PermanentIcons[1] == "SuperSecretRoom") and anim == "RoomUnvisited" then
 					-- skip room rendering for secret rooms so only shadow is visible
 					if not MinimapAPI:GetConfig("ShowShadows") then
 						spr.Color = Color(0, 0, 0, 1, 0, 0, 0)
 						spr:SetFrame(anim, frame)
-						spr:Render(v.RenderOffset, zvec, zvec)
-						spr.Color = v.Color or defaultRoomColor
+						spr:Render(room.RenderOffset, zvec, zvec)
+						spr.Color = room.Color or defaultRoomColor
 					end
 				elseif type(frame) == "table" then
 					local fr0 = frame[size == "small" and "small" or "large"]
 					local fr1 = fr0[anim] or fr0["RoomUnvisited"]
 					local spr = fr1.sprite or sprite
 					updateMinimapIcon(spr, fr1)
-					spr.Color = v.Color or defaultRoomColor
-					spr:Render(v.RenderOffset, zvec, zvec)
+					spr.Color = room.Color or defaultRoomColor
+					spr:Render(room.RenderOffset, zvec, zvec)
 				else
 					spr:SetFrame(anim, frame)
-					spr.Color = v.Color or defaultRoomColor
-					spr:Render(v.RenderOffset, zvec, zvec)
+					spr.Color = room.Color or defaultRoomColor
+					spr:Render(room.RenderOffset, zvec, zvec)
 				end
 			end
 		end
@@ -1536,39 +1535,39 @@ local function renderUnboundedMinimap(size,hide)
 		if MinimapAPI:GetConfig("ShowIcons") then
 			local sprite = MinimapAPI.SpriteIcons
 
-			for i, v in pairs(MinimapAPI:GetLevel()) do
-				local incurrent = MinimapAPI:PlayerInRoom(v) and not MinimapAPI:GetConfig("ShowCurrentRoomItems")
-				local displayflags = v:GetDisplayFlags()
+			for _, room in pairs(MinimapAPI:GetLevel()) do
+				local incurrent = MinimapAPI:PlayerInRoom(room) and not MinimapAPI:GetConfig("ShowCurrentRoomItems")
+				local displayflags = room:GetDisplayFlags()
 				local k = 1
 
 				if displayflags & 0x4 > 0 then
-					local iconcount = #v.PermanentIcons
-					if v:IsVisited() then
-						iconcount = iconcount + #v.VisitedIcons
+					local iconcount = #room.PermanentIcons
+					if room:IsVisited() then
+						iconcount = iconcount + #room.VisitedIcons
 					end
 					if not incurrent and MinimapAPI:GetConfig("ShowPickupIcons") then
-						iconcount = iconcount + #v.ItemIcons
+						iconcount = iconcount + #room.ItemIcons
 					end
 
-					local locs = MinimapAPI:GetRoomShapeIconPositions(v.Shape, iconcount)
+					local locs = MinimapAPI:GetRoomShapeIconPositions(room.Shape, iconcount)
 					if size ~= "small" then
-						locs = MinimapAPI:GetLargeRoomShapeIconPositions(v.Shape, iconcount)
+						locs = MinimapAPI:GetLargeRoomShapeIconPositions(room.Shape, iconcount)
 					end
 
-					k = renderIcons(v.PermanentIcons, locs, k, v, sprite, size, renderRoomSize)
-					if v:IsVisited() then
-						k = renderIcons(v.VisitedIcons, locs, k, v, sprite, size, renderRoomSize)
+					k = renderIcons(room.PermanentIcons, locs, k, room, sprite, size, renderRoomSize)
+					if room:IsVisited() then
+						k = renderIcons(room.VisitedIcons, locs, k, room, sprite, size, renderRoomSize)
 					end
 					if not incurrent and MinimapAPI:GetConfig("ShowPickupIcons") then
-						k = renderIcons(v.ItemIcons, locs, k, v, sprite, size, renderRoomSize)
+						k = renderIcons(room.ItemIcons, locs, k, room, sprite, size, renderRoomSize)
 					end
 				elseif displayflags & 0x2 > 0 then
-					if v.LockedIcons and #v.LockedIcons > 0 then
-						local locs = MinimapAPI:GetRoomShapeIconPositions(v.Shape, #v.LockedIcons)
+					if room.LockedIcons and #room.LockedIcons > 0 then
+						local locs = MinimapAPI:GetRoomShapeIconPositions(room.Shape, #room.LockedIcons)
 						if size ~= "small" then
-							locs = MinimapAPI:GetLargeRoomShapeIconPositions(v.Shape, #v.LockedIcons)
+							locs = MinimapAPI:GetLargeRoomShapeIconPositions(room.Shape, #room.LockedIcons)
 						end
-						k = renderIcons(v.LockedIcons, locs, k, v, sprite, size, renderRoomSize)
+						k = renderIcons(room.LockedIcons, locs, k, room, sprite, size, renderRoomSize)
 					end
 				end
 			end
