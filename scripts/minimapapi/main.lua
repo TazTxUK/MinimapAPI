@@ -1239,11 +1239,36 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 		MinimapAPI:CheckForNewRedRooms()
 	end
 	updatePlayerPos()
-	
+
+	MinimapAPI:HandleCurseOfMaze()
+
 	MinimapAPI.lastCardUsedRoom = nil
 	
 	MinimapAPI:UpdateExternalMap()
 end)
+
+
+function MinimapAPI:HandleCurseOfMaze()
+	if game:GetLevel():GetCurses() & LevelCurse.CURSE_OF_MAZE ~= LevelCurse.CURSE_OF_MAZE then
+		return
+	end
+	local changedRooms = {}
+	for i,room in ipairs(MinimapAPI:GetLevel()) do
+		if room.Descriptor and room.Descriptor.Data then
+			if room.LastDataVariant and room.LastDataVariant ~= room.Descriptor.Data.Variant then
+				table.insert(changedRooms, i)
+			end
+			room.LastDataVariant = room.Descriptor.Data.Variant
+		end
+	end
+	if #changedRooms >= 2 then
+		local room1 = MinimapAPI:GetLevel()[changedRooms[1]]
+		local room2 = MinimapAPI:GetLevel()[changedRooms[2]]
+		local room1Pos = room1.Position
+		room1.Position = room2.Position
+		room2.Position = room1Pos
+	end
+end
 
 function MinimapAPI:ShowMap()
 	MinimapAPI.changedRoomsWithShowMap = {}
