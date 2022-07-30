@@ -137,6 +137,9 @@ if not REPENTANCE then -- ab+ exclusive icons
 	MinimapAPI:AddPickup("ShellGame","ShellGame",6,6,-1,nil,"beggars",100)
 	MinimapAPI:AddPickup("KeyBeggar","KeyBeggar",6,7,-1,nil,"beggars",100)
 	MinimapAPI:AddPickup("Bombbeggar","Bombbeggar",6,9,-1,nil,"beggars",100)
+
+	--MinimapAPI:AddGridEntity("MineshaftButton", "MineshaftButton",4500,3,nil,10000)
+
 else -- Repentance exclusive icons
 	MinimapAPI:AddPickup("KeyShard","KeyShard",5,300,78,MinimapAPI.PickupNotCollected,"cards",1200)
 	MinimapAPI:AddPickup("QueenOfHearts","RedCard",5,300,79,MinimapAPI.PickupNotCollected,"cards",1200)

@@ -289,6 +289,13 @@ MinimapAPI.PickupList = {
 	["Beggar"] = {IconID="Beggar",Type=6,Variant=4,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=0},
 }
 
+-- IsPrespawnObject is used for grid entities that exist on room creation. These objects are mostly defined by very big Type IDs
+MinimapAPI.GridEntityList = {	
+	["Ladder"] = {IconID="Ladder",Type = GridEntityType.GRID_TRAPDOOR, Variant = 1, Priority=12000},
+	["Minecart"] = {IconID="MinecartRoom",Type = 965, Variant = 10, Call=function() return Game():GetLevel():GetAbsoluteStage() == LevelStage.STAGE2_2 end, Priority=11000, IsPrespawnObject = true},
+	["Mirror"] = {IconID="MirrorRoom",Type = 970, Variant = 2, Call=function() return Game():GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_2 end, Priority=11000, IsPrespawnObject = true},
+}
+
 MinimapAPI.IconList = {
 	{ID="Shop",anim="IconShop",frame=0},
 	{ID="TreasureRoom",anim="IconTreasureRoom",frame=0},

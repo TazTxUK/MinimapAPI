@@ -229,14 +229,14 @@ end
 
 local defaultCustomPickupPriority = 12999 --more than vanilla, less than other potential custom pickups
 function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup, priority)
-	local newRoom
+	local newPickup
 	if type(id) == "table" and iconid == nil then
 		local t = id
 		id = t.ID
 		if type(t.Icon) == "table" then
 			t.Icon = MinimapAPI:AddIcon(t.Icon.ID or t.ID, t.Icon.sprite, t.Icon.anim, t.Icon.frame, t.Icon.color).ID
 		end
-		newRoom = {
+		newPickup = {
 			IconID = t.Icon,
 			Type = t.Type,
 			Variant = t.Variant or -1,
@@ -249,7 +249,7 @@ function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup
 		if type(iconid) == "table" then
 			iconid = MinimapAPI:AddIcon(iconid.ID or id, iconid.sprite, iconid.anim, iconid.frame, iconid.color).ID
 		end
-		newRoom = {
+		newPickup = {
 			IconID = iconid,
 			Type = typ,
 			Variant = variant or -1,
@@ -259,13 +259,51 @@ function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup
 			Priority = priority or defaultCustomPickupPriority
 		}
 	end
-	MinimapAPI.PickupList[id] = newRoom
+	MinimapAPI.PickupList[id] = newPickup
 	table.sort(MinimapAPI.PickupList, function(a, b) return a.Priority > b.Priority	end	)
-	return newRoom
+	return newPickup
 end
 
 function MinimapAPI:RemovePickup(id)
 	MinimapAPI.PickupList[id] = nil
+end
+
+function MinimapAPI:AddGridEntity(id, iconid, typ, variant, call, priority, isPrespawnObject)
+	local newEntry
+	if type(id) == "table" and iconid == nil then
+		local t = id
+		id = t.ID
+		if type(t.Icon) == "table" then
+			t.Icon = MinimapAPI:AddIcon(t.Icon.ID or t.ID, t.Icon.sprite, t.Icon.anim, t.Icon.frame, t.Icon.color).ID
+		end
+		newEntry = {
+			IconID = t.Icon,
+			Type = t.Type,
+			Variant = t.Variant or -1,
+			Call = t.Call,
+			Priority = t.Priority or defaultCustomPickupPriority,
+			IsPrespawnObject = t.IsPrespawnObject
+		}
+	else
+		if type(iconid) == "table" then
+			iconid = MinimapAPI:AddIcon(iconid.ID or id, iconid.sprite, iconid.anim, iconid.frame, iconid.color).ID
+		end
+		newEntry = {
+			IconID = iconid,
+			Type = typ,
+			Variant = variant or -1,
+			Call = call,
+			Priority = priority or defaultCustomPickupPriority,
+			IsPrespawnObject = isPrespawnObject
+		}
+	end
+	MinimapAPI.GridEntityList[id] = newEntry
+	table.sort(MinimapAPI.GridEntityList, function(a, b) return a.Priority > b.Priority	end	)
+	return newEntry
+end
+
+function MinimapAPI:RemoveGridEntity(id)
+	MinimapAPI.GridEntityList[id] = nil
 end
 
 function MinimapAPI:AddIcon(id, sprite, anim, frame, color)
@@ -396,12 +434,12 @@ function MinimapAPI:PlayerInRoom(roomdata)
 end
 
 function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current room ONLY
-	local ents = Isaac.GetRoomEntities()
 	local pickupgroupset = {}
 	local addIcons = {}
-	for _, ent in ipairs(ents) do
+	for _, ent in ipairs(Isaac.GetRoomEntities()) do
 		local success = false
-		if type(ent:GetData()) == "table" and ent:GetData().MinimapAPIPickupID == nil then
+		local id = type(ent:GetData()) == "table" and ent:GetData().MinimapAPIPickupID
+		if id == nil then
 			for i, v in pairs(MinimapAPI.PickupList) do
 				local currentid = MinimapAPI.PickupList[ent:GetData().MinimapAPIPickupID]
 				if not currentid or (currentid.Priority < v.Priority) then
@@ -423,7 +461,6 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 			end
 		end
 
-		local id = type(ent:GetData()) == "table" and ent:GetData().MinimapAPIPickupID
 		local pickupicon = MinimapAPI.PickupList[id]
 		if pickupicon then
 			local ind = MinimapAPI:GetConfig("PickupNoGrouping") and (#pickupgroupset + 1) or pickupicon.IconGroup
@@ -437,13 +474,28 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 		end
 	end
 	for _,v in pairs(pickupgroupset) do
-		addIcons[#addIcons + 1] = v
+		table.insert(addIcons, v)
 	end
-	local r = {}
+	local iconList = {}
 	for i,v in ipairs(addIcons) do
-		r[i] = MinimapAPI.PickupList[v].IconID
+		iconList[i] = MinimapAPI.PickupList[v].IconID
 	end
-	return r
+	for _,v in ipairs(MinimapAPI:GetCurrentRoomGridIDs()) do
+		table.insert(iconList, v)
+	end
+	return iconList
+end
+
+function MinimapAPI:GetCurrentRoomGridIDs()
+	local iconList = {}
+	for _, iconEntry in pairs(MinimapAPI.GridEntityList) do
+		if MinimapAPI:CurrentRoomContainsGridEntity(iconEntry) then
+			if (not iconEntry.Call) or iconEntry.Call(ent) then
+				table.insert(iconList, iconEntry.IconID)
+			end
+		end
+	end
+	return iconList
 end
 
 function MinimapAPI:RunPlayerPosCallbacks()
@@ -510,16 +562,21 @@ local function GetRoomDescAndDimFromListIndex(listIndex)
         error(("GetRoomDescFromListIndex: bad index %d"):format(listIndex), 2)
     end
     local gridIndex = constDesc.SafeGridIndex
+	local fallbackDesc,fallbackDim = nil, 0
 	local maxDim = REPENTANCE and 2 or 0
 	for dim = 0, maxDim do
-		Isaac.DebugString("Pre idx "..gridIndex)
 		local roomDesc = level:GetRoomByIdx(gridIndex, dim)
-		Isaac.DebugString("Post idx "..gridIndex)
 		if roomDesc.ListIndex == listIndex then
 			return roomDesc, dim
 		end
+		if roomDesc.SafeGridIndex == gridIndex then -- fallback when code aboth doesnt find a match. Example failcase: Seed GHXY AG8J, Mines 2 with knife piece 1
+			fallbackDesc,fallbackDim = roomDesc, dim
+		end
 	end
-	
+	if fallbackDesc then
+		return fallbackDesc, fallbackDim
+	end
+		
 	error(("GetRoomDescFromListIndex: unknown error with index %d"):format(listIndex), 2)
 end
 
@@ -531,48 +588,41 @@ function MinimapAPI:LoadDefaultMap(dimension)
 	local treasure_room_count = 0
 	local added_descriptors = {}
 	for i = 0, #rooms - 1 do
-		local v, roomDim = GetRoomDescAndDimFromListIndex(i)
-		local hash = GetPtrHash(v)
+		local roomDescriptor, roomDim = GetRoomDescAndDimFromListIndex(i)
+		local hash = GetPtrHash(roomDescriptor)
 		if roomDim == dimension 
-		and not added_descriptors[v] 
-		and GetPtrHash(cache.Level:GetRoomByIdx(v.SafeGridIndex)) == hash 
+		and not added_descriptors[roomDescriptor] 
+		and GetPtrHash(cache.Level:GetRoomByIdx(roomDescriptor.SafeGridIndex)) == hash 
 		then
-			added_descriptors[v] = true
+			added_descriptors[roomDescriptor] = true
 			local t = {
-				Shape = v.Data.Shape,
-				PermanentIcons = {MinimapAPI:GetRoomTypeIconID(v.Data.Type)},
-				LockedIcons = {MinimapAPI:GetUnknownRoomTypeIconID(v.Data.Type)},
+				Shape = roomDescriptor.Data.Shape,
+				PermanentIcons = {MinimapAPI:GetRoomTypeIconID(roomDescriptor.Data.Type)},
+				LockedIcons = {MinimapAPI:GetUnknownRoomTypeIconID(roomDescriptor.Data.Type)},
 				ItemIcons = {},
 				VisitedIcons = {},
-				Position = MinimapAPI:GridIndexToVector(v.SafeGridIndex),
-				Descriptor = v,
-				AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[v.Data.Type] or 5,
-				Type = v.Data.Type,
+				Position = MinimapAPI:GridIndexToVector(roomDescriptor.SafeGridIndex),
+				Descriptor = roomDescriptor,
+				AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[roomDescriptor.Data.Type] or 5,
+				Type = roomDescriptor.Data.Type,
 				Dimension = dimension,
-				Color = REPENTANCE and v.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
+				Color = REPENTANCE and roomDescriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 		}
-		if v.Data.Type == RoomType.ROOM_SECRET or v.Data.Type == RoomType.ROOM_SUPERSECRET then
+		if roomDescriptor.Data.Type == RoomType.ROOM_SECRET or roomDescriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
 				t.Hidden = 1
-			elseif REPENTANCE and v.Data.Type == RoomType.ROOM_ULTRASECRET then
+			elseif REPENTANCE and roomDescriptor.Data.Type == RoomType.ROOM_ULTRASECRET then
 				t.Hidden = 2
 			end
-			if v.Data.Type == 11 and v.Data.Subtype == 1 then
+			if roomDescriptor.Data.Type == 11 and roomDescriptor.Data.Subtype == 1 then
 				t.PermanentIcons[1] = "BossAmbushRoom"
 			end
 			if override_greed and game:IsGreedMode() then
-				if v.Data.Type == RoomType.ROOM_TREASURE then
+				if roomDescriptor.Data.Type == RoomType.ROOM_TREASURE then
 					treasure_room_count = treasure_room_count + 1
 					if treasure_room_count == 1 then
 						t.PermanentIcons = {"TreasureRoomGreed"}
 						t.LockedIcons = {"TreasureRoomGreed"}
 					end
-				end
-			end
-			if REPENTANCE then
-				if (cache.Stage == LevelStage.STAGE1_2 or cache.Stage == LevelStage.STAGE1_1) and string.find(v.Data.Name, "Mirror Room") then
-					t.VisitedIcons = {"MirrorRoom"}
-				elseif (cache.Stage == LevelStage.STAGE2_2 or cache.Stage == LevelStage.STAGE2_1) and string.find(v.Data.Name, "Secret Entrance") then
-					t.VisitedIcons = {"MinecartRoom"}
 				end
 			end
 			MinimapAPI:AddRoom(t)
@@ -615,6 +665,30 @@ function MinimapAPI:LoadDefaultMap(dimension)
 			end
 		end
 	end
+end
+
+function MinimapAPI:CurrentRoomContainsGridEntity(gridEntityDef)
+	gridEntityDef.Variant = gridEntityDef.Variant or -1
+
+	if gridEntityDef.IsPrespawnObject then
+		local spawnList = cache.Level:GetCurrentRoomDesc().Data.Spawns
+		for i = 0, spawnList.Size-1 do
+			local roomConfigSpawn = spawnList:Get(i):PickEntry(0)
+			if roomConfigSpawn.Type == gridEntityDef.Type 
+			and (gridEntityDef.Variant == -1 or roomConfigSpawn.Variant == gridEntityDef.Variant) then
+				return true
+			end
+		end
+	else
+		for i = 0, cache.Room:GetGridSize() - 1 do
+			local gridEntity = cache.Room:GetGridEntity(i)
+			if gridEntity and gridEntityDef.Type == gridEntity:GetType()
+			and (gridEntityDef.Variant == -1 or gridEntity:GetVariant()== gridEntityDef.Variant) then
+				return true
+			end
+		end
+	end
+	return false
 end
 
 function MinimapAPI:EffectCrystalBall()
