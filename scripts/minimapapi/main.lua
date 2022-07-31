@@ -74,6 +74,21 @@ function MinimapAPI:GetScreenTopLeft(offset)
 	
 end
 
+function MinimapAPI:DeepCopy(orig)
+	local orig_type = type(orig)
+	local copy
+	if orig_type == 'table' then
+		copy = {}
+		for orig_key, orig_value in next, orig, nil do
+			copy[MinimapAPI:DeepCopy(orig_key)] = MinimapAPI:DeepCopy(orig_value)
+		end
+		setmetatable(copy, MinimapAPI:DeepCopy(getmetatable(orig)))
+	else -- number, string, boolean, etc
+		copy = orig
+	end
+	return copy
+end
+
 function MinimapAPI:GetRoomShapeFrame(rs)
 	return MinimapAPI.RoomShapeFrames[rs]
 end
@@ -605,6 +620,8 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[roomDescriptor.Data.Type] or 5,
 				Type = roomDescriptor.Data.Type,
 				Dimension = dimension,
+				Visited = roomDescriptor.VisitedCount > 0,
+				Clear = roomDescriptor.Clear,
 				Color = REPENTANCE and roomDescriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 		}
 		if roomDescriptor.Data.Type == RoomType.ROOM_SECRET or roomDescriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
@@ -1165,6 +1182,9 @@ function MinimapAPI:UpdateUnboundedMapOffset()
 	end
 end
 
+local currentMapStateCopy = {}
+local lastMapStateCopy = {}
+local GlowingHourglassTriggered = false
 
 MinimapAPI:AddCallback(	ModCallbacks.MC_USE_ITEM, function(self, colltype, rng)
 	if colltype == CollectibleType.COLLECTIBLE_CRYSTAL_BALL then
@@ -1173,6 +1193,7 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_USE_ITEM, function(self, colltype, rng)
 	elseif REPENTANCE and colltype == CollectibleType.COLLECTIBLE_RED_KEY then
 			MinimapAPI:CheckForNewRedRooms()
 	elseif colltype == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
+		GlowingHourglassTriggered = true
 		if MinimapAPI.lastCardUsedRoom == MinimapAPI:GetCurrentRoom() then
 			for _,v in ipairs(MinimapAPI.changedRoomsWithShowMap) do
 				MinimapAPI:GetLevel()[v[1]].DisplayFlags = v[2]
@@ -1212,6 +1233,7 @@ function MinimapAPI:UpdateExternalMap()
 	end
 end
 
+
 MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 	MinimapAPI.CurrentDimension = cache.Dimension
 	MinimapAPI:RunDimensionCallbacks()
@@ -1228,10 +1250,71 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_ROOM, function(self)
 	MinimapAPI:HandleCurseOfMaze()
 
 	MinimapAPI.lastCardUsedRoom = nil
+	if not GlowingHourglassTriggered then
+		MinimapAPI:CopyLevels()
+	else
+		MinimapAPI:RewindLevels()
+	end
+	GlowingHourglassTriggered = false
 	
 	MinimapAPI:UpdateExternalMap()
 end)
 
+function MinimapAPI:CopyLevels()
+	lastMapStateCopy = MinimapAPI:DeepCopy(currentMapStateCopy)
+	currentMapStateCopy = {}
+	for i, lvl in pairs(MinimapAPI.Levels) do
+		currentMapStateCopy[i] = {}
+		for index, room in pairs(lvl) do
+			local roomCopy ={
+				AdjacentDisplayFlags= room.AdjacentDisplayFlags,
+				Color= room.Color,
+				Descriptor= room.Descriptor,
+				Dimension= room.Dimension,
+				DisplayFlags= room.DisplayFlags,
+				DisplayPosition= room.DisplayPosition,
+				Hidden= room.Hidden,
+				ID= room.ID,
+				IgnoreDescriptorFlags= room.IgnoreDescriptorFlags,
+				NoUpdate= room.NoUpdate,
+				RenderOffset= room.RenderOffset,
+				Shape= room.Shape,
+				ItemIcons= MinimapAPI:DeepCopy(room.ItemIcons),
+				LockedIcons= MinimapAPI:DeepCopy(room.LockedIcons),
+				PermanentIcons= MinimapAPI:DeepCopy(room.PermanentIcons),
+				VisitedIcons= MinimapAPI:DeepCopy(room.VisitedIcons),
+			}
+			currentMapStateCopy[i][index] = roomCopy
+		end
+	end
+end
+
+function MinimapAPI:RewindLevels()
+	MinimapAPI:ClearLevels()
+	MinimapAPI:LoadDefaultMap()
+	updatePlayerPos()
+	MinimapAPI:UpdateExternalMap()
+	for i, lvl in pairs(lastMapStateCopy) do
+		for index, room in pairs(lvl) do
+			local newRoom = MinimapAPI.Levels[i][index]
+				newRoom.AdjacentDisplayFlags= room.AdjacentDisplayFlags
+				newRoom.Color= room.Color
+				newRoom.Descriptor= room.Descriptor
+				newRoom.Dimension= room.Dimension
+				newRoom.DisplayFlags= room.DisplayFlags
+				newRoom.DisplayPosition= room.DisplayPosition
+				newRoom.Hidden= room.Hidden
+				newRoom.ID= room.ID
+				newRoom.IgnoreDescriptorFlags= room.IgnoreDescriptorFlags
+				newRoom.NoUpdate= room.NoUpdate
+				newRoom.RenderOffset= room.RenderOffset
+				newRoom.ItemIcons= MinimapAPI:DeepCopy(room.ItemIcons)
+				newRoom.LockedIcons= MinimapAPI:DeepCopy(room.LockedIcons)
+				newRoom.PermanentIcons= MinimapAPI:DeepCopy(room.PermanentIcons)
+				newRoom.VisitedIcons= MinimapAPI:DeepCopy(room.VisitedIcons)
+		end
+	end
+end
 
 function MinimapAPI:HandleCurseOfMaze()
 	if game:GetLevel():GetCurses() & LevelCurse.CURSE_OF_MAZE ~= LevelCurse.CURSE_OF_MAZE then
