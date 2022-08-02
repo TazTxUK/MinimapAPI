@@ -52,66 +52,41 @@ end
 function _telHandlerTemplate:CanTeleport(room, cheatMode)
 end
 
-local leavingCurseRoom = false
-local enteringCurseRoom = false
-
 ---@param room MinimapAPI.Room # target room
 ---@param curRoom MinimapAPI.Room # room we're teleporting from
----@return should player be hurt from entering or exiting a curse room
+---@return boolean # should player be hurt from entering or exiting a curse room
 local function niceJourney_ShouldDamagePlayer(room, curRoom)
-	enteringCurseRoom = room.Descriptor.Data.Type == RoomType.ROOM_CURSE
-	leavingCurseRoom = (curRoom.Descriptor and curRoom.Descriptor.Data.Type == RoomType.ROOM_CURSE)
+    local enteringCurseRoom = room.Descriptor.Data.Type == RoomType.ROOM_CURSE
+    local leavingCurseRoom = curRoom.Descriptor and curRoom.Descriptor.Data.Type == RoomType.ROOM_CURSE
 
-	--TODO: check door target room for any exit that isn't a curse room?
-	if leavingCurseRoom then
-		local doorCount = 0
-		for _,doorslot in ipairs(MinimapAPI.RoomShapeDoorSlots[curRoom.Descriptor.Data.Shape]) do
-		--TODO: for the life of me i cannot figure out from the door's data if it's a curse room door!!!
-			local doorent = gameroom:GetDoor(doorslot)
-			if doorent and doorent:IsOpen() then
-				if doorent:GetSaveState().VarData == 1 then  -- opened via flat file
-					leavingCurseRoom = false
-					break
-				end
-			--Workaround for TODO above: if there's two doors that lead into a non-curse room, assume there's a safe exit
-				if doorent.TargetRoomType ~= RoomType.ROOM_CURSE then
-					doorCount = doorCount + 1
-					if doorCount > 1 then
-						leavingCurseRoom = false
-						break
-					end
-				end
-			end
-		end
-	end
-	if enteringCurseRoom then
-		for _,doorslot in ipairs(MinimapAPI.RoomShapeDoorSlots[room.Descriptor.Data.Shape]) do
-			local doorent = gameroom:GetDoor(doorslot)
-			if doorent and doorent:IsOpen()
-			and doorent:GetSaveState().VarData == 1 then -- opened via flat file
-				enteringCurseRoom = false
-				break
-			end
-		end
-	end
+    if not (enteringCurseRoom or leavingCurseRoom) or  not MinimapAPI:GetConfig("MouseTeleportDamageOnCurseRoom") then
+        return false
+    end
 
-	if leavingCurseRoom or enteringCurseRoom then
-		for i = 0, Game:GetNumPlayers() - 1 do
-			if Isaac.GetPlayer(i):HasTrinket(TrinketType.TRINKET_FLAT_FILE)
-			or Isaac.GetPlayer(i):HasCollectible(CollectibleType.COLLECTIBLE_ISAACS_HEART) then
-				return false
-			end
-		end
-		if enteringCurseRoom then
-			for i = 0, Game:GetNumPlayers() - 1 do
-				if Isaac.GetPlayer(i).CanFly then
-					return false
-				end
-			end
-		end
-		return true
-	end
-	return false
+    for i = 0, Game:GetNumPlayers() - 1 do
+        if REPENTANCE and Isaac.GetPlayer(i):HasTrinket(TrinketType.TRINKET_FLAT_FILE)
+            or Isaac.GetPlayer(i):HasCollectible(CollectibleType.COLLECTIBLE_ISAACS_HEART) then
+            return false
+        end
+    end
+
+    if leavingCurseRoom then
+        for _, doorslot in ipairs(MinimapAPI.RoomShapeDoorSlots[curRoom.Descriptor.Data.Shape]) do
+            local doorent = gameroom:GetDoor(doorslot)
+            if doorent and doorent:IsOpen() then
+                if doorent.TargetRoomType == RoomType.ROOM_SECRET or doorent:GetSaveState().VarData == 1 then -- Safe exit by secret room or opened via flat file
+                    return false
+                end
+            end
+        end
+    elseif enteringCurseRoom then
+        for i = 0, Game:GetNumPlayers() - 1 do
+            if Isaac.GetPlayer(i).CanFly then
+                return false
+            end
+        end
+    end
+    return true -- damage player
 end
 
 ---@param room MinimapAPI.Room
@@ -121,11 +96,13 @@ local function TeleportToRoom(room)
             Sfx:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, 0.8)
         end
     elseif room.Descriptor then
-		if niceJourney_ShouldDamagePlayer(room, MinimapAPI:GetCurrentRoom()) then
-			Isaac.GetPlayer(0):TakeDamage(1, DamageFlag.DAMAGE_CURSED_DOOR | DamageFlag.DAMAGE_NO_PENALTIES, EntityRef(Isaac.GetPlayer(0)), 0)
-		end
+        if niceJourney_ShouldDamagePlayer(room, MinimapAPI:GetCurrentRoom()) then
+            Isaac.GetPlayer(0):TakeDamage(1, DamageFlag.DAMAGE_CURSED_DOOR | DamageFlag.DAMAGE_NO_PENALTIES,
+                EntityRef(Isaac.GetPlayer(0)), 0)
+        end
         Game:GetLevel().LeaveDoor = -1
-        Game:StartRoomTransition(room.Descriptor.SafeGridIndex, Direction.NO_DIRECTION, REPENTANCE and RoomTransitionAnim.FADE or 1)
+        Game:StartRoomTransition(room.Descriptor.SafeGridIndex, Direction.NO_DIRECTION,
+            REPENTANCE and RoomTransitionAnim.FADE or 1)
     else
         Sfx:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, 0.8)
     end
@@ -172,8 +149,9 @@ local function niceJourney_PostRender()
             local rgp = MinimapAPI.RoomShapeGridPivots[room.Shape]
             local rms = MinimapAPI:GetRoomShapeGridSize(room.Shape)
             local size = Vector(largeRoomPixelSize.X * rms.X, largeRoomPixelSize.Y * rms.Y)
-			local gripPivotOffset = Vector(rgp.X * size.X / 2,rgp.Y * size.Y / 2)
-            local pos = room.RenderOffset + Vector(MinimapAPI.GlobalScaleX * RoomSpriteOffset.X, RoomSpriteOffset.Y) - gripPivotOffset
+            local gripPivotOffset = Vector(rgp.X * size.X / 2, rgp.Y * size.Y / 2)
+            local pos = room.RenderOffset + Vector(MinimapAPI.GlobalScaleX * RoomSpriteOffset.X, RoomSpriteOffset.Y) -
+                gripPivotOffset
             local center = pos + Vector(size.X / 2 * MinimapAPI.GlobalScaleX, size.Y / 2)
             local boundsTl, boundsBr = pos, pos + size
             if MinimapAPI.GlobalScaleX == -1 then -- Map is flipped
@@ -184,7 +162,7 @@ local function niceJourney_PostRender()
                 and mouseCoords.Y > boundsTl.Y and mouseCoords.Y < boundsBr.Y
             then
                 TeleportMarkerSprite.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
-                TeleportMarkerSprite:Render(center, Vector(0,0), Vector(0,0))
+                TeleportMarkerSprite:Render(center, Vector(0, 0), Vector(0, 0))
 
                 if triggered then
                     TeleportToRoom(room)

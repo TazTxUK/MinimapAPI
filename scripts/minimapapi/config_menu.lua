@@ -41,8 +41,6 @@ if modconfigexists then
 			ShowGridDistances = false,
 			HighlightFurthestRoom = false,
 			VanillaSecretRoomDisplay = false,
-			MouseTeleport = false,
-			MouseTeleportUncleared = false,
 		},
 		{ --vanilla
 			ShowIcons = true,
@@ -68,8 +66,6 @@ if modconfigexists then
 			ShowGridDistances = false,
 			HighlightFurthestRoom = false,
 			VanillaSecretRoomDisplay = true,
-			MouseTeleport = false,
-			MouseTeleportUncleared = false,
 		},
 		{ --all
 			ShowIcons = true,
@@ -95,8 +91,6 @@ if modconfigexists then
 			ShowGridDistances = true,
 			HighlightFurthestRoom = true,
 			VanillaSecretRoomDisplay = false,
-			MouseTeleport = false,
-			MouseTeleportUncleared = false,
 		},
 		{ -- minimal
 			ShowIcons = true,
@@ -122,8 +116,6 @@ if modconfigexists then
 			ShowGridDistances = false,
 			HighlightFurthestRoom = false,
 			VanillaSecretRoomDisplay = false,
-			MouseTeleport = false,
-			MouseTeleportUncleared = false,
 		},
 	}
 	
@@ -518,6 +510,24 @@ if modconfigexists then
 				MinimapAPI.Config.ConfigPreset = 0
 			end,
 			Info = {"Restricts teleportation to discovered rooms"}
+		}
+	)
+	MCM.AddSetting(
+		"Minimap API",
+		"Modes",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.MouseTeleportDamageOnCurseRoom
+			end,
+			Display = function()
+				return "Damage on teleporting to curse room: " .. (MinimapAPI.Config.MouseTeleportDamageOnCurseRoom and "True" or "False")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.MouseTeleportDamageOnCurseRoom = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {"Damages the player when he teleports into or out of a curse room and doesnt have Flat file, Isaacs heart, Flight or an open Secret room next to the curse room"}
 		}
 	)
 
