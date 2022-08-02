@@ -57,6 +57,7 @@ local enteringCurseRoom = false
 
 ---@param room MinimapAPI.Room # target room
 ---@param curRoom MinimapAPI.Room # room we're teleporting from
+---@return should player be hurt from entering or exiting a curse room
 local function niceJourney_ShouldDamagePlayer(room, curRoom)
 	enteringCurseRoom = room.Descriptor.Data.Type == RoomType.ROOM_CURSE
 	leavingCurseRoom = (curRoom.Descriptor and curRoom.Descriptor.Data.Type == RoomType.ROOM_CURSE)
@@ -94,12 +95,10 @@ local function niceJourney_ShouldDamagePlayer(room, curRoom)
 		end
 	end
 
-	Isaac.DebugString("enteringCurseRoom: "..tostring(enteringCurseRoom).." leavingCurseRoom: "..tostring(leavingCurseRoom))
 	if leavingCurseRoom or enteringCurseRoom then
-
 		for i = 0, Game:GetNumPlayers() - 1 do
-			if Isaac.GetPlayer(i):HasTrinket(TrinketType.TRINKET_FLAT_FILE) then
-				Isaac.DebugString("found flat file")
+			if Isaac.GetPlayer(i):HasTrinket(TrinketType.TRINKET_FLAT_FILE)
+			or Isaac.GetPlayer(i):HasCollectible(CollectibleType.COLLECTIBLE_ISAACS_HEART) then
 				return false
 			end
 		end
