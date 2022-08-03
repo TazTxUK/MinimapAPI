@@ -54,7 +54,7 @@ function _telHandlerTemplate:CanTeleport(room, cheatMode)
 end
 
 ---@param room MinimapAPI.Room # target room
----@param curRoom MinimapAPI.Room # room we're teleporting from
+---@param curRoom RoomDescriptor # room we're teleporting from
 ---@return boolean # should player be hurt from entering or exiting a curse room
 local function ShouldDamagePlayer(room, curRoom)
     if type(curRoom) == "nil" then
@@ -94,7 +94,7 @@ local function ShouldDamagePlayer(room, curRoom)
 end
 
 ---@param room MinimapAPI.Room # target room
----@param curRoom MinimapAPI.Room # room we're teleporting from
+---@param curRoom RoomDescriptor # room we're teleporting from
 ---@return boolean # is player allowed to teleport
 local function CanTeleportToRoom(room, curRoom)
     local onMomFloor = (level:GetStage() == 6
