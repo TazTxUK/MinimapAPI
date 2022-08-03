@@ -63,7 +63,7 @@ local function ShouldDamagePlayer(room, curRoom)
     local enteringCurseRoom = room.Descriptor.Data.Type == RoomType.ROOM_CURSE
     local leavingCurseRoom = curRoom.Data.Type == RoomType.ROOM_CURSE
 
-    if not (enteringCurseRoom or leavingCurseRoom) or MinimapAPI:GetConfig("MouseTeleportDamageOnCurseRoom") then
+    if not (enteringCurseRoom or leavingCurseRoom) or not MinimapAPI:GetConfig("MouseTeleportDamageOnCurseRoom") then
         return false
     end
 
