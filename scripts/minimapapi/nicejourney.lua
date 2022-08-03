@@ -6,6 +6,7 @@ local largeRoomPixelSize = Vector(18, 16)
 -- ours
 local RoomSpriteOffset = Vector(4, 4)
 local Game = Game()
+local level = Game:GetLevel()
 local Sfx = SFXManager()
 local gameroom = Game:GetRoom()
 
@@ -56,10 +57,13 @@ end
 ---@param curRoom MinimapAPI.Room # room we're teleporting from
 ---@return boolean # should player be hurt from entering or exiting a curse room
 local function ShouldDamagePlayer(room, curRoom)
+    if type(curRoom) == "nil" then
+        return false
+    end
     local enteringCurseRoom = room.Descriptor.Data.Type == RoomType.ROOM_CURSE
-    local leavingCurseRoom = curRoom.Descriptor and curRoom.Descriptor.Data.Type == RoomType.ROOM_CURSE
+    local leavingCurseRoom = curRoom.Data.Type == RoomType.ROOM_CURSE
 
-    if not (enteringCurseRoom or leavingCurseRoom) or  not MinimapAPI:GetConfig("MouseTeleportDamageOnCurseRoom") then
+    if not (enteringCurseRoom or leavingCurseRoom) or MinimapAPI:GetConfig("MouseTeleportDamageOnCurseRoom") then
         return false
     end
 
@@ -71,7 +75,7 @@ local function ShouldDamagePlayer(room, curRoom)
     end
 
     if leavingCurseRoom then
-        for _, doorslot in ipairs(MinimapAPI.RoomShapeDoorSlots[curRoom.Descriptor.Data.Shape]) do
+        for _, doorslot in ipairs(MinimapAPI.RoomShapeDoorSlots[curRoom.Data.Shape]) do
             local doorent = gameroom:GetDoor(doorslot)
             if doorent and doorent:IsOpen() then
                 if doorent.TargetRoomType == RoomType.ROOM_SECRET or doorent:GetSaveState().VarData == 1 then -- Safe exit by secret room or opened via flat file
@@ -93,13 +97,17 @@ end
 ---@param curRoom MinimapAPI.Room # room we're teleporting from
 ---@return boolean # is player allowed to teleport
 local function CanTeleportToRoom(room, curRoom)
-    if MinimapAPI:GetConfig("MouseTeleportUncleared") then
+    local onMomFloor = (level:GetStage() == 6
+        or (level:GetStage() == 5 and (level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH > 0)))
+    if MinimapAPI:GetConfig("MouseTeleportUncleared") or type(curRoom) == "nil" then
         return true
+    elseif (curRoom.Data.Type == RoomType.ROOM_BOSS and gameroom:GetBossID() == 6)
+    or curRoom.GridIndex == GridRooms.ROOM_BOSSRUSH_IDX
+    or (onMomFloor and curRoom.GridIndex == GridRooms.ROOM_DEVIL_IDX and level:GetLastRoomDesc().Data.Type == RoomType.ROOM_BOSS) then -- Mom
+        return (REPENTANCE and level:IsAscent()) or false
     elseif curRoom.Clear then
-        if curRoom.Type == RoomType.ROOM_BOSS and gameroom:GetBossID() == 6 then -- Mom
-            return false
-        elseif curRoom.Descriptor.Data.Type == RoomType.ROOM_CHALLENGE and not curRoom.Descriptor.ChallengeDone then
-            for _, doorslot in ipairs(MinimapAPI.RoomShapeDoorSlots[curRoom.Descriptor.Data.Shape]) do
+        if curRoom.Data.Type == RoomType.ROOM_CHALLENGE and not curRoom.ChallengeDone then
+            for _, doorslot in ipairs(MinimapAPI.RoomShapeDoorSlots[curRoom.Data.Shape]) do
                 local doorent = gameroom:GetDoor(doorslot)
                 if doorent and doorent:IsOpen() then
                     return true
@@ -132,9 +140,9 @@ local function CanTeleportToRoom(room, curRoom)
     end
 end
 
----@param room MinimapAPI.Room
+---@param room MinimapAPI.Room # target room
 local function TeleportToRoom(room)
-local curRoom = MinimapAPI:GetCurrentRoom()
+    local curRoom = level:GetCurrentRoomDesc()
     if room.TeleportHandler and room.TeleportHandler.Teleport then
         if not room.TeleportHandler:Teleport(room) then
             Sfx:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, 0.8)
