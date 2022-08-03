@@ -55,7 +55,7 @@ end
 ---@param room MinimapAPI.Room # target room
 ---@param curRoom MinimapAPI.Room # room we're teleporting from
 ---@return boolean # should player be hurt from entering or exiting a curse room
-local function niceJourney_ShouldDamagePlayer(room, curRoom)
+local function ShouldDamagePlayer(room, curRoom)
     local enteringCurseRoom = room.Descriptor.Data.Type == RoomType.ROOM_CURSE
     local leavingCurseRoom = curRoom.Descriptor and curRoom.Descriptor.Data.Type == RoomType.ROOM_CURSE
 
@@ -89,14 +89,58 @@ local function niceJourney_ShouldDamagePlayer(room, curRoom)
     return true -- damage player
 end
 
+---@param room MinimapAPI.Room # target room
+---@param curRoom MinimapAPI.Room # room we're teleporting from
+---@return boolean # is player allowed to teleport
+local function CanTeleportToRoom(room, curRoom)
+    if MinimapAPI:GetConfig("MouseTeleportUncleared") then
+        return true
+    elseif curRoom.Clear then
+        if curRoom.Type == RoomType.ROOM_BOSS and gameroom:GetBossID() == 6 then -- Mom
+            return false
+        elseif curRoom.Descriptor.Data.Type == RoomType.ROOM_CHALLENGE and not curRoom.Descriptor.ChallengeDone then
+            for _, doorslot in ipairs(MinimapAPI.RoomShapeDoorSlots[curRoom.Descriptor.Data.Shape]) do
+                local doorent = gameroom:GetDoor(doorslot)
+                if doorent and doorent:IsOpen() then
+                    return true
+                end
+            end
+            return false
+        elseif room.Descriptor.Data.Type == RoomType.ROOM_CHALLENGE and not room.Descriptor.ChallengeDone then
+            local allPlayersFullHealth = true
+            local allPlayersOneHealth = true
+            for i = 0, Game:GetNumPlayers() - 1 do
+                local health = Isaac.GetPlayer(i):GetHearts() + Isaac.GetPlayer(i):GetSoulHearts()
+                if allPlayersFullHealth and Isaac.GetPlayer(i):GetMaxHearts() > health then
+                    allPlayersFullHealth = false
+                end
+                if health > 2 then
+                    allPlayersOneHealth = false
+                    break
+                end
+            end
+            if room.Descriptor.Data.Subtype == 1 then
+                return allPlayersOneHealth
+            else
+                return allPlayersFullHealth
+            end
+        else
+            return true
+        end
+    else
+        return false
+    end
+end
+
 ---@param room MinimapAPI.Room
 local function TeleportToRoom(room)
+local curRoom = MinimapAPI:GetCurrentRoom()
     if room.TeleportHandler and room.TeleportHandler.Teleport then
         if not room.TeleportHandler:Teleport(room) then
             Sfx:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, 0.8)
         end
-    elseif room.Descriptor then
-        if niceJourney_ShouldDamagePlayer(room, MinimapAPI:GetCurrentRoom()) then
+    elseif room.Descriptor and CanTeleportToRoom(room, curRoom) then
+        if ShouldDamagePlayer(room, curRoom) then
             Isaac.GetPlayer(0):TakeDamage(1, DamageFlag.DAMAGE_CURSED_DOOR | DamageFlag.DAMAGE_NO_PENALTIES,
                 EntityRef(Isaac.GetPlayer(0)), 0)
         end
