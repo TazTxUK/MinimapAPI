@@ -132,6 +132,8 @@ local function CanTeleportToRoom(room, curRoom)
             else
                 return allPlayersFullHealth
             end
+        elseif (REPENTANCE and level:GetStateFlag(LevelStateFlag.STATE_MINESHAFT_ESCAPE)) then
+            return MinimapAPI.CurrentDimension ~= 1
         else
             return true
         end
