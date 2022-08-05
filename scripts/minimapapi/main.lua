@@ -1485,7 +1485,6 @@ local function renderIcons(icons, locs, k, room, sprite, size, renderRoomSize)
 	return k
 end
 
-local furthestRoom = nil
 local function renderUnboundedMinimap(size,hide)
 	if MinimapAPI:GetConfig("OverrideLost") or game:GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0 then
 		MinimapAPI:UpdateUnboundedMapOffset()
@@ -1591,7 +1590,15 @@ local function renderUnboundedMinimap(size,hide)
 			end
 		end
 
+		if size == "huge" and MinimapAPI:GetConfig("HighlightStartRoom") then
+			local startRoom = MinimapAPI:GetRoomByIdx(game:GetLevel():GetStartingRoomIndex())
+			if startRoom then
+				startRoom.Color = Color(0, 1, 0, 1, 0, 0, 0)
+			end
+		end
+
 		if size == "huge" and MinimapAPI:GetConfig("HighlightFurthestRoom") then
+			local furthestRoom = nil
 			local furthestDist = 1
 			for _, room in pairs(MinimapAPI:GetLevel()) do
 				local dist = room.PlayerDistance

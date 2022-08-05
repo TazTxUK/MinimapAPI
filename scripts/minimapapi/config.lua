@@ -42,6 +42,7 @@ MinimapAPI.Config = {
 	["ExternalMap"] = false,
 	["ShowGridDistances"] = false,
 	["HighlightFurthestRoom"] = false,
+	["HighlightStartRoom"] = false,
 	["MouseTeleport"] = false,
 	["MouseTeleportUncleared"] = false,
 	["MouseTeleportDamageOnCurseRoom"] = true,
