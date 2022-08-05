@@ -54,10 +54,10 @@ function _telHandlerTemplate:CanTeleport(room, cheatMode)
 end
 
 ---@param room MinimapAPI.Room # target room
----@param curRoom RoomDescriptor # room we're teleporting from
 ---@return boolean # should player be hurt from entering or exiting a curse room
-local function ShouldDamagePlayer(room, curRoom)
-    if type(curRoom) == "nil" then
+local function ShouldDamagePlayer(room)
+    local curRoom = level:GetCurrentRoomDesc()
+    if not curRoom then
         return false
     end
     local enteringCurseRoom = room.Descriptor.Data.Type == RoomType.ROOM_CURSE
@@ -94,12 +94,12 @@ local function ShouldDamagePlayer(room, curRoom)
 end
 
 ---@param room MinimapAPI.Room # target room
----@param curRoom RoomDescriptor # room we're teleporting from
 ---@return boolean # is player allowed to teleport
-local function CanTeleportToRoom(room, curRoom)
+local function CanTeleportToRoom(room)
+    local curRoom = level:GetCurrentRoomDesc()
     local onMomFloor = (level:GetStage() == 6
         or (level:GetStage() == 5 and (level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH > 0)))
-    if MinimapAPI:GetConfig("MouseTeleportUncleared") or type(curRoom) == "nil" then
+    if MinimapAPI:GetConfig("MouseTeleportUncleared") or not curRoom then
         return true
     elseif (curRoom.Data.Type == RoomType.ROOM_BOSS and gameroom:GetBossID() == 6)
     or curRoom.GridIndex == GridRooms.ROOM_BOSSRUSH_IDX
@@ -144,13 +144,12 @@ end
 
 ---@param room MinimapAPI.Room # target room
 local function TeleportToRoom(room)
-    local curRoom = level:GetCurrentRoomDesc()
     if room.TeleportHandler and room.TeleportHandler.Teleport then
         if not room.TeleportHandler:Teleport(room) then
             Sfx:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, 0.8)
         end
-    elseif room.Descriptor and CanTeleportToRoom(room, curRoom) then
-        if ShouldDamagePlayer(room, curRoom) then
+    elseif room.Descriptor and CanTeleportToRoom(room) then
+        if ShouldDamagePlayer(room) then
             Isaac.GetPlayer(0):TakeDamage(1, DamageFlag.DAMAGE_CURSED_DOOR | DamageFlag.DAMAGE_NO_PENALTIES,
                 EntityRef(Isaac.GetPlayer(0)), 0)
         end

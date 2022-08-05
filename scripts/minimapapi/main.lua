@@ -590,8 +590,6 @@ local function GetRoomDescAndDimFromListIndex(listIndex)
 	if fallbackDesc then
 		return fallbackDesc, fallbackDim
 	end
-		
-	error(("GetRoomDescFromListIndex: unknown error with index %d"):format(listIndex), 2)
 end
 
 function MinimapAPI:LoadDefaultMap(dimension)
@@ -603,10 +601,9 @@ function MinimapAPI:LoadDefaultMap(dimension)
 	local added_descriptors = {}
 	for i = 0, #rooms - 1 do
 		local roomDescriptor, roomDim = GetRoomDescAndDimFromListIndex(i)
-		local hash = GetPtrHash(roomDescriptor)
-		if roomDim == dimension 
+		if roomDescriptor and roomDim == dimension 
 		and not added_descriptors[roomDescriptor] 
-		and GetPtrHash(cache.Level:GetRoomByIdx(roomDescriptor.SafeGridIndex)) == hash 
+		and GetPtrHash(cache.Level:GetRoomByIdx(roomDescriptor.SafeGridIndex)) == GetPtrHash(roomDescriptor)
 		then
 			added_descriptors[roomDescriptor] = true
 			local t = {
@@ -728,34 +725,33 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 	dimension = dimension or MinimapAPI.CurrentDimension
 	local added_descriptors = {}
 	for i = MinimapAPI.CheckedRoomCount, #rooms - 1 do
-		local v, roomDim = GetRoomDescAndDimFromListIndex(i)
-		local hash = GetPtrHash(v)
-		if roomDim == dimension 
-		and not added_descriptors[v] 
-		and GetPtrHash(cache.Level:GetRoomByIdx(v.GridIndex)) == hash 
+		local roomDescriptor, roomDim = GetRoomDescAndDimFromListIndex(i)
+		if roomDescriptor and roomDim == dimension 
+		and not added_descriptors[roomDescriptor] 
+		and GetPtrHash(cache.Level:GetRoomByIdx(roomDescriptor.GridIndex)) == GetPtrHash(roomDescriptor) 
 		then
-			added_descriptors[v] = true
+			added_descriptors[roomDescriptor] = true
 			local t = {
-				Shape = v.Data.Shape,
-				PermanentIcons = {MinimapAPI:GetRoomTypeIconID(v.Data.Type)},
-				LockedIcons = {MinimapAPI:GetUnknownRoomTypeIconID(v.Data.Type)},
+				Shape = roomDescriptor.Data.Shape,
+				PermanentIcons = {MinimapAPI:GetRoomTypeIconID(roomDescriptor.Data.Type)},
+				LockedIcons = {MinimapAPI:GetUnknownRoomTypeIconID(roomDescriptor.Data.Type)},
 				ItemIcons = {},
-				Position = MinimapAPI:GridIndexToVector(v.GridIndex),
-				Descriptor = v,
-				AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[v.Data.Type] or 5,
-				Type = v.Data.Type,
+				Position = MinimapAPI:GridIndexToVector(roomDescriptor.GridIndex),
+				Descriptor = roomDescriptor,
+				AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[roomDescriptor.Data.Type] or 5,
+				Type = roomDescriptor.Data.Type,
 				Level = dimension,
-				Color = v.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
+				Color = roomDescriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 			}
-			if v.Data.Shape == RoomShape.ROOMSHAPE_LTL then
+			if roomDescriptor.Data.Shape == RoomShape.ROOMSHAPE_LTL then
 				t.Position = t.Position + Vector(1,0)
 			end
-			if v.Data.Type == RoomType.ROOM_SECRET or v.Data.Type == RoomType.ROOM_SUPERSECRET then
+			if roomDescriptor.Data.Type == RoomType.ROOM_SECRET or roomDescriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
 				t.Hidden = 1
-			elseif v.Data.Type == RoomType.ROOM_ULTRASECRET then
+			elseif roomDescriptor.Data.Type == RoomType.ROOM_ULTRASECRET then
 				t.Hidden = 2
 			end
-			if v.Data.Type == 11 and v.Data.Subtype == 1 then
+			if roomDescriptor.Data.Type == 11 and roomDescriptor.Data.Subtype == 1 then
 				t.PermanentIcons[1] = "BossAmbushRoom"
 			end
 			
