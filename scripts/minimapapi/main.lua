@@ -1436,29 +1436,28 @@ local function updateMinimapIcon(spr, t)
 end
 
 local function renderMinimapLevelFlags(renderOffset)
-	local flags = {}
-	-- local offset = Vector(math.floor((#flags-1)/4)*-16,0)
-	local offset=vectorZero
-
+	local offset = vectorZero
 
 	for _, mapFlag in ipairs(MinimapAPI.MapFlags) do
-	    if (mapFlag.condition()) then
-	    	local frame
+		if (mapFlag.condition()) then
+			local frame
 
-	    	-- Frame can be a function for indicators that might change, like zodiac indicator
-	    	if type(mapFlag.frame) == "function" then
-	    		frame = mapFlag.frame()
-	    	else
-	    		frame = mapFlag.frame
-	    	end
+			-- Frame can be a function for indicators that might change, like zodiac indicator
+			if type(mapFlag.frame) == "function" then
+				frame = mapFlag.frame()
+			else
+				frame = mapFlag.frame
+			end
 
-	    	mapFlag.sprite:SetFrame(mapFlag.anim, frame)
-	    	mapFlag.sprite:Render(renderOffset+offset, zvec, zvec)
-	    	offset=offset+Vector(0,16)
-	    	-- if offset.Y >= 48 then
-	    		-- offset = offset + Vector(16,-48)
-	    	-- end
-	    end
+			mapFlag.sprite:SetFrame(mapFlag.anim, frame)
+			mapFlag.sprite:Render(renderOffset + offset, zvec, zvec)
+
+			if MinimapAPI:GetConfig("DisplayLevelFlags") == 1 then -- LEFT
+				offset = offset + Vector(0, 16)
+			else -- BOTTOM
+				offset = offset + Vector(-16, 0)
+			end
+		end
 	end
 end
 
@@ -2002,41 +2001,57 @@ local function renderCallbackFunction(self)
 
 		if MinimapAPI:GetLevel() then
 			MinimapAPI.SpriteMinimapSmall.Scale = Vector(1, 1)
-			if MinimapAPI:IsLarge() then
+			if MinimapAPI:IsLarge() then -- big unbound map
 				renderUnboundedMinimap("huge")
-			elseif MinimapAPI:GetConfig("DisplayMode") == 1 then
+			elseif MinimapAPI:GetConfig("DisplayMode") == 1 then -- small unbound map
 				renderUnboundedMinimap("small")
-			elseif MinimapAPI:GetConfig("DisplayMode") == 2 then
+			elseif MinimapAPI:GetConfig("DisplayMode") == 2 then -- Bounded map
 				if MinimapAPI.GlobalScaleX < 1 then
 					renderUnboundedMinimap("small")
 				else
 					renderBoundedMinimap()
 				end
-			elseif MinimapAPI:GetConfig("DisplayMode") == 4 then
+			elseif MinimapAPI:GetConfig("DisplayMode") == 4 then -- hidden map
 				renderUnboundedMinimap("small",true)
 			end
 
-			if MinimapAPI:GetConfig("ShowLevelFlags") then
+			if MinimapAPI:GetConfig("DisplayLevelFlags") > 0 then
 				local levelflagoffset
 				local islarge = MinimapAPI:IsLarge()
-				if not islarge and MinimapAPI:GetConfig("DisplayMode") == 2 and MinimapAPI.GlobalScaleX >= 1 then
-					levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 9,8)
-				elseif not islarge and MinimapAPI:GetConfig("DisplayMode") == 4 then
-					levelflagoffset = Vector(screen_size.X - 9,8)
+				if not islarge and MinimapAPI:GetConfig("DisplayMode") == 2 and MinimapAPI.GlobalScaleX >= 1 then -- Bounded map
+					if MinimapAPI:GetConfig("DisplayLevelFlags") == 1 then -- LEFT
+						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX")
+							- 18,
+							MinimapAPI:GetConfig("PositionY") + 6)
+					else -- BOTTOM
+						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX") - 14,
+							MinimapAPI:GetConfig("MapFrameHeight") + MinimapAPI:GetConfig("PositionY") + 10)
+					end
+				elseif not islarge and MinimapAPI:GetConfig("DisplayMode") == 4 then -- hidden map
+					levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), 0)
 				else
 					local minx = screen_size.X
-					for i,v in ipairs(MinimapAPI:GetLevel()) do
-						if v.TargetRenderOffset and v.TargetRenderOffset.Y < 64 then
+					local maxY = 0
+					for _, v in ipairs(MinimapAPI:GetLevel()) do
+						if v.TargetRenderOffset then
+							local size = (MinimapAPI:IsLarge() and largeRoomSize or roomSize)
 							if MinimapAPI.GlobalScaleX >= 0 then
 								minx = math.min(minx, v.RenderOffset.X)
 							else
-								local size = (MinimapAPI:IsLarge() and largeRoomSize or roomSize).X
-								minx = math.min(minx, v.RenderOffset.X + MinimapAPI.GlobalScaleX * MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size - 6)
+								minx = math.min(minx,
+									v.RenderOffset.X + MinimapAPI.GlobalScaleX * MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size.X - 6)
 							end
+							maxY = math.max(maxY,
+								v.RenderOffset.Y + MinimapAPI:GetConfig("PositionY") + MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size.Y + 6)
 						end
 					end
-					levelflagoffset = Vector(minx-9,8)
+					if MinimapAPI:GetConfig("DisplayLevelFlags") == 1 then -- LEFT
+						levelflagoffset = Vector(minx, 0)
+					else -- BOTTOM
+						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), maxY)
+					end
 				end
+				levelflagoffset = levelflagoffset + Vector(-9, 8) -- add nice padding
 				renderMinimapLevelFlags(levelflagoffset)
 			end
 		end

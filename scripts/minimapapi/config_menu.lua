@@ -27,7 +27,7 @@ if modconfigexists then
 			PositionX = 4,
 			PositionY = 4,
 			DisplayMode = 1,
-			ShowLevelFlags = true,
+			DisplayLevelFlags = 1,
 			SmoothSlidingSpeed = 0.3,
 			HideInCombat = 1,
 			HideInInvalidRoom = false,
@@ -53,7 +53,7 @@ if modconfigexists then
 			PositionX = 4,
 			PositionY = 4,
 			DisplayMode = 2,
-			ShowLevelFlags = true,
+			DisplayLevelFlags = 2,
 			SmoothSlidingSpeed = 1,
 			HideInCombat = 1,
 			HideInInvalidRoom = true,
@@ -79,7 +79,7 @@ if modconfigexists then
 			PositionX = 2,
 			PositionY = 2,
 			DisplayMode = 1,
-			ShowLevelFlags = true,
+			DisplayLevelFlags = 2,
 			SmoothSlidingSpeed = 0.3,
 			HideInCombat = 1,
 			HideInInvalidRoom = false,
@@ -105,7 +105,7 @@ if modconfigexists then
 			PositionX = 2,
 			PositionY = 2,
 			DisplayMode = 2,
-			ShowLevelFlags = false,
+			DisplayLevelFlags = 0,
 			SmoothSlidingSpeed = 0.3,
 			HideInCombat = 1,
 			HideInInvalidRoom = true,
@@ -206,24 +206,26 @@ if modconfigexists then
 		}
 	)
 
+	local levelFlagstrings = {"OFF","LEFT","BOTTOM"}
 	MCM.AddSetting(
 		"Minimap API",
 		"Map(1)",
 		{
-			Type = MCM.OptionType.BOOLEAN,
+			Type = MCM.OptionType.NUMBER,
 			CurrentSetting = function()
-				return MinimapAPI.Config.ShowLevelFlags
+				return MinimapAPI.Config.DisplayLevelFlags
 			end,
+			Minimum = 0,
+			Maximum = #levelFlagstrings-1,
 			Display = function()
-				return "Show Map Effect Icons: " .. (MinimapAPI.Config.ShowLevelFlags and "ON" or "OFF")
+				return "Show Map Effect Icons: " .. levelFlagstrings[MinimapAPI.Config.DisplayLevelFlags+1]
 			end,
-			OnChange = function(currentBool)
-				MinimapAPI.Config.ShowLevelFlags = currentBool
+			OnChange = function(currentNum)
+				MinimapAPI.Config.DisplayLevelFlags = currentNum
 				MinimapAPI.Config.ConfigPreset = 0
 			end,
 			Info = {
-				"If true, the blue map, compass and treasure map",
-				"icons will show when the effect is active."
+				"If enabled, displays the blue map, compass and treasure map icons next to the map"
 			}
 		}
 	)

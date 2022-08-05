@@ -13,7 +13,7 @@ MinimapAPI.Config = {
 	["PositionX"] = 6, 
 	["PositionY"] = 6,
 	["DisplayMode"] = 1,
-	["ShowLevelFlags"] = true,
+	["DisplayLevelFlags"] = 1, -- 0 = OFF, 1 = LEFT, 2 = BOTTOM
 	["SmoothSlidingSpeed"] = 0.3,
 	["HideInCombat"] = 1,
 	["HideInInvalidRoom"] = false,
