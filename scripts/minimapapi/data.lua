@@ -181,8 +181,8 @@ MinimapAPI.RoomTypeIconIDs = {
 }
 if REPENTANCE then
 	MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_PLANETARIUM] = "Planetarium"
-	MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_TELEPORTER] = nil
-	MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_TELEPORTER_EXIT] = nil
+	MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_TELEPORTER] = "TeleporterRoom"
+	MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_TELEPORTER_EXIT] = "TeleporterRoom"
 	MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_SECRET_EXIT] = nil
 	MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_BLUE] = nil
 	MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_ULTRASECRET] = "UltraSecretRoom"
@@ -317,6 +317,8 @@ MinimapAPI.IconList = {
 	{ID="TreasureRoomGreed",anim="IconTreasureRoomGreed",frame=0},
 	--{ID="GreedExit",anim="",frame=0},  --currently no icon
 	{ID="Planetarium",anim="IconPlanetarium",frame=0},
+	{ID="TeleporterRoom",anim="IconTeleporterRoom",frame=0}, -- unused in vanilla but some mods may use it
+	{ID="TreasureRoomRed",anim="IconTreasureRoomRed",frame=0},
 	{ID="UltraSecretRoom",anim="IconUltraSecretRoom",frame=0},
 	--Quests
 	{ID="MirrorRoom",anim="IconMirrorRoom",frame=0},

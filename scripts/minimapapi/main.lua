@@ -620,22 +620,22 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				Visited = roomDescriptor.VisitedCount > 0,
 				Clear = roomDescriptor.Clear,
 				Color = REPENTANCE and roomDescriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
-		}
-		if roomDescriptor.Data.Type == RoomType.ROOM_SECRET or roomDescriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
+			}
+			
+			if roomDescriptor.Data.Type == RoomType.ROOM_SECRET or roomDescriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
 				t.Hidden = 1
 			elseif REPENTANCE and roomDescriptor.Data.Type == RoomType.ROOM_ULTRASECRET then
 				t.Hidden = 2
 			end
-			if roomDescriptor.Data.Type == 11 and roomDescriptor.Data.Subtype == 1 then
-				t.PermanentIcons[1] = "BossAmbushRoom"
+			if roomDescriptor.Data.Type == RoomType.ROOM_CHALLENGE and roomDescriptor.Data.Subtype == 1 then
+				t.PermanentIcons = {"BossAmbushRoom"}
+			end
+			if REPENTANCE and roomDescriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
+				t.PermanentIcons = {"TreasureRoomRed"}
 			end
 			if override_greed and game:IsGreedMode() then
-				if roomDescriptor.Data.Type == RoomType.ROOM_TREASURE then
-					treasure_room_count = treasure_room_count + 1
-					if treasure_room_count == 1 then
-						t.PermanentIcons = {"TreasureRoomGreed"}
-						t.LockedIcons = {"TreasureRoomGreed"}
-					end
+				if roomDescriptor.Data.Type == RoomType.ROOM_TREASURE and roomDescriptor.GridIndex == 98 then
+					t.PermanentIcons = {"TreasureRoomGreed"}
 				end
 			end
 			MinimapAPI:AddRoom(t)
@@ -751,8 +751,11 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 			elseif roomDescriptor.Data.Type == RoomType.ROOM_ULTRASECRET then
 				t.Hidden = 2
 			end
+			if REPENTANCE and roomDescriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
+				t.PermanentIcons = {"TreasureRoomRed"}
+			end
 			if roomDescriptor.Data.Type == 11 and roomDescriptor.Data.Subtype == 1 then
-				t.PermanentIcons[1] = "BossAmbushRoom"
+				t.PermanentIcons = {"BossAmbushRoom"}
 			end
 			
 			MinimapAPI:AddRoom(t)
@@ -904,6 +907,18 @@ function maproomfunctions:UpdateType()
 	if self.Descriptor and self.Descriptor.Data then
 		self.Type = self.Descriptor.Data.Type
 		self.PermanentIcons = {MinimapAPI:GetRoomTypeIconID(self.Type)}
+		
+		if self.Descriptor.Data.Type == RoomType.ROOM_CHALLENGE and self.Descriptor.Data.Subtype == 1 then
+			self.PermanentIcons = {"BossAmbushRoom"}
+		end
+		if REPENTANCE and self.Descriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
+			self.PermanentIcons = {"TreasureRoomRed"}
+		end
+		if override_greed and game:IsGreedMode() then
+			if self.Descriptor.Data.Type == RoomType.ROOM_TREASURE and self.Descriptor.GridIndex == 98 then
+				self.PermanentIcons = {"TreasureRoomGreed"}
+			end
+		end
 	end
 end
 
@@ -1982,6 +1997,13 @@ local function renderCallbackFunction(self)
 				if not v.Hidden and #v.PermanentIcons > 0 then
 					v.DisplayFlags = v.DisplayFlags | 6
 				end
+			end
+		end
+		
+		-- treasure rooms are the only room with a permanent icon that can dynamically change (devil's crown), so we have to constantly update its type
+		for _,v in ipairs(MinimapAPI:GetLevel()) do
+			if v.Type == RoomType.ROOM_TREASURE then
+				v:UpdateType()
 			end
 		end
 
