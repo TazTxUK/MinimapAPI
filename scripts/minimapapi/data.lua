@@ -318,6 +318,7 @@ MinimapAPI.IconList = {
 	--{ID="GreedExit",anim="",frame=0},  --currently no icon
 	{ID="Planetarium",anim="IconPlanetarium",frame=0},
 	{ID="TeleporterRoom",anim="IconTeleporterRoom",frame=0}, -- unused in vanilla but some mods may use it
+	{ID="TreasureRoomRed",anim="IconTreasureRoomRed",frame=0},
 	{ID="UltraSecretRoom",anim="IconUltraSecretRoom",frame=0},
 	--Quests
 	{ID="MirrorRoom",anim="IconMirrorRoom",frame=0},
