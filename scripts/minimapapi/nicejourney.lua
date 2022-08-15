@@ -6,9 +6,7 @@ local largeRoomPixelSize = Vector(18, 16)
 -- ours
 local RoomSpriteOffset = Vector(4, 4)
 local Game = Game()
-local level = Game:GetLevel()
 local Sfx = SFXManager()
-local gameroom = Game:GetRoom()
 
 local TeleportMarkerSprite = Sprite()
 TeleportMarkerSprite:Load("gfx/ui/minimapapi/teleport_marker.anm2", true)
@@ -56,6 +54,7 @@ end
 ---@param room MinimapAPI.Room # target room
 ---@return boolean # should player be hurt from entering or exiting a curse room
 local function ShouldDamagePlayer(room)
+    local level = Game:GetLevel()
     local curRoom = level:GetCurrentRoomDesc()
     if not curRoom then
         return false
@@ -75,6 +74,7 @@ local function ShouldDamagePlayer(room)
     end
 
     if leavingCurseRoom then
+        local gameroom = Game:GetRoom()
         for _, doorslot in ipairs(MinimapAPI.RoomShapeDoorSlots[curRoom.Data.Shape]) do
             local doorent = gameroom:GetDoor(doorslot)
             if doorent and doorent:IsOpen() then
@@ -96,6 +96,8 @@ end
 ---@param room MinimapAPI.Room # target room
 ---@return boolean # is player allowed to teleport
 local function CanTeleportToRoom(room)
+    local level = Game:GetLevel()
+    local gameroom = Game:GetRoom()
     local curRoom = level:GetCurrentRoomDesc()
     local onMomFloor = (level:GetStage() == 6
         or (level:GetStage() == 5 and (level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH > 0)))
