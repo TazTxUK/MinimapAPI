@@ -1464,6 +1464,7 @@ local function renderMinimapLevelFlags(renderOffset)
 				frame = mapFlag.frame
 			end
 
+			mapFlag.sprite.Color = Color(1,1,1,MinimapAPI:GetConfig("MinimapTransparency"),0,0,0)
 			mapFlag.sprite:SetFrame(mapFlag.anim, frame)
 			mapFlag.sprite:Render(renderOffset + offset, zvec, zvec)
 
@@ -1492,6 +1493,7 @@ local function renderIcons(icons, locs, k, room, sprite, size, renderRoomSize)
 			end
 			pos.X = pos.X * MinimapAPI.GlobalScaleX
 			pos = pos + room.RenderOffset
+			spr.Color = Color(1,1,1,MinimapAPI:GetConfig("MinimapTransparency"),0,0,0)
 			spr:Render(pos, zvec, zvec)
 			k = k + 1
 		end
@@ -1534,7 +1536,7 @@ local function renderUnboundedMinimap(size,hide)
 
 		if hide then return end
 
-		local defaultOutlineColor = Color(1, 1, 1, 1, MinimapAPI:GetConfig("DefaultOutlineColorR") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorG")*dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorB")*dlcColorMult)
+		local defaultOutlineColor = Color(1, 1, 1, MinimapAPI:GetConfig("MinimapTransparency"), MinimapAPI:GetConfig("DefaultOutlineColorR") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorG")*dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorB")*dlcColorMult)
 		if MinimapAPI:GetConfig("ShowShadows") then
 			for _, room in pairs(MinimapAPI:GetLevel()) do
 				local displayflags = room:GetDisplayFlags()
@@ -1549,7 +1551,7 @@ local function renderUnboundedMinimap(size,hide)
 			end
 		end
 
-		local defaultRoomColor = Color(MinimapAPI:GetConfig("DefaultRoomColorR"), MinimapAPI:GetConfig("DefaultRoomColorG"), MinimapAPI:GetConfig("DefaultRoomColorB"), 1, 0, 0, 0)
+		local defaultRoomColor = Color(MinimapAPI:GetConfig("DefaultRoomColorR"), MinimapAPI:GetConfig("DefaultRoomColorG"), MinimapAPI:GetConfig("DefaultRoomColorB"), MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
 		for _, room in pairs(MinimapAPI:GetLevel()) do
 			local iscurrent = MinimapAPI:PlayerInRoom(room)
 			local displayflags = room:GetDisplayFlags()
@@ -1571,21 +1573,33 @@ local function renderUnboundedMinimap(size,hide)
 				if MinimapAPI:GetConfig("VanillaSecretRoomDisplay") and (room.PermanentIcons[1] == "SecretRoom" or room.PermanentIcons[1] == "SuperSecretRoom") and anim == "RoomUnvisited" then
 					-- skip room rendering for secret rooms so only shadow is visible
 					if not MinimapAPI:GetConfig("ShowShadows") then
-						spr.Color = Color(0, 0, 0, 1, 0, 0, 0)
+						spr.Color = Color(0, 0, 0, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
 						spr:SetFrame(anim, frame)
 						spr:Render(room.RenderOffset, zvec, zvec)
-						spr.Color = room.Color or defaultRoomColor
+						local color
+						if room.Color then
+							color = Color(room.Color.R,room.Color.G,room.Color.B,defaultRoomColor.A,room.Color.RO, room.Color.GO, room.Color.BO)
+						end
+						spr.Color = color or defaultRoomColor
 					end
 				elseif type(frame) == "table" then
 					local fr0 = frame[size == "small" and "small" or "large"]
 					local fr1 = fr0[anim] or fr0["RoomUnvisited"]
 					local spr = fr1.sprite or sprite
 					updateMinimapIcon(spr, fr1)
-					spr.Color = room.Color or defaultRoomColor
+					local color
+					if room.Color then
+						color = Color(room.Color.R,room.Color.G,room.Color.B,defaultRoomColor.A,room.Color.RO, room.Color.GO, room.Color.BO)
+					end
+					spr.Color = color or defaultRoomColor
 					spr:Render(room.RenderOffset, zvec, zvec)
 				else
 					spr:SetFrame(anim, frame)
-					spr.Color = room.Color or defaultRoomColor
+					local color
+					if room.Color then
+						color = Color(room.Color.R,room.Color.G,room.Color.B,defaultRoomColor.A,room.Color.RO, room.Color.GO, room.Color.BO)
+					end
+					spr.Color = color or defaultRoomColor
 					spr:Render(room.RenderOffset, zvec, zvec)
 				end
 			end
@@ -1599,7 +1613,7 @@ local function renderUnboundedMinimap(size,hide)
 					if MinimapAPI.TargetGlobalScaleX <0 then
 						offsetX = offsetX * MinimapAPI.TargetGlobalScaleX * 3 + 2
 					end
-					font:DrawString(s, room.RenderOffset.X + offsetX, room.RenderOffset.Y + 3, KColor(0.2, 0.2, 0.2, 1), 0, false)
+					font:DrawString(s, room.RenderOffset.X + offsetX, room.RenderOffset.Y + 3, KColor(0.2, 0.2, 0.2, MinimapAPI:GetConfig("MinimapTransparency")), 0, false)
 				end
 			end
 		end
@@ -1607,7 +1621,7 @@ local function renderUnboundedMinimap(size,hide)
 		if size == "huge" and MinimapAPI:GetConfig("HighlightStartRoom") then
 			local startRoom = MinimapAPI:GetRoomByIdx(game:GetLevel():GetStartingRoomIndex())
 			if startRoom then
-				startRoom.Color = Color(0, 1, 0, 1, 0, 0, 0)
+				startRoom.Color = Color(0, 1, 0, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
 			end
 		end
 
@@ -1625,9 +1639,9 @@ local function renderUnboundedMinimap(size,hide)
 			end
 			if furthestRoom ~= nil then
 				if furthestRoom:GetDisplayFlags() ~= 5 then
-					furthestRoom.Color = Color(1, 0, 0, 1, 0, 0, 0)
+					furthestRoom.Color = Color(1, 0, 0, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
 				else
-					furthestRoom.Color = Color(1, 1, 1, 1, 0, 0, 0)
+					furthestRoom.Color = Color(1, 1, 1, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
 				end
 			end
 		end
@@ -1710,7 +1724,7 @@ local function renderBoundedMinimap()
 		MinimapAPI.SpriteMinimapSmall:SetFrame("MinimapAPIFrameShadowE", 0)
 		MinimapAPI.SpriteMinimapSmall:Render(offsetVec + Vector(frameTL.X + MinimapAPI:GetFrameBR().X, frameTL.Y), zvec, zvec)
 
-		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,1,0,0,0)
+		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,MinimapAPI:GetConfig("MinimapTransparency"),0,0,0)
 		MinimapAPI.SpriteMinimapSmall.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
 	end
 
@@ -1731,7 +1745,7 @@ local function renderBoundedMinimap()
 			end
 		end
 
-		local defaultOutlineColor = Color(1, 1, 1, 1, MinimapAPI:GetConfig("DefaultOutlineColorR") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorG") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorB") * dlcColorMult)
+		local defaultOutlineColor = Color(1, 1, 1, MinimapAPI:GetConfig("MinimapTransparency"), MinimapAPI:GetConfig("DefaultOutlineColorR") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorG") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorB") * dlcColorMult)
 		local roomInView = {}
 		if MinimapAPI:GetConfig("ShowShadows") then
 			for i, v in pairs(MinimapAPI:GetLevel()) do
@@ -1757,7 +1771,7 @@ local function renderBoundedMinimap()
 			end
 		end
 
-		local defaultRoomColor = Color(MinimapAPI:GetConfig("DefaultRoomColorR"), MinimapAPI:GetConfig("DefaultRoomColorG"), MinimapAPI:GetConfig("DefaultRoomColorB"), 1, 0, 0, 0)
+		local defaultRoomColor = Color(MinimapAPI:GetConfig("DefaultRoomColorR"), MinimapAPI:GetConfig("DefaultRoomColorG"), MinimapAPI:GetConfig("DefaultRoomColorB"), MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
 		for i, v in pairs(MinimapAPI:GetLevel()) do
 			if roomInView[v] or not MinimapAPI:GetConfig("ShowShadows") then
 				local iscurrent = MinimapAPI:PlayerInRoom(v)
@@ -1780,11 +1794,19 @@ local function renderBoundedMinimap()
 						local fr0 = frame.small
 						local fr1 = fr0[anim] or fr0["RoomUnvisited"]
 						spr = fr1.sprite or spr
-						spr.Color = v.Color or defaultRoomColor
+						local color
+						if v.Color then
+							color = Color(v.Color.R,v.Color.G,v.Color.B,defaultRoomColor.A,v.Color.RO, v.Color.GO, v.Color.BO)
+						end
+						spr.Color = color or defaultRoomColor
 						updateMinimapIcon(spr, fr1)
 					else
 						spr:SetFrame(anim, frame)
-						spr.Color = v.Color or defaultRoomColor
+						local color
+						if v.Color then
+							color = Color(v.Color.R,v.Color.G,v.Color.B,defaultRoomColor.A,v.Color.RO, v.Color.GO, v.Color.BO)
+						end
+						spr.Color = color or defaultRoomColor
 					end
 					local rms = MinimapAPI:GetRoomShapeGridSize(v.Shape)
 					local rsgp = MinimapAPI.RoomShapeGridPivots[v.Shape]
@@ -1803,7 +1825,7 @@ local function renderBoundedMinimap()
 			end
 		end
 
-		MinimapAPI.SpriteMinimapSmall.Color = Color(1, 1, 1, 1, 0, 0, 0)
+		MinimapAPI.SpriteMinimapSmall.Color = Color(1, 1, 1, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
 
 		if MinimapAPI:GetConfig("ShowIcons") then
 			for i, v in pairs(MinimapAPI:GetLevel()) do
@@ -1820,6 +1842,7 @@ local function renderBoundedMinimap()
 
 								local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
 								local spr = icontb.sprite or MinimapAPI.SpriteIcons
+								spr.Color = Color(1, 1, 1, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
 								updateMinimapIcon(spr, icontb)
 								local brcutoff = v.RenderOffset - offsetVec + iconlocOffset + iconPixelSize - MinimapAPI:GetFrameBR()
 								local tlcutoff = frameTL - (v.RenderOffset - offsetVec + iconlocOffset)
