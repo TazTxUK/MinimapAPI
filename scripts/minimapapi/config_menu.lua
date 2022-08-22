@@ -989,6 +989,28 @@ if modconfigexists then
 			end
 		}
 	)
+
+	MCM.AddSpace("Minimap API", "Colors")
+
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.MinimapTransparency
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Minimap Transparency: " .. MinimapAPI.Config.MinimapTransparency
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.MinimapTransparency = currentNum
+			end
+		}
+	)
 	
 	MCM.AddSetting(
 		"Minimap API",
