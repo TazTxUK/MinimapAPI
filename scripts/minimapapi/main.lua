@@ -1710,11 +1710,11 @@ local function renderBoundedMinimap()
 		MinimapAPI.SpriteMinimapSmall:SetFrame("MinimapAPIFrameS", 0)
 		MinimapAPI.SpriteMinimapSmall:Render(offsetVec + Vector(0, MinimapAPI:GetConfig("MapFrameHeight")), vectorZero, vectorZero)
 
-		MinimapAPI.SpriteMinimapSmall.Scale = Vector(1, MinimapAPI:GetConfig("MapFrameHeight") / dframeVertBarSize.Y)
+		MinimapAPI.SpriteMinimapSmall.Scale = Vector(1, (MinimapAPI:GetConfig("MapFrameHeight")-2) / dframeVertBarSize.Y)
 		MinimapAPI.SpriteMinimapSmall:SetFrame("MinimapAPIFrameW", 0)
-		MinimapAPI.SpriteMinimapSmall:Render(offsetVec, vectorZero, vectorZero)
+		MinimapAPI.SpriteMinimapSmall:Render(offsetVec+Vector(0,2), vectorZero, vectorZero)
 		MinimapAPI.SpriteMinimapSmall:SetFrame("MinimapAPIFrameE", 0)
-		MinimapAPI.SpriteMinimapSmall:Render(offsetVec + Vector(MinimapAPI:GetConfig("MapFrameWidth"), 0), vectorZero, vectorZero)
+		MinimapAPI.SpriteMinimapSmall:Render(offsetVec+Vector(0,2) + Vector(MinimapAPI:GetConfig("MapFrameWidth"), 0), vectorZero, vectorZero)
 
 		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,MinimapAPI:GetConfig("BorderBgColorA"), MinimapAPI:GetConfig("BorderBgColorR") * dlcColorMult,MinimapAPI:GetConfig("BorderBgColorG") * dlcColorMult, MinimapAPI:GetConfig("BorderBgColorB") * dlcColorMult)
 		MinimapAPI.SpriteMinimapSmall.Scale =
