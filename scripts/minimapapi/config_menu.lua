@@ -703,7 +703,32 @@ if modconfigexists then
 			}
 		}
 	)
-	
+
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.MinimapTransparency
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Minimap Transparency: " .. MinimapAPI.Config.MinimapTransparency
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.MinimapTransparency = currentNum
+			end,
+			Info = {
+				"Changes transparency of the map.","Values other than 1 will cause the room shadow/border to not be rendered to improve visiblity"
+			}
+		}
+	)
+
+	MCM.AddSpace("Minimap API", "Colors")
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -986,28 +1011,6 @@ if modconfigexists then
 			end,
 			OnChange = function(currentNum)
 				MinimapAPI.Config.BorderBgColorA = currentNum
-			end
-		}
-	)
-
-	MCM.AddSpace("Minimap API", "Colors")
-
-	MCM.AddSetting(
-		"Minimap API",
-		"Colors",
-		{
-			Type = MCM.OptionType.NUMBER,
-			CurrentSetting = function()
-				return MinimapAPI.Config.MinimapTransparency
-			end,
-			Minimum = 0,
-			Maximum = 1,
-			ModifyBy = 0.1,
-			Display = function()
-				return "Minimap Transparency: " .. MinimapAPI.Config.MinimapTransparency
-			end,
-			OnChange = function(currentNum)
-				MinimapAPI.Config.MinimapTransparency = currentNum
 			end
 		}
 	)
