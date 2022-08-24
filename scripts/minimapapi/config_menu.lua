@@ -1117,5 +1117,28 @@ if modconfigexists then
 			}
 		}
 	)
+
+	MCM.AddSpace("Minimap API",	"General")
+	MCM.AddSetting(
+		"Minimap API",
+		"General",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return true
+			end,
+			Display = "<--- Reset map info --->",
+			OnChange = function(_)
+				MinimapAPI:ClearLevels()
+				MinimapAPI:LoadDefaultMap()
+				MinimapAPI:updatePlayerPos()
+				MinimapAPI:UpdateExternalMap()
+			end,
+			Info = {
+				"Clears the current map informations and reinitializes the map based on available vanilla informations.",
+				"Use this to fix the effects caused by crashes"
+			}
+		}
+	)
 	
 end
