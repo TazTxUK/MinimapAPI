@@ -205,24 +205,26 @@ local function niceJourney_PostRender()
             local rms = MinimapAPI:GetRoomShapeGridSize(room.Shape)
             local size = Vector(largeRoomPixelSize.X * rms.X, largeRoomPixelSize.Y * rms.Y)
             local gripPivotOffset = Vector(rgp.X * size.X / 2, rgp.Y * size.Y / 2)
-            local pos = room.RenderOffset + Vector(MinimapAPI.GlobalScaleX * RoomSpriteOffset.X, RoomSpriteOffset.Y) -
-                gripPivotOffset
-            local center = pos + Vector(size.X / 2 * MinimapAPI.GlobalScaleX, size.Y / 2)
-            local boundsTl, boundsBr = pos, pos + size
-            if MinimapAPI.GlobalScaleX == -1 then -- Map is flipped
-                boundsTl, boundsBr = pos - Vector(size.X, 0), pos + Vector(0, size.Y)
-            end
-
-            if mouseCoords.X > boundsTl.X and mouseCoords.X < boundsBr.X
-                and mouseCoords.Y > boundsTl.Y and mouseCoords.Y < boundsBr.Y
-            then
-                TeleportMarkerSprite.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
-                TeleportMarkerSprite:Render(center, Vector(0, 0), Vector(0, 0))
-
-                if triggered then
-                    TeleportToRoom(room)
+            if room.RenderOffset and MinimapAPI.GlobalScaleX then
+                local pos = room.RenderOffset + Vector(MinimapAPI.GlobalScaleX * RoomSpriteOffset.X, RoomSpriteOffset.Y)
+                    - gripPivotOffset
+                local center = pos + Vector(size.X / 2 * MinimapAPI.GlobalScaleX, size.Y / 2)
+                local boundsTl, boundsBr = pos, pos + size
+                if MinimapAPI.GlobalScaleX == -1 then -- Map is flipped
+                    boundsTl, boundsBr = pos - Vector(size.X, 0), pos + Vector(0, size.Y)
                 end
-                return
+
+                if mouseCoords.X > boundsTl.X and mouseCoords.X < boundsBr.X
+                    and mouseCoords.Y > boundsTl.Y and mouseCoords.Y < boundsBr.Y
+                then
+                    TeleportMarkerSprite.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
+                    TeleportMarkerSprite:Render(center, Vector(0, 0), Vector(0, 0))
+
+                    if triggered then
+                        TeleportToRoom(room)
+                    end
+                    return
+                end
             end
         end
     end
