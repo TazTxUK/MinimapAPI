@@ -222,6 +222,11 @@ if REPENTANCE then
 	end)
 end
 
+local UpdateVisibility_Old = getmetatable(Level).__class.UpdateVisibility
+APIOverride.OverrideClassFunction(Level, "UpdateVisibility", function(self)
+	-- remove functionality of this function, because it can break 
+end)
+
 
 
 MinimapAPI.OverrideConfig = {}
@@ -1196,7 +1201,8 @@ function MinimapAPI:IsBadLoad()
 	return spr:GetFrame() ~= 0
 end
 
-MinimapAPI:AddCallback(	ModCallbacks.MC_POST_NEW_LEVEL,	function(self)
+MinimapAPI:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
+	print("LEVEL")
 	MinimapAPI:ClearLevels()
 	MinimapAPI:LoadDefaultMap()
 	MinimapAPI:updatePlayerPos()
@@ -1351,7 +1357,6 @@ function MinimapAPI:RewindLevels()
 	MinimapAPI:ClearLevels()
 	MinimapAPI:LoadDefaultMap()
 	MinimapAPI:updatePlayerPos()
-	MinimapAPI:UpdateExternalMap()
 	for i, lvl in pairs(lastMapStateCopy) do
 		for index, room in pairs(lvl) do
 			local newRoom = MinimapAPI.Levels[i][index]
@@ -1366,6 +1371,7 @@ function MinimapAPI:RewindLevels()
 				newRoom.IgnoreDescriptorFlags= room.IgnoreDescriptorFlags
 				newRoom.NoUpdate= room.NoUpdate
 				newRoom.RenderOffset= room.RenderOffset
+				newRoom.Shape= room.Shape
 				newRoom.ItemIcons= MinimapAPI:DeepCopy(room.ItemIcons)
 				newRoom.LockedIcons= MinimapAPI:DeepCopy(room.LockedIcons)
 				newRoom.PermanentIcons= MinimapAPI:DeepCopy(room.PermanentIcons)
