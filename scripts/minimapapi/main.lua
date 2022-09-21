@@ -1248,6 +1248,19 @@ MinimapAPI:AddCallback(	ModCallbacks.MC_USE_ITEM, function(self, colltype, rng)
 	end
 end)
 
+if REPENTANCE then
+	MinimapAPI:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_)
+		for i = 0, game:GetNumPlayers() - 1 do
+			local player = Isaac.GetPlayer(i)
+			if player:HasTrinket(TrinketType.TRINKET_CRYSTAL_KEY) or
+				player:GetEffects():HasTrinketEffect(TrinketType.TRINKET_CRYSTAL_KEY) then
+				MinimapAPI:CheckForNewRedRooms()
+				return
+			end
+		end
+	end)
+end
+
 function MinimapAPI:UpdateExternalMap()
 	if MinimapAPI:GetConfig("ExternalMap") then
 		local output = {}
