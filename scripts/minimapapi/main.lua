@@ -1,5 +1,6 @@
 local MinimapAPI = require("scripts.minimapapi")
 local cache = require("scripts.minimapapi.cache")
+require("scripts.minimapapi.apioverride")
 
 local json = require("json")
 
@@ -210,6 +211,18 @@ MinimapAPI.SpriteMinimapCustomSmall = Sprite()
 MinimapAPI.SpriteMinimapCustomSmall:Load("gfx/ui/minimapapi/custom_minimap1.anm2", true)
 MinimapAPI.SpriteMinimapCustomLarge = Sprite()
 MinimapAPI.SpriteMinimapCustomLarge:Load("gfx/ui/minimapapi/custom_minimap2.anm2", true)
+
+------ Override original API -------
+if REPENTANCE then
+	local MakeRedRoomDoor_Old = getmetatable(Level).__class.MakeRedRoomDoor
+	APIOverride.OverrideClassFunction(Level, "MakeRedRoomDoor", function(self,currentRoomIdx, slot)
+		local returnVal = MakeRedRoomDoor_Old(self, currentRoomIdx, slot)
+		MinimapAPI:CheckForNewRedRooms()
+		return returnVal
+	end)
+end
+
+
 
 MinimapAPI.OverrideConfig = {}
 function MinimapAPI:GetConfig(option)
