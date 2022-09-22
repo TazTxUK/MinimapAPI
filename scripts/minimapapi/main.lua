@@ -961,6 +961,21 @@ function maproomfunctions:UpdateType()
 	end
 end
 
+function maproomfunctions:IsValidTeleportTarget()
+	local allowUnclear = MinimapAPI:GetConfig("MouseTeleportUncleared")
+	return (
+		self.TeleportHandler and self.TeleportHandler.CanTeleport
+			and self.TeleportHandler:CanTeleport(self, allowUnclear)
+		)
+		or (
+		not (self.TeleportHandler and self.TeleportHandler.CanTeleport)
+			and (
+			self:IsVisited() and self:IsClear()
+				or (allowUnclear and self:IsVisible())
+			)
+		)
+end
+
 local maproommeta = {
 	__index = maproomfunctions,
 	__type = "MinimapAPI.Room"
@@ -1202,7 +1217,6 @@ function MinimapAPI:IsBadLoad()
 end
 
 MinimapAPI:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function(self)
-	print("LEVEL")
 	MinimapAPI:ClearLevels()
 	MinimapAPI:LoadDefaultMap()
 	MinimapAPI:updatePlayerPos()

@@ -8,6 +8,10 @@ local RoomSpriteOffset = Vector(4, 4)
 local Game = Game()
 local Sfx = SFXManager()
 
+local WasTriggered = false
+local currentlyHighlighted = nil
+local lastMousePos = Vector(-1,-1)
+
 local TeleportMarkerSprite = Sprite()
 TeleportMarkerSprite:Load("gfx/ui/minimapapi/teleport_marker.anm2", true)
 TeleportMarkerSprite:SetFrame("Marker", 0)
@@ -163,42 +167,62 @@ local function TeleportToRoom(room)
     end
 end
 
-local WasTriggered = false
+local tabPressTimeStart = 0
+local function HandleMoveCursorWithButtons()
+    local playerController = Isaac.GetPlayer(0).ControllerIndex
+    local TABpressed = Input.IsActionPressed(ButtonAction.ACTION_MAP, playerController)
+
+    if TABpressed and tabPressTimeStart == 0 then
+        tabPressTimeStart = Isaac.GetTime()
+    elseif not TABpressed then
+        tabPressTimeStart = 0
+    elseif not currentlyHighlighted and Isaac.GetTime()-tabPressTimeStart > 500 then
+        currentlyHighlighted = MinimapAPI:GetCurrentRoom():GetAdjacentRooms()[1]
+    end
+
+    if currentlyHighlighted then
+        local rooms = currentlyHighlighted:GetAdjacentRooms()
+        local teleportCheck = nil
+        if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTLEFT, playerController) then
+            teleportCheck = function(diffPos) return diffPos.X > 0 end
+        elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTRIGHT, playerController) then
+            teleportCheck = function(diffPos) return diffPos.X < 0 end
+        elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTUP, playerController) then
+            teleportCheck = function(diffPos) return diffPos.Y > 0 end
+        elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTDOWN, playerController) then
+            teleportCheck = function(diffPos) return diffPos.Y < 0 end
+        end
+        if teleportCheck then
+            for _, room in ipairs(rooms) do
+                local diffPos = currentlyHighlighted.Position - room.Position
+                if room:IsValidTeleportTarget() and teleportCheck(diffPos) then
+                    currentlyHighlighted = room
+                    break
+                end
+            end
+        end
+    end
+end
 
 local function niceJourney_PostRender()
     if not MinimapAPI:IsLarge() or not MinimapAPI:GetConfig("MouseTeleport") or Game:IsPaused() then
+        currentlyHighlighted = nil
+        tabPressTimeStart = 0
         return
     end
 
     -- gameCoords = false doesn't give proper render coords
     local mouseCoords = Isaac.WorldToScreen(Input.GetMousePosition(true))
+    local mouseMoved = mouseCoords.X ~= lastMousePos.X or mouseCoords.Y ~= lastMousePos.Y
+    lastMousePos = mouseCoords
 
-    local pressed = Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_LEFT)
-    local triggered = false
-    if pressed and not WasTriggered then
-        WasTriggered = true
-        triggered = true
-    elseif not pressed and WasTriggered then
-        WasTriggered = false
-    end
+    local playerController = Isaac.GetPlayer(0).ControllerIndex
+    local TABpressed = Input.IsActionPressed(ButtonAction.ACTION_MAP, playerController)
+    HandleMoveCursorWithButtons()
 
-    local allowUnclear = MinimapAPI:GetConfig("MouseTeleportUncleared")
-
+    local teleportTarget = nil
     for _, room in pairs(MinimapAPI:GetLevel()) do
-        if (
-            (
-                room.TeleportHandler and room.TeleportHandler.CanTeleport
-                    and room.TeleportHandler:CanTeleport(room, allowUnclear)
-                )
-                or (
-                not (room.TeleportHandler and room.TeleportHandler.CanTeleport)
-                    and (
-                    room:IsVisited() and room:IsClear()
-                        or (allowUnclear and room:IsVisible())
-                    )
-                )
-            )
-            and room ~= MinimapAPI:GetCurrentRoom()
+        if room:IsValidTeleportTarget()
             and (room.Descriptor or room.TeleportHandler)
         then
             local rgp = MinimapAPI.RoomShapeGridPivots[room.Shape]
@@ -213,21 +237,32 @@ local function niceJourney_PostRender()
                 if MinimapAPI.GlobalScaleX == -1 then -- Map is flipped
                     boundsTl, boundsBr = pos - Vector(size.X, 0), pos + Vector(0, size.Y)
                 end
-
-                if mouseCoords.X > boundsTl.X and mouseCoords.X < boundsBr.X
-                    and mouseCoords.Y > boundsTl.Y and mouseCoords.Y < boundsBr.Y
-                then
+                if (TABpressed and not mouseMoved and currentlyHighlighted == room)
+                    or (mouseCoords.X > boundsTl.X and mouseCoords.X < boundsBr.X
+                        and mouseCoords.Y > boundsTl.Y and mouseCoords.Y < boundsBr.Y) then
                     TeleportMarkerSprite.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
-                    TeleportMarkerSprite:Render(center, Vector(0, 0), Vector(0, 0))
-
-                    if triggered then
-                        TeleportToRoom(room)
+                    if room == MinimapAPI:GetCurrentRoom() then
+                        TeleportMarkerSprite.Color = Color(1, 1, 1, 0.5, 0, 0, 0)
+                    else
+                        TeleportMarkerSprite.Color = Color(1, 1, 1, 1, 0, 0, 0)
+                        teleportTarget = room
                     end
-                    return
+                    TeleportMarkerSprite:Render(center, Vector(0, 0), Vector(0, 0))
+                    break
                 end
             end
         end
+
     end
+
+    local pressed = Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_LEFT) or Input.IsActionPressed(ButtonAction.ACTION_MENUCONFIRM, 0)
+    if pressed and not WasTriggered and teleportTarget then
+        WasTriggered = true
+        TeleportToRoom(teleportTarget)
+    elseif not pressed and WasTriggered then
+        WasTriggered = false
+    end
+
 end
 
 local addRenderCall = true
