@@ -247,6 +247,7 @@ local function niceJourney_PostRender()
                         TeleportMarkerSprite.Color = Color(1, 1, 1, 1, 0, 0, 0)
                         teleportTarget = room
                     end
+                    currentlyHighlighted = room
                     TeleportMarkerSprite:Render(center, Vector(0, 0), Vector(0, 0))
                     break
                 end
