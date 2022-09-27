@@ -1484,6 +1484,7 @@ function MinimapAPI:FirstMapDisplayMode()
 end
 
 MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
+	if game:IsPaused() then return end
 	local mapPressed = false
 	for i = 0, game:GetNumPlayers() - 1 do
 		local player = Isaac.GetPlayer(i)
