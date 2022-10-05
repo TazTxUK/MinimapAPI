@@ -1490,7 +1490,6 @@ MinimapAPI:AddCallback( ModCallbacks.MC_INPUT_ACTION, function(self, entity, inp
 		if player then
 			if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
 				mapheldframes = mapheldframes + 1
-				print(mapheldframes)
 			elseif mapheldframes > 0 then
 				if mapheldframes <= 8 or (MinimapAPI:GetConfig("DisplayMode") == 3 and mapheldframes == 9) then -- this is dumb but for some reason it works
 					MinimapAPI:NextMapDisplayMode()
