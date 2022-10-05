@@ -449,7 +449,7 @@ function MinimapAPI:EnablePickupDetection()
 end
 
 function MinimapAPI:IsLarge()
-	return mapheldframes > 16 or MinimapAPI:GetConfig("DisplayMode") == 3
+	return mapheldframes > 0 or MinimapAPI:GetConfig("DisplayMode") == 3
 end
 
 function MinimapAPI:PlayerInRoom(roomdata)
@@ -1483,22 +1483,24 @@ function MinimapAPI:FirstMapDisplayMode()
 	end
 end
 
-MinimapAPI:AddCallback( ModCallbacks.MC_POST_RENDER, function(self)
-	if game:IsPaused() then return end
-	local mapPressed = false
-	for i = 0, game:GetNumPlayers() - 1 do
-		local player = Isaac.GetPlayer(i)
-		mapPressed = mapPressed or Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex)
-	end
-	if mapPressed then
-		mapheldframes = mapheldframes + 1
-	elseif mapheldframes > 0 then
-		if mapheldframes <= 16 then
-			MinimapAPI:NextMapDisplayMode()
+MinimapAPI:AddCallback( ModCallbacks.MC_INPUT_ACTION, function(self, entity, inputHook, buttonAction)
+
+	if entity and buttonAction == ButtonAction.ACTION_MAP then
+		local player = entity:ToPlayer()
+		if player then
+			if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
+				mapheldframes = mapheldframes + 1
+				print(mapheldframes)
+			elseif mapheldframes > 0 then
+				if mapheldframes <= 8 or (MinimapAPI:GetConfig("DisplayMode") == 3 and mapheldframes == 9) then -- this is dumb but for some reason it works
+					MinimapAPI:NextMapDisplayMode()
+				end
+
+				mapheldframes = 0
+			end
 		end
-		mapheldframes = 0
 	end
-end)
+end, InputHook.IS_ACTION_PRESSED)
 
 local defaultColor = Color(1, 1, 1, 1, 0, 0, 0)
 local function updateMinimapIcon(spr, t)
