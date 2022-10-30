@@ -134,6 +134,200 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
+                {
+                    str = 'show unclr vstd',
+                    size = 1,
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'seen but not', 'cleared rooms', 'will show as', 'checkerboard', 'pattern' }},
+                    variable = 'ShowShadows',
+                    setting = 2,
+                    load = function()
+                        return MinimapAPI.Config.DisplayExploredRooms and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.DisplayExploredRooms = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end,
+                },
+                {
+                    str = 'bounded map width',
+                    min = 10,
+                    max = 100,
+                    increment = 5,
+                    setting = 50,
+                    variable = "MapFrameWidth",
+                    tooltip = {strset = {'border map\'s', 'width' }},
+                    load = function()
+                        return MinimapAPI.Config.MapFrameWidth
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.MapFrameWidth = var
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end,
+                },
+                {
+                    str = 'bounded map height',
+                    min = 10,
+                    max = 100,
+                    increment = 5,
+                    setting = 50,
+                    variable = "MapFrameHeight",
+                    tooltip = {strset = {'border map\'s', 'height' }},
+                    load = function()
+                        return MinimapAPI.Config.MapFrameHeight
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.MapFrameHeight = var
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end,
+                },
+                {
+                    str = 'position x',
+                    min = 0,
+                    max = 100,
+                    increment = 2,
+                    setting = 10,
+                    variable = "PositionX",
+                    tooltip = {strset = {'horizontal', 'distance from', 'top right of', 'the screen' }},
+                    load = function()
+                        return MinimapAPI.Config.PositionX
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.PositionX = var
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end,
+                },
+                {
+                    str = 'position y',
+                    min = 0,
+                    max = 100,
+                    increment = 2,
+                    setting = 10,
+                    variable = "PositionY",
+                    tooltip = {strset = {'vertical', 'distance from', 'top right of', 'the screen' }},
+                    load = function()
+                        return MinimapAPI.Config.PositionY
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.PositionY = var
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end,
+                },
+                {
+                    str = 'map interpolation',
+                    min = 0.1,
+                    max = 1,
+                    increment = 0.05,
+                    setting = 0.5,
+                    variable = "SmoothSlidingSpeed",
+                    tooltip = {strset = {'how quickly', 'the map moves'}},
+                    load = function()
+                        return MinimapAPI.Config.SmoothSlidingSpeed
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.SmoothSlidingSpeed = var
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end,
+                },
+                -- Map 2 section
+                {
+                    str = 'hide in combat',
+                    choices = {'never', 'bosses only', 'always'},
+                    tooltip = {strset = {'hide map', 'in uncleared', 'rooms' }},
+                    variable = 'HideInCombat',
+                    setting = 2,
+                    load = function()
+                        return MinimapAPI.Config.HideInCombat
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.HideInCombat = var
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end,
+                },
+                {
+                    str = 'hide outside',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'hide map', 'in rooms', 'not on the', 'map (ie.', 'devil rooms)' }},
+                    variable = 'HideInInvalidRoom',
+                    setting = 1,
+                    load = function()
+                        return MinimapAPI.Config.HideInInvalidRoom and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.HideInInvalidRoom = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end,
+                },
+                {
+                    str = 'room distance',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'rooms will', 'have their', 'distance shown' }},
+                    variable = 'ShowGridDistances',
+                    setting = 2,
+                    load = function()
+                        return MinimapAPI.Config.ShowGridDistances and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.ShowGridDistances = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end,
+                },
+                {
+                    str = 'highlight start',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'starting room', 'will be', 'highlighted' }},
+                    variable = 'HighlightStartRoom',
+                    setting = 2,
+                    load = function()
+                        return MinimapAPI.Config.HighlightStartRoom and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.HighlightStartRoom = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end,
+                },
+                {
+                    str = 'highlight far',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'furthest room', 'from start', 'will be', 'highlighted'}},
+                    variable = 'HighlightFurthestRoom',
+                    setting = 2,
+                    load = function()
+                        return MinimapAPI.Config.HighlightFurthestRoom and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.HighlightFurthestRoom = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end,
+                },
+                {
+                    str = 'alt visited',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'alternate', 'sprite for', 'semivisited', 'rooms' }},
+                    variable = 'AltSemivisitedSprite',
+                    setting = 1,
+                    load = function()
+                        return MinimapAPI.Config.AltSemivisitedSprite and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.AltSemivisitedSprite = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end,
+                },
+                {
+                    str = 'secret shadows',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'discovered', 'secret rooms', 'show as', 'shadows', 'instead of', 'normal rooms' }},
+                    variable = 'VanillaSecretRoomDisplay',
+                    setting = 1,
+                    load = function()
+                        return MinimapAPI.Config.VanillaSecretRoomDisplay and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.VanillaSecretRoomDisplay = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end,
+                },
             },
             tooltip = dssmod.menuOpenToolTip,
         },
