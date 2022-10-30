@@ -1,5 +1,6 @@
 local MinimapAPI = require("scripts.minimapapi")
 local json = require("json")
+local configPresetSettings = require("scripts.minimapapi.config_presets")
 
 -- Do not add DSS on our side (wouldn't really make sense to support MCM
 -- otherwise) but add a way for dependent mods to add MinimapAPI config to DSS
@@ -30,6 +31,29 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
         return
     end
 
+	local configPresets = {
+		"custom",
+		"api default",
+		"vanilla",
+		"all info",
+		"minimal",
+	}
+	local configPresetTexts = {
+		{ "manual", "custom", "settings" },
+		{ "default mod", "config", "options" },
+		{ "a close", "recreation", "of the", "original", "isaac map" },
+		{ "as much", "information", "as possible" },
+		{ "the map", "is long", "and thin" },
+	}
+
+    local JustChangedPreset = false
+
+    local function ResetPresetIfChanged(saveVar, var)
+        if saveVar ~= var and not JustChangedPreset then
+            MinimapAPI.Config.ConfigPreset = 0
+        end
+    end
+
     local menuDirectory = {
         --LEVEL 1
         main = {
@@ -37,8 +61,40 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
             buttons = {
                 {str = 'resume game', action = 'resume'},
                 {str = 'settings', dest = 'settings'},
-                {str = 'presets'}, --, dest = 'settings'},
+                {str = 'presets', dest = 'presets'},
                 {str = 'minimapapi info', dest = 'info'},
+            },
+            tooltip = dssmod.menuOpenToolTip
+        },
+        presets = {
+            title = 'presets',
+            buttons = {
+                {
+                    str = 'preset',
+                    variable = "ConfigPreset",
+                    choices = configPresets,
+                    tooltip = {strset = {''}},
+                    setting = 1,
+                    update = function(button, item, tbl)
+                        button.tooltip.strset = configPresetTexts[button.setting]
+                    end,
+                    load = function()
+                        return MinimapAPI.Config.ConfigPreset + 1
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.ConfigPreset = var - 1
+
+                        if configPresetSettings[MinimapAPI.Config.ConfigPreset] then
+                            for i,v in pairs(configPresetSettings[MinimapAPI.Config.ConfigPreset]) do
+                                MinimapAPI.Config[i] = v
+                            end
+                        end
+        				MinimapAPI:FirstMapDisplayMode()
+                    end,
+                },
+                {str = ''},
+                {str = 'presets for'},
+                {str = 'map settings'},
             },
             tooltip = dssmod.menuOpenToolTip
         },
@@ -157,8 +213,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.ShowPickupIcons and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.ShowPickupIcons, var == 1)
                         MinimapAPI.Config.ShowPickupIcons = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end
                 },
                 {
@@ -184,8 +240,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.PickupNoGrouping and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.PickupNoGrouping, var == 1)
                         MinimapAPI.Config.PickupNoGrouping = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end
                 },
             },
@@ -204,8 +260,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.ShowShadows and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.ShowShadows, var == 1)
                         MinimapAPI.Config.ShowShadows = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end
                 },
                 {
@@ -218,8 +274,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.DisplayLevelFlags
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.DisplayLevelFlags, var)
                         MinimapAPI.Config.DisplayLevelFlags = var
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
                 {
@@ -233,8 +289,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.DisplayExploredRooms and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.DisplayExploredRooms, var == 1)
                         MinimapAPI.Config.DisplayExploredRooms = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
                 {
@@ -249,8 +305,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.MapFrameWidth
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.MapFrameWidth, var)
                         MinimapAPI.Config.MapFrameWidth = var
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
                 {
@@ -265,8 +321,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.MapFrameHeight
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.MapFrameHeight, var)
                         MinimapAPI.Config.MapFrameHeight = var
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
                 {
@@ -281,8 +337,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.PositionX
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.PositionX, var)
                         MinimapAPI.Config.PositionX = var
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
                 {
@@ -297,8 +353,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.PositionY
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.PositionY, var)
                         MinimapAPI.Config.PositionY = var
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
                 {
@@ -313,8 +369,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.SmoothSlidingSpeed
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.SmoothSlidingSpeed, var)
                         MinimapAPI.Config.SmoothSlidingSpeed = var
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
                 -- Map 2 section
@@ -328,8 +384,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.HideInCombat
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.HideInCombat, var)
                         MinimapAPI.Config.HideInCombat = var
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
                 {
@@ -342,8 +398,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.HideInInvalidRoom and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.HideInInvalidRoom, var == 1)
                         MinimapAPI.Config.HideInInvalidRoom = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
                 {
@@ -356,8 +412,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.ShowGridDistances and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.ShowGridDistances, var == 1)
                         MinimapAPI.Config.ShowGridDistances = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
                 {
@@ -370,8 +426,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.HighlightStartRoom and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.HighlightStartRoom, var == 1)
                         MinimapAPI.Config.HighlightStartRoom = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
                 {
@@ -384,8 +440,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.HighlightFurthestRoom and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.HighlightFurthestRoom, var == 1)
                         MinimapAPI.Config.HighlightFurthestRoom = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
                 {
@@ -398,8 +454,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.AltSemivisitedSprite and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.AltSemivisitedSprite, var == 1)
                         MinimapAPI.Config.AltSemivisitedSprite = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
                 {
@@ -412,8 +468,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.VanillaSecretRoomDisplay and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.VanillaSecretRoomDisplay, var == 1)
                         MinimapAPI.Config.VanillaSecretRoomDisplay = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end,
                 },
             },
@@ -432,8 +488,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.AllowToggleLargeMap and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.AllowToggleLargeMap, var == 1)
                         MinimapAPI.Config.AllowToggleLargeMap = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end
                 },
                 {
@@ -446,8 +502,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.AllowToggleSmallMap and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.AllowToggleSmallMap, var == 1)
                         MinimapAPI.Config.AllowToggleSmallMap = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end
                 },
                 {
@@ -460,8 +516,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.AllowToggleBoundedMap and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.AllowToggleBoundedMap, var == 1)
                         MinimapAPI.Config.AllowToggleBoundedMap = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end
                 },
                 {
@@ -474,8 +530,8 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         return MinimapAPI.Config.AllowToggleNoMap and 1 or 2
                     end,
                     store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.AllowToggleNoMap, var == 1)
                         MinimapAPI.Config.AllowToggleNoMap = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end
                 },
                 {
@@ -489,7 +545,6 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                     end,
                     store = function(var)
                         MinimapAPI.Config.MouseTeleport = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end
                 },
                 {
@@ -503,7 +558,6 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                     end,
                     store = function(var)
                         MinimapAPI.Config.MouseTeleportUncleared = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end
                 },
                 {
@@ -517,7 +571,6 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                     end,
                     store = function(var)
                         MinimapAPI.Config.MouseTeleportDamageOnCurseRoom = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
                     end
                 },
             },
