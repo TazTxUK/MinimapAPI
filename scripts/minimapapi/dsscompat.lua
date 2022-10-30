@@ -47,6 +47,7 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
             buttons = {
                 {str = 'pickups', dest = 'pickups'},
                 {str = 'map', dest = 'map'},
+                {str = 'modes', dest = 'modes'},
     
                 dssmod.gamepadToggleButton,
                 dssmod.menuKeybindButton,
@@ -327,6 +328,130 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                         MinimapAPI.Config.VanillaSecretRoomDisplay = var == 1
                         MinimapAPI.Config.ConfigPreset = 0
                     end,
+                },
+            },
+            tooltip = dssmod.menuOpenToolTip,
+        },
+        modes = {
+            title = 'mode settings',
+            buttons = {
+                {
+                    str = 'toggle large',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'allow toggle', 'large map' }},
+                    variable = 'AllowToggleLargeMap',
+                    setting = 1,
+                    load = function()
+                        return MinimapAPI.Config.AllowToggleLargeMap and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.AllowToggleLargeMap = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end
+                },
+                {
+                    str = 'toggle small',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'allow toggle', 'small map' }},
+                    variable = 'AllowToggleSmallMap',
+                    setting = 2,
+                    load = function()
+                        return MinimapAPI.Config.AllowToggleSmallMap and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.AllowToggleSmallMap = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end
+                },
+                {
+                    str = 'toggle bounded',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'allow toggle', 'bounded map' }},
+                    variable = 'AllowToggleBoundedMap',
+                    setting = 1,
+                    load = function()
+                        return MinimapAPI.Config.AllowToggleBoundedMap and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.AllowToggleBoundedMap = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end
+                },
+                {
+                    str = 'toggle none',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'allow toggle', 'no map' }},
+                    variable = 'AllowToggleNoMap',
+                    setting = 2,
+                    load = function()
+                        return MinimapAPI.Config.AllowToggleNoMap and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.AllowToggleNoMap = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end
+                },
+                {
+                    str = 'mouse teleport',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'allows to', 'teleport by', 'clicking on', 'rooms on', 'the map' }},
+                    variable = 'MouseTeleport',
+                    setting = 2,
+                    load = function()
+                        return MinimapAPI.Config.MouseTeleport and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.MouseTeleport = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end
+                },
+                {
+                    str = 'restrict teleport',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'restricts', 'teleport', 'to cleared', 'rooms' }},
+                    variable = 'MouseTeleportUncleared',
+                    setting = 1,
+                    load = function()
+                        return MinimapAPI.Config.MouseTeleportUncleared and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.MouseTeleportUncleared = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end
+                },
+                {
+                    str = 'teleport curse dmg',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'damage on', 'teleport', 'to curse', 'rooms' }},
+                    variable = 'MouseTeleportDamageOnCurseRoom',
+                    setting = 1,
+                    load = function()
+                        return MinimapAPI.Config.MouseTeleportDamageOnCurseRoom and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.MouseTeleportDamageOnCurseRoom = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end
+                },
+            },
+            tooltip = dssmod.menuOpenToolTip,
+        },
+        colors = {
+            title = 'color settings',
+            buttons = {
+                {
+                    str = 'toggle large',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'allow toggle', 'large map' }},
+                    variable = 'AllowToggleLargeMap',
+                    setting = 1,
+                    load = function()
+                        return MinimapAPI.Config.AllowToggleLargeMap and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.AllowToggleLargeMap = var == 1
+                        MinimapAPI.Config.ConfigPreset = 0
+                    end
                 },
             },
             tooltip = dssmod.menuOpenToolTip,
