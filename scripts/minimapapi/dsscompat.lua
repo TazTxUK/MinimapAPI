@@ -45,9 +45,11 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
         settings = {
             title = 'settings',
             buttons = {
+                {str = 'general', dest = 'general'},
                 {str = 'pickups', dest = 'pickups'},
                 {str = 'map', dest = 'map'},
                 {str = 'modes', dest = 'modes'},
+                {str = 'colors', dest = 'colors'},
     
                 dssmod.gamepadToggleButton,
                 dssmod.menuKeybindButton,
@@ -56,6 +58,91 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                 dssmod.menuBuzzerButton,
             },
             tooltip = dssmod.menuOpenToolTip
+        },
+        general = {
+            title = "general settings",
+            buttons = {
+                {
+                    str = 'external map',
+                    choices = {'on', 'off'},
+                    setting = 2,
+                    tooltip = {strset = {'output map', 'state into', 'the log, for', 'use by', 'external', 'maps' }},
+                    variable = 'ExternalMap',
+                    load = function()
+                        return MinimapAPI.Config.ExternalMap and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.ExternalMap = var == 1
+                        MinimapAPI:UpdateExternalMap()
+                    end
+                },
+                {
+                    str = 'disable map',
+                    choices = {'on', 'off'},
+                    setting = 2,
+                    tooltip = {strset = {'removes the', 'minimap', 'entirely' }},
+                    variable = 'Disable',
+                    load = function()
+                        return MinimapAPI.Config.Disable and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.Disable = var == 1
+                    end
+                },
+                {
+                    str = 'enable with lost',
+                    choices = {'on', 'off'},
+                    setting = 2,
+                    tooltip = {strset = {'forces map to', 'show with', 'curse of the', 'lost active' }},
+                    variable = 'OverrideLost',
+                    load = function()
+                        return MinimapAPI.Config.OverrideLost and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.OverrideLost = var == 1
+                    end
+                },
+                {
+                    str = 'enable with seed',
+                    choices = {'on', 'off'},
+                    setting = 2,
+                    tooltip = {strset = {'forces map to', 'show even', 'with no hud', 'seed' }},
+                    variable = 'DisplayOnNoHUD',
+                    load = function()
+                        return MinimapAPI.Config.DisplayOnNoHUD and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.DisplayOnNoHUD = var == 1
+                    end
+                },
+                {
+                    str = 'show icons',
+                    choices = {'on', 'off'},
+                    setting = 1,
+                    tooltip = {strset = {'off:', 'hide all icons' }},
+                    variable = 'ShowIcons',
+                    load = function()
+                        return MinimapAPI.Config.ShowIcons and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.ShowIcons = var == 1
+                    end
+                },
+                {
+                    str = ''
+                },
+                {
+                    str = 'reset map info',
+                    tooltip = {strset = {'clears current', 'map data and', 'reinitialize', 'it, use to', 'fix crash', 'effects' }},
+                    func = function() 
+                        MinimapAPI:ClearLevels()
+                        MinimapAPI:LoadDefaultMap()
+                        MinimapAPI:updatePlayerPos()
+                        MinimapAPI:UpdateExternalMap()        
+                    end,
+                },
+            },
+            tooltip = dssmod.menuOpenToolTip,
         },
         pickups = {
             title = 'pickup settings',
@@ -440,17 +527,214 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
             title = 'color settings',
             buttons = {
                 {
-                    str = 'toggle large',
-                    choices = {'on', 'off'},
-                    tooltip = {strset = {'allow toggle', 'large map' }},
-                    variable = 'AllowToggleLargeMap',
+                    str = 'map transparency',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
                     setting = 1,
+                    tooltip = {strset = {'values other', 'than 1', 'will hide', 'room borders', 'to improve', 'visibility' }},
+                    variable = 'MinimapTransparency',
                     load = function()
-                        return MinimapAPI.Config.AllowToggleLargeMap and 1 or 2
+                        return MinimapAPI.Config.MinimapTransparency
                     end,
                     store = function(var)
-                        MinimapAPI.Config.AllowToggleLargeMap = var == 1
-                        MinimapAPI.Config.ConfigPreset = 0
+                        MinimapAPI.Config.MinimapTransparency = var
+                    end
+                },
+                {
+                    str = 'room color r',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 0.9,
+                    variable = 'DefaultRoomColorR',
+                    load = function()
+                        return MinimapAPI.Config.DefaultRoomColorR
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.DefaultRoomColorR = var
+                    end
+                },
+                {
+                    str = 'room color g',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 0.9,
+                    variable = 'DefaultRoomColorG',
+                    load = function()
+                        return MinimapAPI.Config.DefaultRoomColorG
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.DefaultRoomColorG = var
+                    end
+                },
+                {
+                    str = 'room color b',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 0.9,
+                    variable = 'DefaultRoomColorB',
+                    load = function()
+                        return MinimapAPI.Config.DefaultRoomColorB
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.DefaultRoomColorB = var
+                    end
+                },
+                {
+                    str = 'outline color r',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 0.9,
+                    variable = 'DefaultOutlineColorR',
+                    load = function()
+                        return MinimapAPI.Config.DefaultOutlineColorR
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.DefaultOutlineColorR = var
+                    end
+                },
+                {
+                    str = 'outline color g',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 0.9,
+                    variable = 'DefaultOutlineColorG',
+                    load = function()
+                        return MinimapAPI.Config.DefaultOutlineColorG
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.DefaultOutlineColorG = var
+                    end
+                },
+                {
+                    str = 'outline color b',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 0.9,
+                    variable = 'DefaultOutlineColorB',
+                    load = function()
+                        return MinimapAPI.Config.DefaultOutlineColorB
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.DefaultOutlineColorB = var
+                    end
+                },
+                {
+                    str = 'border color r',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 0.9,
+                    variable = 'BorderColorR',
+                    load = function()
+                        return MinimapAPI.Config.BorderColorR
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.BorderColorR = var
+                    end
+                },
+                {
+                    str = 'border color g',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 0.9,
+                    variable = 'BorderColorG',
+                    load = function()
+                        return MinimapAPI.Config.BorderColorG
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.BorderColorG = var
+                    end
+                },
+                {
+                    str = 'border color b',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 0.9,
+                    variable = 'BorderColorB',
+                    load = function()
+                        return MinimapAPI.Config.BorderColorB
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.BorderColorB = var
+                    end
+                },
+                {
+                    str = 'border color a',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 1,
+                    variable = 'BorderColorA',
+                    load = function()
+                        return MinimapAPI.Config.BorderColorA
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.BorderColorA = var
+                    end
+                },
+                {
+                    str = 'border bg r',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 0.9,
+                    variable = 'BorderBgColorR',
+                    load = function()
+                        return MinimapAPI.Config.BorderBgColorR
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.BorderBgColorR = var
+                    end
+                },
+                {
+                    str = 'border bg g',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 0.9,
+                    variable = 'BorderBgColorG',
+                    load = function()
+                        return MinimapAPI.Config.BorderBgColorG
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.BorderBgColorG = var
+                    end
+                },
+                {
+                    str = 'border bg b',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 0.9,
+                    variable = 'BorderBgColorB',
+                    load = function()
+                        return MinimapAPI.Config.BorderBgColorB
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.BorderBgColorB = var
+                    end
+                },
+                {
+                    str = 'border bg a',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 1,
+                    variable = 'BorderBgColorA',
+                    load = function()
+                        return MinimapAPI.Config.BorderBgColorA
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.BorderBgColorA = var
                     end
                 },
             },
