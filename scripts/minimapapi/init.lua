@@ -10,6 +10,7 @@ require("scripts.minimapapi.custom_icons")
 require("scripts.minimapapi.custom_mapflags")
 require("scripts.minimapapi.nicejourney")
 require("scripts.minimapapi.config_menu")
+require("scripts.minimapapi.dsscompat")
 require("scripts.minimapapi.testfunctions")
 
 
