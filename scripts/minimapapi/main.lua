@@ -974,6 +974,32 @@ function maproomfunctions:UpdateType()
 	end
 end
 
+function maproomfunctions:SyncRoomDescriptor()
+	if self.Descriptor and self.Descriptor.Data then
+		self.Shape = self.Descriptor.Data.Shape
+		self.PermanentIcons = {MinimapAPI:GetRoomTypeIconID(self.Descriptor.Data.Type)}
+		self.LockedIcons = {MinimapAPI:GetUnknownRoomTypeIconID(self.Descriptor.Data.Type)}
+		self.ItemIcons = {}
+		self.VisitedIcons = {}
+		self.Position = MinimapAPI:GridIndexToVector(self.Descriptor.SafeGridIndex)
+		self.Descriptor = self.Descriptor
+		self.AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[self.Descriptor.Data.Type] or 5
+		self.Type = self.Descriptor.Data.Type
+		self.Dimension = MinimapAPI.CurrentDimension
+		self.Visited = self.Descriptor.VisitedCount > 0
+		self.Clear = self.Descriptor.Clear
+		self.Color = REPENTANCE and self.Descriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
+		
+		if self.Descriptor.Data.Type == RoomType.ROOM_SECRET or self.Descriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
+			self.Hidden = 1
+		elseif REPENTANCE and roomDescriptor.Data.Type == RoomType.ROOM_ULTRASECRET then
+			self.Hidden = 2
+		end
+
+		self:UpdateType()
+	end
+end
+
 function maproomfunctions:IsValidTeleportTarget()
 	local allowUnclear = MinimapAPI:GetConfig("MouseTeleportUncleared")
 	return (
