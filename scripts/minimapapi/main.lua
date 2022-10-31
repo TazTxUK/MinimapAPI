@@ -523,7 +523,13 @@ end
 
 function MinimapAPI:RunPlayerPosCallbacks()
 	for _, v in ipairs(callbacks_playerpos) do
-		local s, ret = pcall(v.call, v.mod, MinimapAPI:GetCurrentRoom(), playerMapPos)
+		local s, ret
+		-- backwards compatibility mode, pass mod reference
+		if v.modReference then
+			s, ret = pcall(v.call, v.modReference, MinimapAPI:GetCurrentRoom(), playerMapPos)
+		else
+			s, ret = pcall(v.call, MinimapAPI:GetCurrentRoom(), playerMapPos)
+		end
 		if s then
 			if ret then
 				playerMapPos = ret
@@ -537,7 +543,14 @@ end
 
 function MinimapAPI:RunDisplayFlagsCallbacks(room, df)
 	for _, v in ipairs(callbacks_displayflags) do
-		local s, ret = pcall(v.call, v.mod, room, df)
+		local s, ret
+		-- backwards compatibility mode, pass mod reference
+		if v.modReference then
+			s, ret = pcall(v.call, v.modReference, room, df)
+		else
+			s, ret = pcall(v.call, room, df)
+		end
+		
 		if s then
 			if ret then
 				return ret
@@ -551,7 +564,13 @@ end
 
 function MinimapAPI:RunDimensionCallbacks()
 	for _, v in ipairs(callbacks_dimension) do
-		local s, ret = pcall(v.call, v.mod, MinimapAPI.CurrentDimension)
+		local s, ret
+		-- backwards compatibility mode, pass mod reference
+		if v.modReference then
+			s, ret = pcall(v.call, v.modReference, MinimapAPI.CurrentDimension)
+		else
+			s, ret = pcall(v.call, MinimapAPI.CurrentDimension)
+		end
 		if s then
 			if ret then
 				MinimapAPI.CurrentDimension = ret
@@ -1149,43 +1168,99 @@ function MinimapAPI:IsModTable(modtable)
 	return false
 end
 
-function MinimapAPI:AddPlayerPositionCallback(modtable, func)
-	if not MinimapAPI:IsModTable(modtable) then
-		error("Table given to AddPlayerPositionCallback was not a mod table")
+-- Callbacks
+-- try to handle both using a mod table as key
+-- for backwards compatibility, and using a string
+
+-- Use of a string as key or something else that doesn't change between
+-- mod reloads is recommended
+function MinimapAPI:AddPlayerPositionCallback(modkey, func)
+	local modtable
+
+	if MinimapAPI:IsModTable(modkey) then
+		modtable = modkey
+		modkey = modtable.Name
 	end
+
 	callbacks_playerpos[#callbacks_playerpos + 1] = {
-		mod = modtable,
+		mod = modkey,
+		modReference = modtable,
 		call = func
 	}
 end
 
-function MinimapAPI:AddDisplayFlagsCallback(modtable, func)
-	if not MinimapAPI:IsModTable(modtable) then
-		error("Table given to AddDisplayFlagsCallback was not a mod table")
+-- Use of a string as key or something else that doesn't change between
+-- mod reloads is recommended
+function MinimapAPI:AddDisplayFlagsCallback(modkey, func)
+	local modtable
+
+	if MinimapAPI:IsModTable(modkey) then
+		modtable = modkey
+		modkey = modtable.Name
 	end
+
 	callbacks_displayflags[#callbacks_displayflags + 1] = {
-		mod = modtable,
+		mod = modkey,
+		modReference = modtable,
 		call = func
 	}
 end
 
-function MinimapAPI:AddDimensionCallback(modtable, func)
-	if not MinimapAPI:IsModTable(modtable) then
-		error("Table given to AddDimensionCallback was not a mod table")
+-- Use of a string as key or something else that doesn't change between
+-- mod reloads is recommended
+function MinimapAPI:AddDimensionCallback(modkey, func)
+	local modtable
+
+	if MinimapAPI:IsModTable(modkey) then
+		modtable = modkey
+		modkey = modtable.Name
 	end
+
 	callbacks_dimension[#callbacks_dimension + 1] = {
-		mod = modtable,
+		mod = modkey,
+		modReference = modtable,
 		call = func
 	}
 end
 
-function MinimapAPI:RemovePlayerPositionCallback(modtable)
-	for i, v in ipairs(callbacks_playerpos) do
-		if v.mod == modtable then
-			table.remove(callbacks_playerpos, i)
-			break
+function MinimapAPI:RemoveAllCallbacks(modkey)
+	MinimapAPI:RemovePlayerPositionCallbacks(modkey)
+	MinimapAPI:RemoveDisplayFlagsCallbacks(modkey)
+	MinimapAPI:RemoveDimensionCallbacks(modkey)
+end
+
+local function RemoveFromCallbackTable(tbl, modkey)
+	if MinimapAPI:IsModTable(modkey) then
+		modkey = modkey.Name
+	end
+
+	-- remove during iterate is bad if iteration continues
+	local toRemove = {}
+	for i, v in ipairs(tbl) do
+		if v.mod == modkey then
+			toRemove[#toRemove+1] = i
 		end
 	end
+	for _, i in ipairs(toRemove) do
+		table.remove(tbl, i)
+	end
+end
+
+function MinimapAPI:RemovePlayerPositionCallbacks(modkey)
+	RemoveFromCallbackTable(callbacks_playerpos, modkey)
+end
+
+---@deprecated
+function MinimapAPI:RemovePlayerPositionCallback(modkey)
+	MinimapAPI:RemovePlayerPositionCallbacks(modkey)
+end
+
+function MinimapAPI:RemoveDisplayFlagsCallbacks(modkey)
+	RemoveFromCallbackTable(callbacks_displayflags, modkey)
+end
+
+function MinimapAPI:RemoveDimensionCallbacks(modkey)
+	RemoveFromCallbackTable(callbacks_dimension, modkey)
 end
 
 function MinimapAPI:GetCurrentRoom() --DOESNT ALWAYS RETURN SOMETHING!!!
