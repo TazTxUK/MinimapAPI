@@ -992,7 +992,7 @@ function maproomfunctions:SyncRoomDescriptor()
 		
 		if self.Descriptor.Data.Type == RoomType.ROOM_SECRET or self.Descriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
 			self.Hidden = 1
-		elseif REPENTANCE and roomDescriptor.Data.Type == RoomType.ROOM_ULTRASECRET then
+		elseif REPENTANCE and self.Descriptor.Data.Type == RoomType.ROOM_ULTRASECRET then
 			self.Hidden = 2
 		end
 
