@@ -2,4 +2,4 @@ local MinimapAPI = require("scripts.minimapapi")
 
 MinimapAPI.BranchVersion = "Master" --branch
 MinimapAPI.MajorVersion = 2
-MinimapAPI.MinorVersion = 32
+MinimapAPI.MinorVersion = 33
