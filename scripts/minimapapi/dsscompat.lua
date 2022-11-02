@@ -554,10 +554,10 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                     variable = 'MouseTeleportUncleared',
                     setting = 1,
                     load = function()
-                        return MinimapAPI.Config.MouseTeleportUncleared and 1 or 2
+                        return MinimapAPI.Config.MouseTeleportUncleared and 2 or 1
                     end,
                     store = function(var)
-                        MinimapAPI.Config.MouseTeleportUncleared = var == 1
+                        MinimapAPI.Config.MouseTeleportUncleared = var == 2
                     end
                 },
                 {
