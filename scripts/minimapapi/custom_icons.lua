@@ -72,6 +72,8 @@ else -- Repentance exclusive icons
 
 	MinimapAPI:AddIcon("UnusCard", MinimapAPI.CustomIcons, "CustomIconUnusCard", 0)
 
+	MinimapAPI:AddIcon("RuneShard", MinimapAPI.CustomIcons, "CustomIconRuneShard", 0)
+
 	MinimapAPI:AddIcon("BigPoopNugget", MinimapAPI.CustomIcons, "CustomIconPoop", 1)
 	MinimapAPI:AddIcon("WhiteFireplace", MinimapAPI.CustomIcons, "CustomIconWhiteFireplace", 0)
 	MinimapAPI:AddIcon("AscentExit", MinimapAPI.CustomIcons, "CustomIconAscentExit", 0)
@@ -156,12 +158,13 @@ else -- Repentance exclusive icons
 
 	MinimapAPI:AddPickup("KeyShard","KeyShard",5,300,78,MinimapAPI.PickupNotCollected,"cards",1200)
 	MinimapAPI:AddPickup("QueenOfHearts","SuitCard",5,300,79,MinimapAPI.PickupNotCollected,"cards",1200)
-	
+
 	for i=81,97 do
 		MinimapAPI:AddPickup("Soul"..i,"Soul"..i,5,300,i,MinimapAPI.PickupNotCollected,"runes",1300)
 	end
 
 	MinimapAPI:AddPickup("WildCard","UnusCard",5,300,80,MinimapAPI.PickupNotCollected,"cards",1200)
+	MinimapAPI:AddPickup("RuneShard","RuneShard",5,300,55,MinimapAPI.PickupNotCollected,"runes",1100)
 
 	MinimapAPI:AddPickup("BigPoopNugget","BigPoopNugget",5,42,1,MinimapAPI.PickupNotCollected,"bombs",1200)
 	MinimapAPI:AddPickup("WhiteFireplace","WhiteFireplace",33,4,-1,nil,"quest",100)
