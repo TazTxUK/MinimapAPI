@@ -34,7 +34,7 @@ MinimapAPI:AddIcon("CheckeredFlag", MinimapAPI.CustomIcons, "CustomIconFlag", 0)
 MinimapAPI:AddIcon("Shovel", MinimapAPI.CustomIcons, "CustomIconShovel", 0)
 
 MinimapAPI:AddIcon("TarotCard", MinimapAPI.CustomIcons, "CustomIconTarotCard", 0)
-MinimapAPI:AddIcon("RedCard", MinimapAPI.CustomIcons, "CustomIconRedCard", 0)
+MinimapAPI:AddIcon("SuitCard", MinimapAPI.CustomIcons, "CustomIconSuitCard", 0)
 MinimapAPI:AddIcon("RuneRight", MinimapAPI.CustomIcons, "CustomIconRuneRight", 0)
 MinimapAPI:AddIcon("RuneBlack", MinimapAPI.CustomIcons, "CustomIconRuneBlack", 0)
 MinimapAPI:AddIcon("RuneBlank", MinimapAPI.CustomIcons, "CustomIconRuneBlank", 0)
@@ -45,6 +45,7 @@ MinimapAPI:AddIcon("HolyCard", MinimapAPI.CustomIcons, "CustomIconHolyCard", 0)
 MinimapAPI:AddIcon("MomsContract", MinimapAPI.CustomIcons, "CustomIconMomsContract", 0)
 MinimapAPI:AddIcon("DiceShard", MinimapAPI.CustomIcons, "CustomIconDiceShard", 0)
 MinimapAPI:AddIcon("Rune", MinimapAPI.CustomIcons, "CustomIconRune", 0)
+MinimapAPI:AddIcon("MagicCard", MinimapAPI.CustomIcons, "CustomIconMagicCard", 0)
 
 if not REPENTANCE then -- ab+ exclusive icons
 	MinimapAPI:AddIcon("GoldenKey", MinimapAPI.CustomIcons, "CustomIconGoldKey", 0)
@@ -63,9 +64,15 @@ if not REPENTANCE then -- ab+ exclusive icons
 	MinimapAPI:AddIcon("Bombbeggar", MinimapAPI.CustomIcons, "CustomIconBombBeggar", 0)
 else -- Repentance exclusive icons
 	MinimapAPI:AddIcon("KeyShard", MinimapAPI.CustomIcons, "CustomIconKeyShard", 0)
+
+	MinimapAPI:AddIcon("ReverseCard", MinimapAPI.CustomIcons, "CustomIconReverseCard", 0)
 	for i=0,16 do
 		MinimapAPI:AddIcon("Soul"..(i + 81), MinimapAPI.CustomIcons, "CustomIconSouls", i)
 	end
+
+	MinimapAPI:AddIcon("UnusCard", MinimapAPI.CustomIcons, "CustomIconUnusCard", 0)
+
+	MinimapAPI:AddIcon("RuneShard", MinimapAPI.CustomIcons, "CustomIconRuneShard", 0)
 
 	MinimapAPI:AddIcon("BigPoopNugget", MinimapAPI.CustomIcons, "CustomIconPoop", 1)
 	MinimapAPI:AddIcon("WhiteFireplace", MinimapAPI.CustomIcons, "CustomIconWhiteFireplace", 0)
@@ -97,7 +104,7 @@ MinimapAPI:AddPickup("DoubleBomb","DoubleBomb",5,40,2,MinimapAPI.PickupNotCollec
 
 MinimapAPI:AddPickup("Card","TarotCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",1000)
 for i=23,31 do
-	MinimapAPI:AddPickup("RedCard"..i,"RedCard",5,300,i,MinimapAPI.PickupNotCollected,"cards",1100)
+	MinimapAPI:AddPickup("SuitCard"..i,"SuitCard",5,300,i,MinimapAPI.PickupNotCollected,"cards",1100)
 end
 for i=32,35 do
 	MinimapAPI:AddPickup("Rune"..i,"Rune",5,300,i,MinimapAPI.PickupNotCollected,"runes",1100)
@@ -107,16 +114,20 @@ for i=36,39 do
 end
 MinimapAPI:AddPickup("Rune40","RuneBlank",5,300,40,MinimapAPI.PickupNotCollected,"runes",1200)--Blank rune
 MinimapAPI:AddPickup("Rune41","RuneBlack",5,300,41,MinimapAPI.PickupNotCollected,"runes",1200)--Black rune
-MinimapAPI:AddPickup("ChaosCard","RedCard",5,300,42,MinimapAPI.PickupNotCollected,"cards",1100)--Chaos Card
-MinimapAPI:AddPickup("RulesCard","RedCard",5,300,44,MinimapAPI.PickupNotCollected,"cards",1100)--Rules Card
-MinimapAPI:AddPickup("SuicideKing","RedCard",5,300,46,MinimapAPI.PickupNotCollected,"cards",1100)--Suicide King
-MinimapAPI:AddPickup("QuestionmarkCard","RedCard",5,300,48,MinimapAPI.PickupNotCollected,"cards",1100)--?Card 
+MinimapAPI:AddPickup("ChaosCard","MagicCard",5,300,42,MinimapAPI.PickupNotCollected,"cards",1100)--Chaos Card
+MinimapAPI:AddPickup("RulesCard","SuitCard",5,300,44,MinimapAPI.PickupNotCollected,"cards",1100)--Rules Card
+MinimapAPI:AddPickup("SuicideKing","SuitCard",5,300,46,MinimapAPI.PickupNotCollected,"cards",1100)--Suicide King
+MinimapAPI:AddPickup("QuestionmarkCard","SuitCard",5,300,48,MinimapAPI.PickupNotCollected,"cards",1100)--?Card 
 MinimapAPI:AddPickup("CreditCard","CreditCard",5,300,43,MinimapAPI.PickupNotCollected,"cards",1100)
 MinimapAPI:AddPickup("GetOutOfJail","GetOutOfJail",5,300,47,MinimapAPI.PickupNotCollected,"cards",1100)
 MinimapAPI:AddPickup("CardAgainstHumanity","CardAgainstHumanity",5,300,45,MinimapAPI.PickupNotCollected,"cards",1100)
 MinimapAPI:AddPickup("HolyCard","HolyCard",5,300,51,MinimapAPI.PickupNotCollected,"cards",1100)
 MinimapAPI:AddPickup("MomsContract","MomsContract",5,300,50,MinimapAPI.PickupNotCollected,"cards",1100)
 MinimapAPI:AddPickup("DiceShard","DiceShard",5,300,49,MinimapAPI.PickupNotCollected,"cards",1100)
+
+MinimapAPI:AddPickup("HugeGrowth","MagicCard",5,300,52,MinimapAPI.PickupNotCollected,"cards",1100)
+MinimapAPI:AddPickup("AncientRecall","MagicCard",5,300,53,MinimapAPI.PickupNotCollected,"cards",1100)
+MinimapAPI:AddPickup("EraWalk","MagicCard",5,300,54,MinimapAPI.PickupNotCollected,"cards",1100)
 
 MinimapAPI:AddPickup("Trophy","CheckeredFlag",5,370,-1,nil,"trophies",13000)
 MinimapAPI:AddPickup("BigChest","CheckeredFlag",5,340,-1,nil,"trophies",13000)
@@ -141,12 +152,19 @@ if not REPENTANCE then -- ab+ exclusive icons
 	--MinimapAPI:AddGridEntity("MineshaftButton", "MineshaftButton",4500,3,nil,10000)
 
 else -- Repentance exclusive icons
+	for i=56,77 do
+		MinimapAPI:AddPickup("Reverse"..i,"ReverseCard",5,300,i,MinimapAPI.PickupNotCollected,"cards",1100)
+	end
+
 	MinimapAPI:AddPickup("KeyShard","KeyShard",5,300,78,MinimapAPI.PickupNotCollected,"cards",1200)
-	MinimapAPI:AddPickup("QueenOfHearts","RedCard",5,300,79,MinimapAPI.PickupNotCollected,"cards",1200)
+	MinimapAPI:AddPickup("QueenOfHearts","SuitCard",5,300,79,MinimapAPI.PickupNotCollected,"cards",1200)
 
 	for i=81,97 do
 		MinimapAPI:AddPickup("Soul"..i,"Soul"..i,5,300,i,MinimapAPI.PickupNotCollected,"runes",1300)
 	end
+
+	MinimapAPI:AddPickup("WildCard","UnusCard",5,300,80,MinimapAPI.PickupNotCollected,"cards",1200)
+	MinimapAPI:AddPickup("RuneShard","RuneShard",5,300,55,MinimapAPI.PickupNotCollected,"runes",1100)
 
 	MinimapAPI:AddPickup("BigPoopNugget","BigPoopNugget",5,42,1,MinimapAPI.PickupNotCollected,"bombs",1200)
 	MinimapAPI:AddPickup("WhiteFireplace","WhiteFireplace",33,4,-1,nil,"quest",100)
