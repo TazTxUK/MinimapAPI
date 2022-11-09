@@ -177,7 +177,11 @@ local function HandleMoveCursorWithButtons()
     elseif not TABpressed then
         tabPressTimeStart = 0
     elseif not currentlyHighlighted and Isaac.GetTime()-tabPressTimeStart > 500 then
-        currentlyHighlighted = MinimapAPI:GetCurrentRoom():GetAdjacentRooms()[1]
+        if MinimapAPI:GetCurrentRoom() then
+            currentlyHighlighted = MinimapAPI:GetCurrentRoom():GetAdjacentRooms()[1]
+        else
+            currentlyHighlighted = MinimapAPI:GetRoomByIdx(Game:GetLevel():GetStartingRoomIndex())
+        end
     end
 
     if currentlyHighlighted then
