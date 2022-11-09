@@ -208,6 +208,11 @@ local function HandleMoveCursorWithButtons()
     end
 end
 
+local function round(num)
+    local mult = 10^0
+    return math.floor(num * mult + 0.5) / mult
+end
+
 local function niceJourney_PostRender()
     if not MinimapAPI:IsLarge() or not MinimapAPI:GetConfig("MouseTeleport") or Game:IsPaused() then
         currentlyHighlighted = nil
@@ -217,6 +222,7 @@ local function niceJourney_PostRender()
 
     -- gameCoords = false doesn't give proper render coords
     local mouseCoords = Isaac.WorldToScreen(Input.GetMousePosition(true))
+    mouseCoords = Vector(round(mouseCoords.X), round(mouseCoords.Y))
     local mouseMoved = mouseCoords.X ~= lastMousePos.X or mouseCoords.Y ~= lastMousePos.Y
     lastMousePos = mouseCoords
 
