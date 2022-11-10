@@ -292,6 +292,9 @@ MinimapAPI.PickupList = {
 for i=32,41 do -- This can be better once the api has more stuff in ItemConfig_Card
 	MinimapAPI.PickupList["Rune"..i] = {IconID="Rune",Type=5,Variant=300,SubType=i,Call=notCollected,IconGroup="runes",Priority=1100}
 end
+for i=81,97 do -- This can be better once the api has more stuff in ItemConfig_Card
+	MinimapAPI.PickupList["Soul"..i] = {IconID="Rune",Type=5,Variant=300,SubType=i,Call=notCollected,IconGroup="runes",Priority=1100}
+end
 
 -- IsPrespawnObject is used for grid entities that exist on room creation. These objects are mostly defined by very big Type IDs
 MinimapAPI.GridEntityList = {	
