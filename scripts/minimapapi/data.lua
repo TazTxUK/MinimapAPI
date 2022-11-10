@@ -289,10 +289,10 @@ MinimapAPI.PickupList = {
 	["ShellGame"] = {IconID="Beggar",Type=6,Variant=6,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=100},
 	["Beggar"] = {IconID="Beggar",Type=6,Variant=4,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=0},
 }
-for i=32,41 do -- This can be better once the api has more stuff in ItemConfig_Card
+for i=32,41 do -- These can be better once the api has more stuff in ItemConfig_Card
 	MinimapAPI.PickupList["Rune"..i] = {IconID="Rune",Type=5,Variant=300,SubType=i,Call=notCollected,IconGroup="runes",Priority=1100}
 end
-for i=81,97 do -- This can be better once the api has more stuff in ItemConfig_Card
+for i=81,97 do
 	MinimapAPI.PickupList["Soul"..i] = {IconID="Rune",Type=5,Variant=300,SubType=i,Call=notCollected,IconGroup="runes",Priority=1100}
 end
 
