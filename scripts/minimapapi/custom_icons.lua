@@ -3,9 +3,6 @@ local MinimapAPI = require("scripts.minimapapi")
 MinimapAPI.CustomIcons = Sprite()
 MinimapAPI.CustomIcons:Load("gfx/ui/minimapapi/custom_icons.anm2",true)
 
-MinimapAPI:AddIcon("DevilRoom", MinimapAPI.CustomIcons, "CustomIconDevilRoom", 0)
-MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_DEVIL] = "DevilRoom"
-
 --PILLS
 
 MinimapAPI:AddIcon("PillBlueBlue", MinimapAPI.CustomIcons, "CustomIconPillBlueBlue", 0)

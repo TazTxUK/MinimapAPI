@@ -168,7 +168,7 @@ MinimapAPI.RoomTypeIconIDs = {
     [RoomType.ROOM_CHALLENGE] = "AmbushRoom",
     [RoomType.ROOM_LIBRARY] = "Library",
     [RoomType.ROOM_SACRIFICE] = "SacrificeRoom",
-    [RoomType.ROOM_DEVIL] = nil,
+    [RoomType.ROOM_DEVIL] = "DevilRoom",
     [RoomType.ROOM_ANGEL] = "AngelRoom",
     [RoomType.ROOM_DUNGEON] = nil,
     [RoomType.ROOM_BOSSRUSH] = "BossAmbushRoom",
@@ -291,9 +291,7 @@ MinimapAPI.PickupList = {
 
 -- IsPrespawnObject is used for grid entities that exist on room creation. These objects are mostly defined by very big Type IDs
 MinimapAPI.GridEntityList = {	
-	["Ladder"] = {IconID="Ladder",Type = GridEntityType.GRID_TRAPDOOR, Variant = 1, Priority=12000},
-	["Minecart"] = {IconID="MinecartRoom",Type = 965, Variant = 10, Call=function() return Game():GetLevel():GetAbsoluteStage() == LevelStage.STAGE2_2 end, Priority=11000, IsPrespawnObject = true},
-	["Mirror"] = {IconID="MirrorRoom",Type = 970, Variant = 2, Call=function() return Game():GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_2 end, Priority=11000, IsPrespawnObject = true},
+	["Ladder"] = {IconID="Ladder",Type=18,Variant=-1,Priority=12000},
 }
 
 MinimapAPI.IconList = {
@@ -308,6 +306,7 @@ MinimapAPI.IconList = {
 	{ID="AmbushRoom",anim="IconAmbushRoom",frame=0},
 	{ID="Library",anim="IconLibrary",frame=0},
 	{ID="SacrificeRoom",anim="IconSacrificeRoom",frame=0},
+	{ID="DevilRoom",anim="IconDevilRoom",frame=0},
 	{ID="AngelRoom",anim="IconAngelRoom",frame=0},
 	{ID="BossAmbushRoom",anim="IconBossAmbushRoom",frame=0},
 	{ID="IsaacsRoom",anim="IconIsaacsRoom",frame=0},

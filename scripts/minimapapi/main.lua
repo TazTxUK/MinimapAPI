@@ -657,8 +657,20 @@ function MinimapAPI:LoadDefaultMap(dimension)
 			if roomDescriptor.Data.Type == RoomType.ROOM_CHALLENGE and roomDescriptor.Data.Subtype == 1 then
 				t.PermanentIcons = {"BossAmbushRoom"}
 			end
-			if REPENTANCE and roomDescriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
-				t.PermanentIcons = {"TreasureRoomRed"}
+			if REPENTANCE then
+				if roomDescriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
+					t.PermanentIcons = { "TreasureRoomRed" }
+				end
+	
+				if roomDescriptor.Data.Type == RoomType.ROOM_DEFAULT then
+					if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and roomDescriptor.Data.Subtype == 34 then
+						t.PermanentIcons = { "MirrorRoom" }
+					end
+		
+					if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE2_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and roomDescriptor.Data.Subtype == 10 then
+						t.PermanentIcons = { "MinecartRoom" }
+					end
+				end
 			end
 			if override_greed and game:IsGreedMode() then
 				if roomDescriptor.Data.Type == RoomType.ROOM_TREASURE and roomDescriptor.GridIndex == 98 then
@@ -778,13 +790,24 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 			elseif roomDescriptor.Data.Type == RoomType.ROOM_ULTRASECRET then
 				t.Hidden = 2
 			end
-			if REPENTANCE and roomDescriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
-				t.PermanentIcons = {"TreasureRoomRed"}
-			end
 			if roomDescriptor.Data.Type == 11 and roomDescriptor.Data.Subtype == 1 then
 				t.PermanentIcons = {"BossAmbushRoom"}
 			end
-			
+			if REPENTANCE then
+				if roomDescriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
+					t.PermanentIcons = { "TreasureRoomRed" }
+				end
+				
+				if roomDescriptor.Data.Type == RoomType.ROOM_DEFAULT then
+					if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and roomDescriptor.Data.Subtype == 34 then
+						t.PermanentIcons = { "MirrorRoom" }
+					end
+		
+					if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE2_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and roomDescriptor.Data.Subtype == 10 then
+						t.PermanentIcons = { "MinecartRoom" }
+					end
+				end
+			end
 			MinimapAPI:AddRoom(t)
 		end
 	end
@@ -963,8 +986,19 @@ function maproomfunctions:UpdateType()
 		if self.Descriptor.Data.Type == RoomType.ROOM_CHALLENGE and self.Descriptor.Data.Subtype == 1 then
 			self.PermanentIcons = { "BossAmbushRoom" }
 		end
-		if REPENTANCE and self.Descriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
-			self.PermanentIcons = { "TreasureRoomRed" }
+		if REPENTANCE then
+			if self.Descriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
+				self.PermanentIcons = { "TreasureRoomRed" }
+			end
+			if self.Descriptor.Data.Type == RoomType.ROOM_DEFAULT then
+				if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and self.Descriptor.Data.Subtype == 34 then
+					self.PermanentIcons = { "MirrorRoom" }
+				end
+
+				if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE2_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and self.Descriptor.Data.Subtype == 10 then
+					self.PermanentIcons = { "MinecartRoom" }
+				end
+			end
 		end
 		if override_greed and game:IsGreedMode() then
 			if self.Descriptor.Data.Type == RoomType.ROOM_TREASURE and self.Descriptor.GridIndex == 98 then
