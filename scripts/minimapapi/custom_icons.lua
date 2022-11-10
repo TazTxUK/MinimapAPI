@@ -112,7 +112,7 @@ MinimapAPI:AddPickup("Trophy","CheckeredFlag",5,370,-1,nil,"trophies",13000)
 MinimapAPI:AddPickup("BigChest","CheckeredFlag",5,340,-1,nil,"trophies",13000)
 MinimapAPI:AddPickup("Shovel","Shovel",5,110,-1,nil,"trophies",13000)
 
-MinimapAPI:AddPickup("ShellGame","ShellGame",6,6,-1,nil,"beggars",100)
+MinimapAPI:AddPickup("ShellGame","ShellGame",6,6,-1,MinimapAPI.PickupSlotMachineNotBroken,"beggars",100)
 
 if REPENTANCE then -- Repentance exclusive icons
 	for i=56,77 do
@@ -128,7 +128,7 @@ if REPENTANCE then -- Repentance exclusive icons
 
 	MinimapAPI:AddPickup("WildCard","UnusCard",5,300,80,MinimapAPI.PickupNotCollected,"cards",1200)
 	MinimapAPI:AddPickup("RuneShard","RuneShard",5,300,55,MinimapAPI.PickupNotCollected,"runes",1100)
-	MinimapAPI:AddPickup("HellGame","HellGame",6,15,-1,nil,"beggars",100)
+	MinimapAPI:AddPickup("HellGame","HellGame",6,15,-1,MinimapAPI.PickupSlotMachineNotBroken,"beggars",100)
 
 	MinimapAPI:AddPickup("BigPoopNugget","BigPoopNugget",5,42,1,MinimapAPI.PickupNotCollected,"bombs",1200)
 	MinimapAPI:AddPickup("WhiteFireplace","WhiteFireplace",33,4,-1,nil,"quest",100)
