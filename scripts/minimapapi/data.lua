@@ -237,7 +237,9 @@ MinimapAPI.PickupList = {
 	["BlueHeart"] = {IconID="BlueHeart",Type=5,Variant=10,SubType=3,Call=notCollected,IconGroup="hearts",Priority=10500},
 	["BlendedHeart"] = {IconID="BlendedHeart",Type=5,Variant=10,SubType=10,Call=notCollected,IconGroup="hearts",Priority=10400},
 	["HalfBlueHeart"] = {IconID="HalfBlueHeart",Type=5,Variant=10,SubType=8,Call=notCollected,IconGroup="hearts",Priority=10300},
-	["Heart"] = {IconID="Heart",Type=5,Variant=10,SubType=-1,Call=notCollected,IconGroup="hearts",Priority=10100},
+	["ScaredHeart"] = {IconID="Heart",Type=5,Variant=10,SubType=9,Call=notCollected,IconGroup="hearts",Priority=10100},
+	["DoubleHeart"] = {IconID="Heart",Type=5,Variant=10,SubType=5,Call=notCollected,IconGroup="hearts",Priority=10100},
+	["Heart"] = {IconID="Heart",Type=5,Variant=10,SubType=1,Call=notCollected,IconGroup="hearts",Priority=10100},
 	["HalfHeart"] = {IconID="HalfHeart",Type=5,Variant=10,SubType=2,Call=notCollected,IconGroup="hearts",Priority=10000},
 	
 	["Item"] = {IconID="Item",Type=5,Variant=100,SubType=-1,Call=function(pickup) return pickup.SubType ~= 0 end,IconGroup="collectibles",Priority=9000},
