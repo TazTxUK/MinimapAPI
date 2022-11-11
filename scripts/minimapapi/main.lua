@@ -664,11 +664,11 @@ function MinimapAPI:LoadDefaultMap(dimension)
 	
 				if roomDescriptor.Data.Type == RoomType.ROOM_DEFAULT then
 					if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and roomDescriptor.Data.Subtype == 34 then
-						t.PermanentIcons = { "MirrorRoom" }
+						t.VisitedIcons = { "MirrorRoom" }
 					end
 		
 					if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE2_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and roomDescriptor.Data.Subtype == 10 then
-						t.PermanentIcons = { "MinecartRoom" }
+						t.VisitedIcons = { "MinecartRoom" }
 					end
 				end
 			end
@@ -800,11 +800,11 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 				
 				if roomDescriptor.Data.Type == RoomType.ROOM_DEFAULT then
 					if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and roomDescriptor.Data.Subtype == 34 then
-						t.PermanentIcons = { "MirrorRoom" }
+						t.VisitedIcons = { "MirrorRoom" }
 					end
 		
 					if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE2_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and roomDescriptor.Data.Subtype == 10 then
-						t.PermanentIcons = { "MinecartRoom" }
+						t.VisitedIcons = { "MinecartRoom" }
 					end
 				end
 			end
@@ -992,11 +992,11 @@ function maproomfunctions:UpdateType()
 			end
 			if self.Descriptor.Data.Type == RoomType.ROOM_DEFAULT then
 				if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and self.Descriptor.Data.Subtype == 34 then
-					self.PermanentIcons = { "MirrorRoom" }
+					self.VisitedIcons = { "MirrorRoom" }
 				end
 
 				if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE2_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and self.Descriptor.Data.Subtype == 10 then
-					self.PermanentIcons = { "MinecartRoom" }
+					self.VisitedIcons = { "MinecartRoom" }
 				end
 			end
 		end
