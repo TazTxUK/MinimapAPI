@@ -258,16 +258,19 @@ MinimapAPI.PickupList = {
 	["HauntedChest"] = {IconID="SpikedChest",Type=5,Variant=58,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=7100},
 	["MimicChest"] = {IconID="SpikedChest",Type=5,Variant=54,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=7000},
 	
+	["GoldenPill"] = {IconID="GoldenPill",Type=5,Variant=70,SubType=14,Call=notCollected,IconGroup="pills",Priority=6200},
 	["Pill"] = {IconID="Pill",Type=5,Variant=70,SubType=-1,Call=notCollected,IconGroup="pills",Priority=6000},
 	["GoldenKey"] = {IconID="GoldenKey",Type=5,Variant=30,SubType=2,Call=notCollected,IconGroup="keys",Priority=5300},
 	["ChargedKey"] = {IconID="ChargedKey",Type=5,Variant=30,SubType=4,Call=notCollected,IconGroup="keys",Priority=5200},
 	["Key"] = {IconID="Key",Type=5,Variant=30,SubType=1,Call=notCollected,IconGroup="keys",Priority=5000},
 	["GoldenBomb"] = {IconID="GoldenBomb",Type=5,Variant=40,SubType=4,Call=notCollected,IconGroup="bombs",Priority=4200},
 	["Bomb"] = {IconID="Bomb",Type=5,Variant=40,SubType=1,Call=notCollected,IconGroup="bombs",Priority=4000},
+	["GoldenCoin"] = {IconID="GoldenCoin",Type=5,Variant=20,SubType=7,Call=notCollected,IconGroup="coins",Priority=3200},
 	["Coin"] = {IconID="Coin",Type=5,Variant=20,SubType=-1,Call=notCollected,IconGroup="coins",Priority=3000},
 	["GoldenBattery"] = {IconID="GoldenBattery",Type=5,Variant=90,SubType=4,Call=notCollected,IconGroup="batteries",Priority=2200},
 	["Battery"] = {IconID="Battery",Type=5,Variant=90,SubType=-1,Call=notCollected,IconGroup="batteries",Priority=2000},
 	["Card"] = {IconID="Card",Type=5,Variant=300,SubType=-1,Call=notCollected,IconGroup="cards",Priority=1000},
+	["RuneShard"] = {IconID="Rune",Type=5,Variant=300,SubType=55,Call=notCollected,IconGroup="runes",Priority=1100},
 	["Poop"] = {IconID="Poop",Type=5,Variant=42,SubType=0,Call=notCollected,IconGroup="bombs",Priority=1200},
 	
 	["Confessional"] = {IconID="Confessional",Type=6,Variant=17,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=700},
@@ -275,7 +278,7 @@ MinimapAPI.PickupList = {
 	["RestockMachine"] = {IconID="RestockMachine",Type=6,Variant=10,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=500},
 	["DressingTable"] = {IconID="DressingTable",Type=6,Variant=12,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=400},
 	["DonationMachine"] = {IconID="DonationMachine",Type=6,Variant=8,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=300},
-	["FortuneMachine"] = {IconID="Slot",Type=6,Variant=3,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=200},
+	["FortuneMachine"] = {IconID="FortuneMachine",Type=6,Variant=3,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=200},
 	["BloodDonationMachine"] = {IconID="BloodDonationMachine",Type=6,Variant=2,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=100},
 	["Slot"] = {IconID="Slot",Type=6,Variant=1,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=0},
 
@@ -283,11 +286,17 @@ MinimapAPI.PickupList = {
 	["RottenBeggar"] = {IconID="RottenBeggar",Type=6,Variant=18,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=600},
 	["BombBeggar"] = {IconID="BombBeggar",Type=6,Variant=9,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=500},
 	["KeyBeggar"] = {IconID="KeyBeggar",Type=6,Variant=7,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=400},
-	["DemonShellGame"] = {IconID="DemonBeggar",Type=6,Variant=15,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=300},
+	["HellGame"] = {IconID="DemonBeggar",Type=6,Variant=15,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=300},
 	["DemonBeggar"] = {IconID="DemonBeggar",Type=6,Variant=5,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=200},
 	["ShellGame"] = {IconID="Beggar",Type=6,Variant=6,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=100},
 	["Beggar"] = {IconID="Beggar",Type=6,Variant=4,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=0},
 }
+for i=32,41 do -- These can be better once the api has more stuff in ItemConfig_Card
+	MinimapAPI.PickupList["Rune"..i] = {IconID="Rune",Type=5,Variant=300,SubType=i,Call=notCollected,IconGroup="runes",Priority=1100}
+end
+for i=81,97 do
+	MinimapAPI.PickupList["Soul"..i] = {IconID="Rune",Type=5,Variant=300,SubType=i,Call=notCollected,IconGroup="runes",Priority=1100}
+end
 
 -- IsPrespawnObject is used for grid entities that exist on room creation. These objects are mostly defined by very big Type IDs
 MinimapAPI.GridEntityList = {	
@@ -338,15 +347,18 @@ MinimapAPI.IconList = {
 	{ID="Item",anim="IconItem",frame=0},
 	{ID="Trinket",anim="IconTrinket",frame=0},
 	{ID="Pill",anim="IconPill",frame=0},
+	{ID="GoldenPill",anim="IconPill",frame=1},
 	{ID="Key",anim="IconKey",frame=0},
 	{ID="GoldenKey",anim="IconKey",frame=1},
 	{ID="ChargedKey",anim="IconKey",frame=2},
 	{ID="Bomb",anim="IconBomb",frame=0},
 	{ID="GoldenBomb",anim="IconBomb",frame=1},
 	{ID="Coin",anim="IconCoin",frame=0},
+	{ID="GoldenCoin",anim="IconCoin",frame=1},
 	{ID="Battery",anim="IconBattery",frame=0},
 	{ID="GoldenBattery",anim="IconBattery",frame=1},
 	{ID="Card",anim="IconCard",frame=0},
+	{ID="Rune",anim="IconRune",frame=0},
 	{ID="Poop",anim="IconPoop",frame=0},
 	--Chests
 	
