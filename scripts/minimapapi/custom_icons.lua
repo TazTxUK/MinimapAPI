@@ -59,7 +59,7 @@ if REPENTANCE then -- Repentance exclusive icons
 
 	MinimapAPI:AddIcon("BigPoopNugget", MinimapAPI.CustomIcons, "CustomIconPoop", 1)
 	MinimapAPI:AddIcon("WhiteFireplace", MinimapAPI.CustomIcons, "CustomIconWhiteFireplace", 0)
-	MinimapAPI:AddIcon("AscentExit", MinimapAPI.CustomIcons, "CustomIconAscentExit", 0)
+	MinimapAPI:AddIcon("HeavenDoor", MinimapAPI.CustomIcons, "CustomIconHeavenDoor", 0)
 end
 
 MinimapAPI:AddPickup("PillBlueBlue","PillBlueBlue",5,70,PillColor.PILL_BLUE_BLUE,MinimapAPI.PickupNotCollected,"pills",6100)
@@ -132,5 +132,5 @@ if REPENTANCE then -- Repentance exclusive icons
 
 	MinimapAPI:AddPickup("BigPoopNugget","BigPoopNugget",5,42,1,MinimapAPI.PickupNotCollected,"bombs",1200)
 	MinimapAPI:AddPickup("WhiteFireplace","WhiteFireplace",33,4,-1,nil,"quest",100)
-	MinimapAPI:AddPickup("AscentExit","AscentExit",1000,39,-1,function(p) return Game():GetLevel():IsAscent() end,"quest",100)
+	MinimapAPI:AddPickup("HeavenDoor","HeavenDoor",1000,39,0,function(p) return Game():GetLevel():IsAscent() or Isaac.GetChallenge() == Challenge.CHALLENGE_BACKASSWARDS end,"quest",100)
 end
