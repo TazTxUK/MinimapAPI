@@ -113,6 +113,7 @@ MinimapAPI:AddPickup("BigChest","CheckeredFlag",5,340,-1,nil,"trophies",13000)
 MinimapAPI:AddPickup("Shovel","Shovel",5,110,-1,nil,"trophies",13000)
 
 MinimapAPI:AddPickup("ShellGame","ShellGame",6,6,-1,MinimapAPI.PickupSlotMachineNotBroken,"beggars",100)
+MinimapAPI:AddPickup("HeavenDoor","HeavenDoor",1000,39,0,function(p) return Game():GetLevel():IsAscent() or Isaac.GetChallenge() == Challenge.CHALLENGE_BACKASSWARDS end,"quest",100) --IsAscent() should always be false in ab+
 
 if REPENTANCE then -- Repentance exclusive icons
 	for i=56,77 do
@@ -132,5 +133,4 @@ if REPENTANCE then -- Repentance exclusive icons
 
 	MinimapAPI:AddPickup("BigPoopNugget","BigPoopNugget",5,42,1,MinimapAPI.PickupNotCollected,"bombs",1200)
 	MinimapAPI:AddPickup("WhiteFireplace","WhiteFireplace",33,4,-1,nil,"quest",100)
-	MinimapAPI:AddPickup("HeavenDoor","HeavenDoor",1000,39,0,function(p) return Game():GetLevel():IsAscent() or Isaac.GetChallenge() == Challenge.CHALLENGE_BACKASSWARDS end,"quest",100)
 end
