@@ -621,7 +621,8 @@ local function GetRoomDescAndDimFromListIndex(listIndex)
 end
 
 function MinimapAPI:LoadDefaultMap(dimension)
-	rooms = game:GetLevel():GetRooms()
+	local level = game:GetLevel()
+	rooms = level:GetRooms()
 	dimension = dimension or MinimapAPI.CurrentDimension
 	MinimapAPI.Levels[dimension] = {}
 	MinimapAPI.CheckedRoomCount = 0
@@ -663,12 +664,15 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				end
 	
 				if roomDescriptor.Data.Type == RoomType.ROOM_DEFAULT then
-					if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and roomDescriptor.Data.Subtype == 34 then
-						t.VisitedIcons = { "MirrorRoom" }
-					end
-		
-					if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE2_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and roomDescriptor.Data.Subtype == 10 then
-						t.VisitedIcons = { "MinecartRoom" }
+					if level:GetStageType() == StageType.STAGETYPE_REPENTANCE or level:GetStageType() == StageType.STAGETYPE_REPENTANCE_B then
+						local isCurseLabyrinth = level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH == LevelCurse.CURSE_OF_LABYRINTH
+						if (level:GetAbsoluteStage() == LevelStage.STAGE1_2 and not isCurseLabyrinth or level:GetAbsoluteStage() == LevelStage.STAGE1_1 and isCurseLabyrinth) and roomDescriptor.Data.Subtype == 34 then
+							t.VisitedIcons = { "MirrorRoom" }
+						end
+			
+						if (level:GetAbsoluteStage() == LevelStage.STAGE2_2 and not isCurseLabyrinth or level:GetAbsoluteStage() == LevelStage.STAGE2_1 and isCurseLabyrinth) and roomDescriptor.Data.Subtype == 10 then
+							t.VisitedIcons = { "MinecartRoom" }
+						end
 					end
 				end
 			end
