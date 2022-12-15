@@ -251,7 +251,7 @@ function MinimapAPI:GetDoorSlotValue(doorgroup, doordir)
 end
 
 local defaultCustomPickupPriority = 12999 --more than vanilla, less than other potential custom pickups
-function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup, priority)
+function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup, priority, condition)
 	local newPickup
 	if type(id) == "table" and iconid == nil then
 		local t = id
@@ -266,7 +266,8 @@ function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup
 			SubType = t.SubType or -1,
 			Call = t.Call,
 			IconGroup = t.IconGroup,
-			Priority = t.Priority or defaultCustomPickupPriority
+			Priority = t.Priority or defaultCustomPickupPriority,
+			Condition = t.Condition,
 		}
 	else
 		if type(iconid) == "table" then
@@ -279,7 +280,8 @@ function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup
 			SubType = subtype or -1,
 			Call = call,
 			IconGroup = icongroup,
-			Priority = priority or defaultCustomPickupPriority
+			Priority = priority or defaultCustomPickupPriority,
+			Condition = condition,
 		}
 	end
 	MinimapAPI.PickupList[id] = newPickup
@@ -471,8 +473,10 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 						if (not toPickup) or (not toPickup:IsShopItem()) then
 							if v.Variant == -1 or ent.Variant == v.Variant then
 								if v.SubType == -1 or ent.SubType == v.SubType then
-									ent:GetData().MinimapAPIPickupID = i
-									success = true
+									if (not v.Condition) or v.Condition(ent) then
+										ent:GetData().MinimapAPIPickupID = i
+										success = true
+									end
 								end
 							end
 						end

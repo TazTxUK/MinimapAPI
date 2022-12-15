@@ -6,39 +6,39 @@ MinimapAPI.SpriteMinimapIcons:Load("gfx/ui/minimapapi_mapitemicons.anm2", true)
 local game = Game()
 local gameLvl = game:GetLevel()
 
-local function MindCondition()
-	return gameLvl:GetStateFlag(LevelStateFlag.STATE_FULL_MAP_EFFECT) or (gameLvl:GetStateFlag(LevelStateFlag.STATE_MAP_EFFECT) and gameLvl:GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT) and gameLvl:GetStateFlag(LevelStateFlag.STATE_COMPASS_EFFECT))
-end
-
-local function TreasureMapCondition()
-	if MindCondition() then return false end
-
-	return gameLvl:GetStateFlag(LevelStateFlag.STATE_MAP_EFFECT)
-end
-
-local function BlueMapCondition()
-	if MindCondition() then return false end
-	return gameLvl:GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT)
-end
-
-local function CompassCondition()
-	if MindCondition() then return false end
-
-	return gameLvl:GetStateFlag(LevelStateFlag.STATE_COMPASS_EFFECT)
-end
-
-local function RestockCondition()
-	if game:IsGreedMode() then return true end
-
+local function anyPlayerHasCollectible(collectible)
 	for p = 0, game:GetNumPlayers() - 1 do
 		local player = game:GetPlayer(p)
-
-		if player:HasCollectible(CollectibleType.COLLECTIBLE_RESTOCK) then
+		if player:HasCollectible(collectible) then
 			return true
 		end
 	end
 
 	return false
+end
+
+local function MindCondition()
+	return anyPlayerHasCollectible(CollectibleType.COLLECTIBLE_MIND)
+end
+
+local function TreasureMapCondition()
+	if MindCondition() then return false end
+	return anyPlayerHasCollectible(CollectibleType.COLLECTIBLE_TREASURE_MAP)
+end
+
+local function BlueMapCondition()
+	if MindCondition() then return false end
+	return anyPlayerHasCollectible(CollectibleType.COLLECTIBLE_BLUE_MAP)
+end
+
+local function CompassCondition()
+	if MindCondition() then return false end
+	return anyPlayerHasCollectible(CollectibleType.COLLECTIBLE_COMPASS)
+end
+
+local function RestockCondition()
+	if game:IsGreedMode() then return true end
+	return anyPlayerHasCollectible(CollectibleType.COLLECTIBLE_RESTOCK)
 end
 
 local function DarknessCurse()
