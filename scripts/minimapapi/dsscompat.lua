@@ -89,7 +89,10 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                                 MinimapAPI.Config[i] = v
                             end
                         end
-        				MinimapAPI:FirstMapDisplayMode()
+                        MinimapAPI:FirstMapDisplayMode()
+                        if Game():GetLevel():GetStage() == LevelStage.STAGE7 then
+                            MinimapAPI:LoadDefaultMap(0)
+                        end
                     end,
                 },
                 {str = ''},
@@ -470,6 +473,23 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                     store = function(var)
                         ResetPresetIfChanged(MinimapAPI.Config.VanillaSecretRoomDisplay, var == 1)
                         MinimapAPI.Config.VanillaSecretRoomDisplay = var == 1
+                    end,
+                },
+                {
+                    str = 'true room sizes',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {'show', 'true room', 'sizes in', 'the void', 'to easily', 'find', 'delirium' }},
+                    variable = 'OverrideVoid',
+                    setting = 1,
+                    load = function()
+                        return MinimapAPI.Config.OverrideVoid and 1 or 2
+                    end,
+                    store = function(var)
+                        ResetPresetIfChanged(MinimapAPI.Config.OverrideVoid, var == 1)
+                        MinimapAPI.Config.OverrideVoid = var == 1
+                        if Game():GetLevel():GetStage() == LevelStage.STAGE7 then
+                            MinimapAPI:LoadDefaultMap(0)
+                        end
                     end,
                 },
             },
