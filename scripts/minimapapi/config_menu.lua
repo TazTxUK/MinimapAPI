@@ -49,6 +49,9 @@ if modconfigexists then
 				end
 				MinimapAPI:FirstMapDisplayMode()
 				MinimapAPI.Config.ConfigPreset = currentNum
+				if Game():GetLevel():GetStage() == LevelStage.STAGE7 then
+					MinimapAPI:LoadDefaultMap(0)
+				end
 			end,
 		}
 	)
@@ -320,6 +323,30 @@ if modconfigexists then
 			Info = {
 				"Enable this to display newly discovered",
 				"secret rooms as a shadows instead of a normal rooms.",
+			}
+		}
+	)
+	
+		MCM.AddSetting(
+		"Minimap API",
+		"Map(2)",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.OverrideVoid
+			end,
+			Display = function()
+				return "Show true room sizes in The Void: " .. (MinimapAPI.Config.OverrideVoid and "ON" or "OFF")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.OverrideVoid = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
+				if Game():GetLevel():GetStage() == LevelStage.STAGE7 then
+					MinimapAPI:LoadDefaultMap(0) -- use dimension 0 just in case we're in the death certificate dimension
+				end
+			end,
+			Info = {
+				"Enable this to easily find Delirium on the map."
 			}
 		}
 	)
