@@ -70,18 +70,18 @@ MinimapAPI:AddPickup("Shovel","Shovel",5,110,-1,nil,"trophies",15000)
 MinimapAPI:AddPickup("DoubleHeart","DoubleHeart",5,10,5,MinimapAPI.PickupNotCollected,"hearts",14150)
 
 MinimapAPI:AddPickup("RuneBlack","RuneBlack",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10050,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 7 end)
-MinimapAPI:AddPickup("RuneLeft","Rune",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 3 end)
-MinimapAPI:AddPickup("RuneRight","RuneRight",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 4 end)
+MinimapAPI:AddPickup("RuneLeft","Rune",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10010,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 3 end)
+MinimapAPI:AddPickup("RuneRight","RuneRight",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10010,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 4 end)
 
-MinimapAPI:AddPickup("SuitCard","SuitCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9050,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 2 end)
-MinimapAPI:AddPickup("MomsContract","MomsContract",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9050,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 5 end)
-MinimapAPI:AddPickup("DiceShard","DiceShard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9050,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 6 end)
-MinimapAPI:AddPickup("MagicCard","MagicCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9050,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 8 end)
-MinimapAPI:AddPickup("CardAgainstHumanity","CardAgainstHumanity",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9050,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 9 end)
-MinimapAPI:AddPickup("CreditCard","CreditCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9050,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 10 end)
-MinimapAPI:AddPickup("HolyCard","HolyCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9050,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 11 end)
-MinimapAPI:AddPickup("GetOutOfJail","GetOutOfJail",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9050,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 12 end)
-MinimapAPI:AddPickup("TarotCard","TarotCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9000,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 1 end)
+MinimapAPI:AddPickup("TarotCard","TarotCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 1 end)
+MinimapAPI:AddPickup("SuitCard","SuitCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 2 end)
+MinimapAPI:AddPickup("MomsContract","MomsContract",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 5 end)
+MinimapAPI:AddPickup("DiceShard","DiceShard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 6 end)
+MinimapAPI:AddPickup("MagicCard","MagicCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 8 end)
+MinimapAPI:AddPickup("CardAgainstHumanity","CardAgainstHumanity",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 9 end)
+MinimapAPI:AddPickup("CreditCard","CreditCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 10 end)
+MinimapAPI:AddPickup("HolyCard","HolyCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 11 end)
+MinimapAPI:AddPickup("GetOutOfJail","GetOutOfJail",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 12 end)
 
 MinimapAPI:AddPickup("PillBlueBlue","PillBlueBlue",5,70,PillColor.PILL_BLUE_BLUE,MinimapAPI.PickupNotCollected,"pills",8001)
 MinimapAPI:AddPickup("PillWhiteBlue","Pill",5,70,PillColor.PILL_WHITE_BLUE,MinimapAPI.PickupNotCollected,"pills",8001)
@@ -115,11 +115,11 @@ if REPENTANCE then -- Repentance exclusive icons
 	for i=81,97 do
 		MinimapAPI:AddPickup("Soul"..i,"Soul"..i,5,300,i,MinimapAPI.PickupNotCollected,"runes",10050) -- so many souls this is just easier
 	end
-	MinimapAPI:AddPickup("RuneShard","RuneShard",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10000,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 13 end)
+	MinimapAPI:AddPickup("RuneShard","RuneShard",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 13 end)
 
-	MinimapAPI:AddPickup("ReverseCard","ReverseCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9050,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 14 end)
-	MinimapAPI:AddPickup("KeyShard","KeyShard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9050,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 15 end)
-	MinimapAPI:AddPickup("UnusCard","UnusCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9050,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 17 end)
+	MinimapAPI:AddPickup("ReverseCard","ReverseCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 14 end)
+	MinimapAPI:AddPickup("KeyShard","KeyShard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 15 end)
+	MinimapAPI:AddPickup("UnusCard","UnusCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 17 end)
 
 	MinimapAPI:AddPickup("HellGame","HellGame",6,15,-1,MinimapAPI.PickupSlotMachineNotBroken,"beggars",2250)
 
