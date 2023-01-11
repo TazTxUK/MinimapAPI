@@ -250,7 +250,7 @@ function MinimapAPI:GetDoorSlotValue(doorgroup, doordir)
 	return doorgroup*4 + doordir
 end
 
-local defaultCustomPickupPriority = 12999 --more than vanilla, less than other potential custom pickups
+local defaultCustomPickupPriority = 14999 --more than vanilla, less than other potential custom pickups
 function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup, priority, condition)
 	local newPickup
 	if type(id) == "table" and iconid == nil then

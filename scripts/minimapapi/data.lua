@@ -259,7 +259,7 @@ MinimapAPI.PickupList = {
 	["HauntedChest"] = {IconID="SpikedChest",Type=5,Variant=58,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=11000},
 	["MimicChest"] = {IconID="SpikedChest",Type=5,Variant=54,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=11000},
 	
-	["Rune"] = {IconID="Rune",Type=5,Variant=300,SubType=-1,Call=notCollected,IconGroup="runes",Priority=10000,Condition=function(pickup) return Isaac.GetItemConfig():GetCard(pickup.SubType):IsRune() end},
+	["Rune"] = {IconID="Rune",Type=5,Variant=300,SubType=-1,Call=notCollected,IconGroup="runes",Priority=10000,Condition=function(pickup) return REPENTANCE and Isaac.GetItemConfig():GetCard(pickup.SubType):IsRune() or (pickup.SubType >= 31 and pickup.SubType < 42) end},
 
 	["Card"] = {IconID="Card",Type=5,Variant=300,SubType=-1,Call=notCollected,IconGroup="cards",Priority=9000},
 
