@@ -6,7 +6,9 @@ require("scripts.minimapapi.data")
 require("scripts.minimapapi.config")
 require("scripts.minimapapi.main")
 require("scripts.minimapapi.noalign")
-require("scripts.minimapapi.custom_icons")
+if REPENTANCE then
+    require("scripts.minimapapi.custom_icons")
+end
 require("scripts.minimapapi.custom_mapflags")
 require("scripts.minimapapi.nicejourney")
 require("scripts.minimapapi.config_menu")
