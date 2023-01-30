@@ -220,13 +220,11 @@ end
 
 local function notCollected(pickup) return not pickup:GetSprite():IsPlaying("Collect") end
 local function chestNotCollected(pickup) return pickup.SubType ~= 0 end
-local function slotNotDead(pickup) return not (pickup:GetSprite():IsPlaying("Death") or pickup:GetSprite():IsPlaying("Broken")) end
-local function dresserNotDead(pickup) return not (pickup:GetSprite():IsFinished("Broken")) end
+local function slotNotDead(pickup) return not (pickup:GetSprite():WasEventTriggered("Explosion")) end
 
 MinimapAPI.PickupNotCollected = notCollected
 MinimapAPI.PickupChestNotCollected = chestNotCollected
 MinimapAPI.PickupSlotMachineNotBroken = slotNotDead
-MinimapAPI.PickupDresserNotDead = dresserNotDead
 
 MinimapAPI.PickupList = {
 	["WhiteHeart"] = {IconID="WhiteHeart",Type=5,Variant=10,SubType=4,Call=notCollected,IconGroup="hearts",Priority=14900},
