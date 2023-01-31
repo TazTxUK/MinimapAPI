@@ -73,6 +73,7 @@ MinimapAPI:AddIcon("HorsePillWhiteAzure", MinimapAPI.CustomIcons, "CustomIconHor
 MinimapAPI:AddIcon("HorsePillBlackYellow", MinimapAPI.CustomIcons, "CustomIconHorsePillBlackYellow", 0)
 MinimapAPI:AddIcon("HorsePillWhiteBlack", MinimapAPI.CustomIcons, "CustomIconHorsePillWhiteBlack", 0)
 MinimapAPI:AddIcon("HorsePillWhiteYellow", MinimapAPI.CustomIcons, "CustomIconHorsePillWhiteYellow", 0)
+MinimapAPI:AddIcon("HorsePillGold", MinimapAPI.CustomIcons, "CustomIconHorsePillGold", 0)
 
 
 local itemConfig = Isaac.GetItemConfig()
@@ -105,6 +106,7 @@ MinimapAPI:AddPickup("ReverseCard","ReverseCard",5,300,-1,MinimapAPI.PickupNotCo
 MinimapAPI:AddPickup("KeyShard","KeyShard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 15 end)
 MinimapAPI:AddPickup("UnusCard","UnusCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 17 end)
 
+MinimapAPI:AddPickup("HorsePillGold","HorsePillGold",5,70,PillColor.PILL_GOLD + PillColor.PILL_GIANT_FLAG,MinimapAPI.PickupNotCollected,"pills",8150)
 MinimapAPI:AddPickup("HorsePillBlueBlue","HorsePillBlueBlue",5,70,PillColor.PILL_BLUE_BLUE + PillColor.PILL_GIANT_FLAG,MinimapAPI.PickupNotCollected,"pills",8050)
 MinimapAPI:AddPickup("HorsePillWhiteBlue","HorsePillWhiteBlue",5,70,PillColor.PILL_WHITE_BLUE + PillColor.PILL_GIANT_FLAG,MinimapAPI.PickupNotCollected,"pills",8050)
 MinimapAPI:AddPickup("HorsePillOrangeOrange","HorsePillOrangeOrange",5,70,PillColor.PILL_ORANGE_ORANGE + PillColor.PILL_GIANT_FLAG,MinimapAPI.PickupNotCollected,"pills",8050)
