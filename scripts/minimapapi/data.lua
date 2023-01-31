@@ -220,7 +220,7 @@ end
 
 local function notCollected(pickup) return not pickup:GetSprite():IsPlaying("Collect") end
 local function chestNotCollected(pickup) return pickup.SubType ~= 0 end
-local function slotNotDead(pickup) return not (pickup:GetSprite():WasEventTriggered("Explosion")) end
+local function slotNotDead(pickup) return not (pickup:GetSprite():IsPlaying("Death") or pickup:GetSprite():IsFinished("Death") or pickup:GetSprite():IsPlaying("Broken") or pickup:GetSprite():IsFinished("Broken")) end
 
 MinimapAPI.PickupNotCollected = notCollected
 MinimapAPI.PickupChestNotCollected = chestNotCollected
