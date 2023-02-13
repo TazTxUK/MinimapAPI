@@ -2408,7 +2408,12 @@ MinimapAPI:AddCallback(
 	function(self, is_save)
 		badload = MinimapAPI:IsBadLoad()
 		if addRenderCall then
-			MinimapAPI:AddCallback(ModCallbacks.MC_POST_RENDER, renderCallbackFunction)
+			if StageAPI and StageAPI.Loaded then
+				StageAPI.AddCallback("MinimapAPI", "POST_HUD_RENDER", 1, renderCallbackFunction)
+				MinimapAPI.UsingPostHUDRender = true
+			else
+				MinimapAPI:AddCallback(ModCallbacks.MC_POST_RENDER, renderCallbackFunction)
+			end
 			addRenderCall = false
 		end
 		if MinimapAPI:HasData() then
