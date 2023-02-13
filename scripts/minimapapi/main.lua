@@ -17,7 +17,6 @@ function MinimapAPI:GetScreenSize() --based off of code from kilburn
 	local ry = pos.Y + 140 * (26 / 40)
 
 	return Vector(rx*2 + 13*26, ry*2 + 7*26)
-
 end
 
 function MinimapAPI:GetScreenCenter()
@@ -2147,7 +2146,8 @@ local function renderCallbackFunction(self)
 	MinimapAPI.GlobalScaleX = MinimapAPI.ValueGlobalScaleX
 
 	local screen_size = MinimapAPI:GetScreenSize()
-	if MinimapAPI:GetConfig("DisplayOnNoHUD") or MinimapAPI:IsHUDVisible() then
+	if MinimapAPI:GetConfig("DisplayOnNoHUD") or MinimapAPI:IsHUDVisible() or MinimapAPI.ForceMapRender then
+		MinimapAPI.ForceMapRender = false
 		local currentroomdata = MinimapAPI:GetCurrentRoom()
 		local gamelevel = game:GetLevel()
 		local hasSpelunkerHat = false

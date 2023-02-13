@@ -29,7 +29,7 @@ function cache.ReloadRoomCache()
 			cache.Dimension = 1
 		end
 		
-		cache.MirrorDimension = cache.Dimension == 1 and (cache.Stage == LevelStage.STAGE1_1 and cache.Level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH == LevelCurse.CURSE_OF_LABYRINTH or cache.Stage == LevelStage.STAGE1_2) and (cache.StageType == StageType.STAGETYPE_REPENTANCE or cache.StageType == StageType.STAGETYPE_REPENTANCE_B)
+		cache.MirrorDimension = cache.Dimension == 1 and (cache.Stage == LevelStage.STAGE1_1 and cache.Level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH == LevelCurse.CURSE_OF_LABYRINTH or cache.Stage == LevelStage.STAGE1_2) and ((cache.StageType == StageType.STAGETYPE_REPENTANCE or cache.StageType == StageType.STAGETYPE_REPENTANCE_B) or (StageAPI.GetCustomStage() and (StageAPI.GetCustomStage().LevelgenStage == StageType.STAGETYPE_REPENTANCE or StageAPI.GetCustomStage().LevelgenStage == StageType.STAGETYPE_REPENTANCE_B)))
 	end
 end
 cache.ReloadRoomCache()
