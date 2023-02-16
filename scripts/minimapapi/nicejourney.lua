@@ -1,6 +1,6 @@
 local MinimapAPI = require("scripts.minimapapi")
 local constants = require("scripts.minimapapi.constants")
-local callbackPriority = constants.callbackPriority
+local CALLBACK_PRIORITY = constants.CALLBACK_PRIORITY
 
 -- match main.lua
 local largeRoomPixelSize = Vector(18, 16)
@@ -282,13 +282,13 @@ local addRenderCall = true
 
 MinimapAPI:AddPriorityCallback(
     ModCallbacks.MC_POST_GAME_STARTED,
-    callbackPriority,
+    CALLBACK_PRIORITY,
     function(self, is_save)
         if addRenderCall then
-            MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_RENDER, callbackPriority, niceJourney_PostRender)
+            MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, niceJourney_PostRender)
             addRenderCall = false
         end
     end
 )
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_EXECUTE_CMD, callbackPriority, niceJourney_ExecuteCmd)
+MinimapAPI:AddPriorityCallback(ModCallbacks.MC_EXECUTE_CMD, CALLBACK_PRIORITY, niceJourney_ExecuteCmd)

@@ -1,7 +1,7 @@
 local MinimapAPI = require("scripts.minimapapi")
 local cache = require("scripts.minimapapi.cache")
 local constants = require("scripts.minimapapi.constants")
-local callbackPriority = constants.callbackPriority
+local CALLBACK_PRIORITY = constants.CALLBACK_PRIORITY
 require("scripts.minimapapi.apioverride")
 
 local json = require("json")
@@ -1387,7 +1387,7 @@ function MinimapAPI:IsBadLoad()
 	return spr:GetFrame() ~= 0
 end
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_NEW_LEVEL, callbackPriority, function(self)
+MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_NEW_LEVEL, CALLBACK_PRIORITY, function(self)
 	MinimapAPI:ClearLevels()
 	MinimapAPI:LoadDefaultMap()
 	MinimapAPI:updatePlayerPos()
@@ -1421,7 +1421,7 @@ end
 local currentMapStateCopy = {}
 local GlowingHourglassTriggered = false
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, callbackPriority, function(self, colltype, rng)
+MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CALLBACK_PRIORITY, function(self, colltype, rng)
 	if colltype == CollectibleType.COLLECTIBLE_CRYSTAL_BALL then
 		MinimapAPI:EffectCrystalBall()
 		MinimapAPI:UpdateExternalMap()
@@ -1439,7 +1439,7 @@ MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, callbackPriority, funct
 end)
 
 if REPENTANCE then
-	MinimapAPI:AddPriorityCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, callbackPriority, function(_)
+	MinimapAPI:AddPriorityCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, CALLBACK_PRIORITY, function(_)
 		for i = 0, game:GetNumPlayers() - 1 do
 			local player = Isaac.GetPlayer(i)
 			if player:HasTrinket(TrinketType.TRINKET_CRYSTAL_KEY) or
@@ -1482,7 +1482,7 @@ function MinimapAPI:UpdateExternalMap()
 end
 
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, callbackPriority, function(self)
+MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CALLBACK_PRIORITY, function(self)
 	MinimapAPI.CurrentDimension = cache.Dimension
 	MinimapAPI:RunDimensionCallbacks()
 	if not MinimapAPI:GetLevel() then
@@ -1598,7 +1598,7 @@ function MinimapAPI:ShowMap()
 	MinimapAPI:UpdateExternalMap()
 end
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_CARD, callbackPriority, function(self, card)
+MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_CARD, CALLBACK_PRIORITY, function(self, card)
 	if card == Card.CARD_WORLD or card == Card.CARD_SUN or card == Card.RUNE_ANSUZ then
 		MinimapAPI.lastCardUsedRoom = MinimapAPI:GetCurrentRoom()
 	elseif REPENTANCE and card == Card.CARD_CRACKED_KEY or card == Card.CARD_SOUL_CAIN then
@@ -1660,7 +1660,7 @@ function MinimapAPI:FirstMapDisplayMode()
 	end
 end
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_INPUT_ACTION, callbackPriority, function(self, entity, inputHook, buttonAction)
+MinimapAPI:AddPriorityCallback(ModCallbacks.MC_INPUT_ACTION, CALLBACK_PRIORITY, function(self, entity, inputHook, buttonAction)
 
 	if entity and buttonAction == ButtonAction.ACTION_MAP then
 		local player = entity:ToPlayer()
@@ -2407,11 +2407,11 @@ local isFirstGame = true
 local addRenderCall = true
 MinimapAPI:AddPriorityCallback(
 	ModCallbacks.MC_POST_GAME_STARTED,
-	callbackPriority,
+	CALLBACK_PRIORITY,
 	function(self, is_save)
 		badload = MinimapAPI:IsBadLoad()
 		if addRenderCall then
-			MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_RENDER, callbackPriority, renderCallbackFunction)
+			MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, renderCallbackFunction)
 			addRenderCall = false
 		end
 		if MinimapAPI:HasData() then
@@ -2435,7 +2435,7 @@ MinimapAPI:AddPriorityCallback(
 -- SAVING GAME
 MinimapAPI:AddPriorityCallback(
 	ModCallbacks.MC_PRE_GAME_EXIT,
-	callbackPriority,
+	CALLBACK_PRIORITY,
 	function(self, menuexit)
 		if not MinimapAPI.DisableSaving then
 			MinimapAPI:SaveData(json.encode(MinimapAPI:GetSaveTable(menuexit)))

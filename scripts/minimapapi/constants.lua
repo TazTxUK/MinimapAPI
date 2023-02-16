@@ -1,5 +1,5 @@
 local constants = {}
 
-constants.callbackPriority = CallbackPriority.IMPORTANT
+constants.CALLBACK_PRIORITY = CallbackPriority.IMPORTANT
 
 return constants
