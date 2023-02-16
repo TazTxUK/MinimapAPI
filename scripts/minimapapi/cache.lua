@@ -1,5 +1,8 @@
 -- copied from Music Mod Callback with some stuff removed
 
+local constants = require("scripts.minimapapi.constants")
+local callbackPriority = constants.callbackPriority
+
 local cache = {}
 
 cache.Mod = RegisterMod("MinimapAPI Cache", 1)
@@ -34,6 +37,6 @@ function cache.ReloadRoomCache()
 end
 cache.ReloadRoomCache()
 
-mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, cache.ReloadRoomCache)
+mod:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, callbackPriority, cache.ReloadRoomCache)
 
 return cache

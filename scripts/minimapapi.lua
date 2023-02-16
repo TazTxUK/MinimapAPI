@@ -1,1 +1,1 @@
-return RegisterMod("Minimap API",1)
+return RegisterMod("Minimap API", 1)
