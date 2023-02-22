@@ -657,9 +657,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 			}
 			
 			if roomDescriptor.Data.Type == RoomType.ROOM_SECRET or roomDescriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
-				t.Hidden = 1
-			elseif REPENTANCE and roomDescriptor.Data.Type == RoomType.ROOM_ULTRASECRET then
-				t.Hidden = 2
+				t.Hidden = true
 			end
 			if roomDescriptor.Data.Type == RoomType.ROOM_CHALLENGE and roomDescriptor.Data.Subtype == 1 then
 				t.PermanentIcons = {"BossAmbushRoom"}
@@ -816,9 +814,7 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 				t.Position = t.Position + Vector(1,0)
 			end
 			if roomDescriptor.Data.Type == RoomType.ROOM_SECRET or roomDescriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
-				t.Hidden = 1
-			elseif roomDescriptor.Data.Type == RoomType.ROOM_ULTRASECRET then
-				t.Hidden = 2
+				t.Hidden = true
 			end
 			if roomDescriptor.Data.Type == 11 and roomDescriptor.Data.Subtype == 1 then
 				t.PermanentIcons = {"BossAmbushRoom"}
@@ -880,15 +876,15 @@ end
 ---@field private AdjacentRooms MinimapAPI.Room[]
 local maproomfunctions = {}
 function maproomfunctions:IsVisible()
-	return self:GetDisplayFlags() & 1 > 0
+	return self:GetDisplayFlags() & 1 > 0 and not self.Hidden
 end
 
 function maproomfunctions:IsShadow()
-	return (self:GetDisplayFlags() or 0) & 2 > 0
+	return (self:GetDisplayFlags() or 0) & 2 > 0 and not self.Hidden
 end
 
 function maproomfunctions:IsIconVisible()
-	return (self:GetDisplayFlags() or 0) & 4 > 0
+	return (self:GetDisplayFlags() or 0) & 4 > 0 and not self.Hidden
 end
 
 function maproomfunctions:IsVisited()
@@ -920,7 +916,7 @@ end
 function maproomfunctions:GetDisplayFlags()
 	local roomDesc = self.Descriptor
 	local df = self.DisplayFlags or 0
-	if self.Hidden == 2 and roomDesc.DisplayFlags == 0 then -- if red self is hidden and DFs not set
+	if self.Descriptor.Data.Type == RoomType.ROOM_ULTRASECRET and roomDesc.DisplayFlags == 0 then -- if red self is hidden and DFs not set
 		if not self:IsVisited() then
 			df = 0
 		end
@@ -1003,6 +999,7 @@ end
 function maproomfunctions:Reveal()
 	if self.Hidden then
 		self.DisplayFlags = self.DisplayFlags | 6
+		self.Hidden = true
 	else
 		self.DisplayFlags = self.DisplayFlags | 5
 	end
@@ -1055,9 +1052,7 @@ function maproomfunctions:SyncRoomDescriptor()
 		self.Color = REPENTANCE and self.Descriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 		
 		if self.Descriptor.Data.Type == RoomType.ROOM_SECRET or self.Descriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
-			self.Hidden = 1
-		elseif REPENTANCE and self.Descriptor.Data.Type == RoomType.ROOM_ULTRASECRET then
-			self.Hidden = 2
+			self.Hidden = true
 		end
 
 		self:UpdateType()
@@ -1782,8 +1777,7 @@ local function renderUnboundedMinimap(size,hide)
 
 	for _, room in pairs(MinimapAPI:GetLevel()) do
 		local iscurrent = MinimapAPI:PlayerInRoom(room)
-		local displayflags = room:GetDisplayFlags()
-		if displayflags & 0x1 > 0 then
+		if room:IsVisible() then
 			local frame = MinimapAPI:GetRoomShapeFrame(room.Shape)
 			local anim
 			local spr = sprite
@@ -1867,10 +1861,9 @@ local function renderUnboundedMinimap(size,hide)
 
 		for _, room in pairs(MinimapAPI:GetLevel()) do
 			local incurrent = MinimapAPI:PlayerInRoom(room) and not MinimapAPI:GetConfig("ShowCurrentRoomItems")
-			local displayflags = room:GetDisplayFlags()
 			local k = 1
 
-			if displayflags & 0x4 > 0 then
+			if room:IsIconVisible() then
 				local iconcount = #room.PermanentIcons
 				if room:IsVisited() then
 					iconcount = iconcount + #room.VisitedIcons
@@ -1891,7 +1884,7 @@ local function renderUnboundedMinimap(size,hide)
 				if not incurrent and MinimapAPI:GetConfig("ShowPickupIcons") then
 					k = renderIcons(room.ItemIcons, locs, k, room, sprite, size, renderRoomSize)
 				end
-			elseif displayflags & 0x2 > 0 then
+			elseif room:IsShadow() then
 				if room.LockedIcons and #room.LockedIcons > 0 then
 					local locs = MinimapAPI:GetRoomShapeIconPositions(room.Shape, #room.LockedIcons)
 					if size ~= "small" then
@@ -1966,9 +1959,8 @@ local function renderBoundedMinimap()
 
 	for _, room in pairs(MinimapAPI:GetLevel()) do
 		local iscurrent = MinimapAPI:PlayerInRoom(room)
-		local displayflags = room:GetDisplayFlags()
 		local spr = MinimapAPI.SpriteMinimapSmall
-		if displayflags & 0x1 > 0 then
+		if room:IsVisible() then
 			local frame = MinimapAPI:GetRoomShapeFrame(room.Shape)
 			local anim
 			if iscurrent then
@@ -2010,9 +2002,8 @@ local function renderBoundedMinimap()
 	if MinimapAPI:GetConfig("ShowIcons") then
 		for _, room in pairs(MinimapAPI:GetLevel()) do
 			local incurrent = MinimapAPI:PlayerInRoom(room) and not MinimapAPI:GetConfig("ShowCurrentRoomItems")
-			local displayflags = room:GetDisplayFlags() or 0
 			local k = 1
-			local function renderIcons(icons, locs)
+			local function renderIconsInlineFunc(icons, locs)
 				for _, icon in ipairs(icons) do
 					local icontb = MinimapAPI:GetIconAnimData(icon)
 					if icontb then
@@ -2037,7 +2028,7 @@ local function renderBoundedMinimap()
 				end
 			end
 
-			if displayflags & 0x4 > 0 then
+			if room:IsIconVisible() then
 				local iconcount = #room.PermanentIcons
 				if room:IsVisited() then
 					iconcount = iconcount + #room.VisitedIcons
@@ -2080,8 +2071,7 @@ function MinimapAPI:renderRoomShadows(useCutOff)
 	sprite:SetFrame("RoomOutline", 1)
 
 	for _, room in pairs(MinimapAPI:GetLevel()) do
-		local displayflags = room:GetDisplayFlags()
-		if displayflags > 0 then
+		if room:IsShadow() then
 			for _, pos in ipairs(MinimapAPI:GetRoomShapePositions(room.Shape)) do
 				pos = Vector(pos.X * renderRoomSize.X * MinimapAPI.GlobalScaleX, pos.Y * renderRoomSize.Y)
 				if useCutOff then
