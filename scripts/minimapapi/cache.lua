@@ -21,7 +21,7 @@ function cache.ReloadRoomCache()
 	cache.CurrentRoomIndex = cache.Level:GetCurrentRoomIndex()
 	cache.RoomType = cache.Room:GetType()
 	cache.Seeds = cache.Game:GetSeeds()
-	
+
 	--Dimension
 	if REPENTANCE then
 		if GetPtrHash(cache.RoomDescriptor) == GetPtrHash(cache.Level:GetRoomByIdx(cache.CurrentRoomIndex, 0)) then
@@ -31,7 +31,7 @@ function cache.ReloadRoomCache()
 		else
 			cache.Dimension = 1
 		end
-		
+
 		cache.MirrorDimension = cache.Dimension == 1 and (cache.Stage == LevelStage.STAGE1_1 and cache.Level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH == LevelCurse.CURSE_OF_LABYRINTH or cache.Stage == LevelStage.STAGE1_2) and (cache.StageType == StageType.STAGETYPE_REPENTANCE or cache.StageType == StageType.STAGETYPE_REPENTANCE_B)
 	end
 end

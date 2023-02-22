@@ -10,7 +10,7 @@ MinimapAPI.Config = {
 	["ShowCurrentRoomItems"] = false,
 	["MapFrameWidth"] = 65,
 	["MapFrameHeight"] = 60,
-	["PositionX"] = 6, 
+	["PositionX"] = 6,
 	["PositionY"] = 6,
 	["DisplayMode"] = 1,
 	["DisplayLevelFlags"] = 1, -- 0 = OFF, 1 = LEFT, 2 = BOTTOM
@@ -47,9 +47,9 @@ MinimapAPI.Config = {
 	["MouseTeleport"] = false,
 	["MouseTeleportUncleared"] = false,
 	["MouseTeleportDamageOnCurseRoom"] = true,
-	
+
 	["ConfigPreset"] = 1,
-	
+
 	["CustomPresets"] = {},
 	["VanillaSecretRoomDisplay"] = false,
 }

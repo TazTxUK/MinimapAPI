@@ -17,6 +17,7 @@ local lastMousePos = Vector(-1,-1)
 local TeleportMarkerSprite = Sprite()
 TeleportMarkerSprite:Load("gfx/ui/minimapapi/teleport_marker.anm2", true)
 TeleportMarkerSprite:SetFrame("Marker", 0)
+local teleportTarget
 
 local function niceJourney_ExecuteCmd(_, cmd, params)
     if cmd == "mapitel" then
@@ -232,7 +233,7 @@ local function niceJourney_PostRender()
     local TABpressed = Input.IsActionPressed(ButtonAction.ACTION_MAP, playerController)
     HandleMoveCursorWithButtons()
 
-    local teleportTarget = nil
+    teleportTarget = nil
     for _, room in pairs(MinimapAPI:GetLevel()) do
         if room:IsValidTeleportTarget()
             and (room.Descriptor or room.TeleportHandler)
@@ -255,6 +256,7 @@ local function niceJourney_PostRender()
                     TeleportMarkerSprite.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
                     if room == MinimapAPI:GetCurrentRoom() then
                         TeleportMarkerSprite.Color = Color(1, 1, 1, 0.5, 0, 0, 0)
+                        teleportTarget = 'current'
                     else
                         TeleportMarkerSprite.Color = Color(1, 1, 1, 1, 0, 0, 0)
                         teleportTarget = room
@@ -269,7 +271,8 @@ local function niceJourney_PostRender()
     end
 
     local pressed = Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_LEFT) or Input.IsActionPressed(ButtonAction.ACTION_MENUCONFIRM, 0)
-    if pressed and not WasTriggered and teleportTarget then
+    if pressed and not WasTriggered and teleportTarget
+    and teleportTarget ~= 'current' then
         WasTriggered = true
         TeleportToRoom(teleportTarget)
     elseif not pressed and WasTriggered then
@@ -277,6 +280,20 @@ local function niceJourney_PostRender()
     end
 
 end
+
+MinimapAPI:AddPriorityCallback(
+    ModCallbacks.MC_POST_PEFFECT_UPDATE,
+    CALLBACK_PRIORITY,
+    ---@param player EntityPlayer
+    function(self, player)
+        print(teleportTarget)
+        if teleportTarget then
+            player.ControlsEnabled = false
+        else
+            player.ControlsEnabled = true
+        end
+    end
+)
 
 local addRenderCall = true
 

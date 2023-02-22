@@ -248,11 +248,11 @@ MinimapAPI.PickupList = {
 	["DoubleHeart"] = {IconID="Heart",Type=5,Variant=10,SubType=5,Call=notCollected,IconGroup="hearts",Priority=14100},
 	["Heart"] = {IconID="Heart",Type=5,Variant=10,SubType=1,Call=notCollected,IconGroup="hearts",Priority=14100},
 	["HalfHeart"] = {IconID="HalfHeart",Type=5,Variant=10,SubType=2,Call=notCollected,IconGroup="hearts",Priority=14000},
-	
+
 	["Item"] = {IconID="Item",Type=5,Variant=100,SubType=-1,Call=function(pickup) return pickup.SubType ~= 0 end,IconGroup="collectibles",Priority=13000},
 
 	["Trinket"] = {IconID="Trinket",Type=5,Variant=350,SubType=-1,IconGroup="trinkets",Priority=12000},
-	
+
 	["MegaChest"] = {IconID="MegaChest",Type=5,Variant=57,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=11900},
 	["GoldChest"] = {IconID="GoldChest",Type=5,Variant=60,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=11800},
 	["EternalChest"] = {IconID="EternalChest",Type=5,Variant=53,SubType=-1,Call=chestNotCollected,IconGroup="chests",Priority=11700},
@@ -308,7 +308,7 @@ MinimapAPI.PickupList = {
 }
 
 -- IsPrespawnObject can be used for grid entities that exist on room creation. These objects are mostly defined by very big Type IDs
-MinimapAPI.GridEntityList = {	
+MinimapAPI.GridEntityList = {
 	["Ladder"] = {IconID="Ladder",Type=18,Variant=-1,Priority=0},
 }
 
@@ -370,7 +370,7 @@ MinimapAPI.IconList = {
 	{ID="Rune",anim="IconRune",frame=0},
 	{ID="Poop",anim="IconPoop",frame=0},
 	--Chests
-	
+
 	{ID="MegaChest",anim="IconChest",frame=9},
 	{ID="WoodenChest",anim="IconChest",frame=6},
 	{ID="EternalChest",anim="IconChest",frame=7},
@@ -402,58 +402,58 @@ MinimapAPI.IconList = {
 
 MinimapAPI.RoomShapeAdjacentCoords = {
 
-	{Vector(-1, 0), Vector(0, -1), Vector(1, 0), Vector(0, 1)}, -- ROOMSHAPE_1x1 
-	{Vector(-1, 0),Vector(1, 0)}, -- ROOMSHAPE_IH  
-	{Vector(0, -1),Vector(0, 1)}, -- ROOMSHAPE_IV  
-	{Vector(-1, 0), Vector(0, -1), Vector(1, 0), Vector(0, 2), Vector(-1, 1), Vector(1, 1)}, -- ROOMSHAPE_1x2  
-	{Vector(0, -1), Vector(0, 2)}, -- ROOMSHAPE_IIV  
-	{Vector(-1, 0),Vector(0, -1),Vector(2, 0),Vector(0, 1),Vector(-1, 0),Vector(1, -1),Vector(2, 0),Vector(1, 1)}, -- ROOMSHAPE_2x1  
-	{Vector(-1, 0),Vector(2,0)}, -- ROOMSHAPE_IIH  
-	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_2x2  
+	{Vector(-1, 0), Vector(0, -1), Vector(1, 0), Vector(0, 1)}, -- ROOMSHAPE_1x1
+	{Vector(-1, 0),Vector(1, 0)}, -- ROOMSHAPE_IH
+	{Vector(0, -1),Vector(0, 1)}, -- ROOMSHAPE_IV
+	{Vector(-1, 0), Vector(0, -1), Vector(1, 0), Vector(0, 2), Vector(-1, 1), Vector(1, 1)}, -- ROOMSHAPE_1x2
+	{Vector(0, -1), Vector(0, 2)}, -- ROOMSHAPE_IIV
+	{Vector(-1, 0),Vector(0, -1),Vector(2, 0),Vector(0, 1),Vector(-1, 0),Vector(1, -1),Vector(2, 0),Vector(1, 1)}, -- ROOMSHAPE_2x1
+	{Vector(-1, 0),Vector(2,0)}, -- ROOMSHAPE_IIH
+	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_2x2
 	{Vector(-1,0),Vector(1,0),Vector(-1,2),Vector(-2,1),Vector(0,-1),Vector(1,1),Vector(0,2)}, -- ROOMSHAPE_LTL
-	{Vector(-1,0),Vector(0,-1),Vector(1,0),Vector(0,2),Vector(-1,1),Vector(1,0),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LTR  
-	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,1),Vector(0,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LBL  
-	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(1,1),Vector(1,1)} -- ROOMSHAPE_LBR  
+	{Vector(-1,0),Vector(0,-1),Vector(1,0),Vector(0,2),Vector(-1,1),Vector(1,0),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LTR
+	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,1),Vector(0,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LBL
+	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(1,1),Vector(1,1)} -- ROOMSHAPE_LBR
 
 }
 
 MinimapAPI.RoomShapeDoorCoords = {
 
 -- L0 		UP0		R0		D0		L1		UP1		R1		D1
-	{Vector(-1, 0), Vector(0, -1), Vector(1, 0), Vector(0, 1),nil,nil,nil,nil}, -- ROOMSHAPE_1x1 
-	{Vector(-1, 0),nil,Vector(1, 0),nil,nil,nil,nil,nil}, -- ROOMSHAPE_IH  
-	{nil,Vector(0, -1),nil,Vector(0, 1),nil,nil,nil,nil}, -- ROOMSHAPE_IV  
-	{Vector(-1, 0), Vector(0, -1), Vector(1, 0), Vector(0, 2), Vector(-1, 1),nil, Vector(1, 1),nil}, -- ROOMSHAPE_1x2  
-	{nil,Vector(0, -1),nil, Vector(0, 2),nil,nil,nil,nil}, -- ROOMSHAPE_IIV  
-	{Vector(-1, 0),Vector(0, -1),Vector(2, 0),Vector(0, 1),Vector(-1, 0),Vector(1, -1),Vector(2, 0),Vector(1, 1)}, -- ROOMSHAPE_2x1  
-	{Vector(-1, 0),nil,Vector(2,0),nil,nil,nil,nil,nil}, -- ROOMSHAPE_IIH  
-	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_2x2  
+	{Vector(-1, 0), Vector(0, -1), Vector(1, 0), Vector(0, 1),nil,nil,nil,nil}, -- ROOMSHAPE_1x1
+	{Vector(-1, 0),nil,Vector(1, 0),nil,nil,nil,nil,nil}, -- ROOMSHAPE_IH
+	{nil,Vector(0, -1),nil,Vector(0, 1),nil,nil,nil,nil}, -- ROOMSHAPE_IV
+	{Vector(-1, 0), Vector(0, -1), Vector(1, 0), Vector(0, 2), Vector(-1, 1),nil, Vector(1, 1),nil}, -- ROOMSHAPE_1x2
+	{nil,Vector(0, -1),nil, Vector(0, 2),nil,nil,nil,nil}, -- ROOMSHAPE_IIV
+	{Vector(-1, 0),Vector(0, -1),Vector(2, 0),Vector(0, 1),Vector(-1, 0),Vector(1, -1),Vector(2, 0),Vector(1, 1)}, -- ROOMSHAPE_2x1
+	{Vector(-1, 0),nil,Vector(2,0),nil,nil,nil,nil,nil}, -- ROOMSHAPE_IIH
+	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_2x2
 	{Vector(-1,0),Vector(-1,0),Vector(1,0),Vector(-1,2),Vector(-2,1),Vector(0,-1),Vector(1,1),Vector(0,2)}, -- ROOMSHAPE_LTL
-	{Vector(-1,0),Vector(0,-1),Vector(1,0),Vector(0,2),Vector(-1,1),Vector(1,0),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LTR  
-	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,1),Vector(0,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LBL  
-	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(1,1),Vector(1,1)} -- ROOMSHAPE_LBR  
+	{Vector(-1,0),Vector(0,-1),Vector(1,0),Vector(0,2),Vector(-1,1),Vector(1,0),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LTR
+	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,1),Vector(0,1),Vector(1,-1),Vector(2,1),Vector(1,2)}, -- ROOMSHAPE_LBL
+	{Vector(-1,0),Vector(0,-1),Vector(2,0),Vector(0,2),Vector(-1,1),Vector(1,-1),Vector(1,1),Vector(1,1)} -- ROOMSHAPE_LBR
 
 }
 
 -- Available doorslot ids per roomshape
 MinimapAPI.RoomShapeDoorSlots ={
-	{0,1,2,3}, -- ROOMSHAPE_1x1 
-	{0,2}, -- ROOMSHAPE_IH  
-	{1,3}, -- ROOMSHAPE_IV  
-	{0,1,2,3,4,6}, -- ROOMSHAPE_1x2  
-	{1,3}, -- ROOMSHAPE_IIV  
-	{0,1,2,3,5,7}, -- ROOMSHAPE_2x1  
-	{0,2}, -- ROOMSHAPE_IIH  
-	{0,1,2,3,4,5,6,7}, -- ROOMSHAPE_2x2  
-	{0,1,2,3,4,5,6,7}, -- ROOMSHAPE_LTL  
-	{0,1,2,3,4,5,6,7}, -- ROOMSHAPE_LTR  
-	{0,1,2,3,4,5,6,7}, -- ROOMSHAPE_LBL  
-	{0,1,2,3,4,5,6,7} -- ROOMSHAPE_LBR  
+	{0,1,2,3}, -- ROOMSHAPE_1x1
+	{0,2}, -- ROOMSHAPE_IH
+	{1,3}, -- ROOMSHAPE_IV
+	{0,1,2,3,4,6}, -- ROOMSHAPE_1x2
+	{1,3}, -- ROOMSHAPE_IIV
+	{0,1,2,3,5,7}, -- ROOMSHAPE_2x1
+	{0,2}, -- ROOMSHAPE_IIH
+	{0,1,2,3,4,5,6,7}, -- ROOMSHAPE_2x2
+	{0,1,2,3,4,5,6,7}, -- ROOMSHAPE_LTL
+	{0,1,2,3,4,5,6,7}, -- ROOMSHAPE_LTR
+	{0,1,2,3,4,5,6,7}, -- ROOMSHAPE_LBL
+	{0,1,2,3,4,5,6,7} -- ROOMSHAPE_LBR
 }
 
 -- Map indicators, Added each flag from custom_mapflags.lua
 MinimapAPI.MapFlags = {
-	--[[ 
+	--[[
 	id: used to identify the flag
 	condition: return true to render the indicator
 	sprite: Mods should supply their own Sprite object where they load a custom anm2

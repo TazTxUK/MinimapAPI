@@ -17,17 +17,17 @@ if modconfigexists then
 		"As much information as possible.",
 		"The map is long and thin.",
 	}
-	
+
 	MCM.AddText("Minimap API", "Presets", function() return "Mod by Taz and Wofsauge" end)
-	
+
 	MCM.AddSpace("Minimap API", "Presets")
-	
+
 	MCM.AddText("Minimap API", "Presets", function()
 		return "Minimap Config Preset:"
 	end)
-	
+
 	MCM.AddSpace("Minimap API", "Presets")
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Presets",
@@ -55,9 +55,9 @@ if modconfigexists then
 			end,
 		}
 	)
-	
+
 	MCM.AddSpace("Minimap API", "Presets")
-	
+
 	MCM.AddText("Minimap API", "Presets", function()
 		return configPresetTexts[MinimapAPI.Config.ConfigPreset]
 	end)
@@ -149,7 +149,7 @@ if modconfigexists then
 			}
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Map(1)",
@@ -171,7 +171,7 @@ if modconfigexists then
 			}
 		}
 	)
-	
+
 	local hicstrings = {"Never","Bosses Only","Always"}
 	MCM.AddSetting(
 		"Minimap API",
@@ -195,7 +195,7 @@ if modconfigexists then
 			}
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Map(2)",
@@ -217,7 +217,7 @@ if modconfigexists then
 			}
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Map(2)",
@@ -239,7 +239,7 @@ if modconfigexists then
 			}
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Map(2)",
@@ -261,7 +261,7 @@ if modconfigexists then
 			}
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Map(2)",
@@ -283,7 +283,7 @@ if modconfigexists then
 			}
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Map(2)",
@@ -326,7 +326,7 @@ if modconfigexists then
 			}
 		}
 	)
-	
+
 		MCM.AddSetting(
 		"Minimap API",
 		"Map(2)",
@@ -350,7 +350,7 @@ if modconfigexists then
 			}
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Modes",
@@ -368,7 +368,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Modes",
@@ -386,7 +386,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Modes",
@@ -404,7 +404,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Modes",
@@ -424,7 +424,7 @@ if modconfigexists then
 	)
 
 	MCM.AddSpace("Minimap API", "Modes")
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Modes",
@@ -443,7 +443,7 @@ if modconfigexists then
 			Info = {"Allows you to teleport by clicking on rooms on the map."}
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Modes",
@@ -603,7 +603,7 @@ if modconfigexists then
 			}
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Pickups",
@@ -670,7 +670,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -690,7 +690,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -710,9 +710,9 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSpace("Minimap API", "Colors")
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -732,7 +732,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -752,7 +752,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -772,9 +772,9 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSpace("Minimap API", "Colors")
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -794,7 +794,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -814,7 +814,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -834,7 +834,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -854,9 +854,9 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSpace("Minimap API", "Colors")
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -876,7 +876,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -896,7 +896,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -916,7 +916,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"Colors",
@@ -936,7 +936,7 @@ if modconfigexists then
 			end
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"General",
@@ -958,7 +958,7 @@ if modconfigexists then
 			}
 		}
 	)
-	
+
 	MCM.AddSetting(
 		"Minimap API",
 		"General",
@@ -1065,5 +1065,5 @@ if modconfigexists then
 			}
 		}
 	)
-	
+
 end
