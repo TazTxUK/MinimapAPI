@@ -655,9 +655,6 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				Color = REPENTANCE and roomDescriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 			}
 
-			if roomDescriptor.Data.Type == RoomType.ROOM_SECRET or roomDescriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
-				t.Hidden = true
-			end
 			if roomDescriptor.Data.Type == RoomType.ROOM_CHALLENGE and roomDescriptor.Data.Subtype == 1 then
 				t.PermanentIcons = {"BossAmbushRoom"}
 			end
@@ -812,10 +809,7 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 			if roomDescriptor.Data.Shape == RoomShape.ROOMSHAPE_LTL then
 				t.Position = t.Position + Vector(1,0)
 			end
-			if roomDescriptor.Data.Type == RoomType.ROOM_SECRET or roomDescriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
-				t.Hidden = true
-			end
-			if roomDescriptor.Data.Type == 11 and roomDescriptor.Data.Subtype == 1 then
+			if roomDescriptor.Data.Type == RoomType.ROOM_CHALLENGE and roomDescriptor.Data.Subtype == 1 then
 				t.PermanentIcons = {"BossAmbushRoom"}
 			end
 			if REPENTANCE then
@@ -1049,10 +1043,6 @@ function maproomfunctions:SyncRoomDescriptor()
 		self.Visited = self.Descriptor.VisitedCount > 0
 		self.Clear = self.Descriptor.Clear
 		self.Color = REPENTANCE and self.Descriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
-
-		if self.Descriptor.Data.Type == RoomType.ROOM_SECRET or self.Descriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
-			self.Hidden = true
-		end
 
 		self:UpdateType()
 	end
@@ -1423,7 +1413,12 @@ MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CALLBACK_PRIORITY, func
 		MinimapAPI:EffectCrystalBall()
 		MinimapAPI:UpdateExternalMap()
 	elseif REPENTANCE and colltype == CollectibleType.COLLECTIBLE_RED_KEY then
-			MinimapAPI:CheckForNewRedRooms()
+		MinimapAPI:CheckForNewRedRooms()
+	elseif colltype == CollectibleType.COLLECTIBLE_DADS_KEY then
+		for _,room in ipairs(MinimapAPI:GetCurrentRoom():GetAdjacentRooms()) do
+			room:SetDisplayFlags(5)
+		end
+		MinimapAPI:UpdateExternalMap()
 	elseif colltype == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
 		GlowingHourglassTriggered = true
 		if MinimapAPI.lastCardUsedRoom == MinimapAPI:GetCurrentRoom() then
@@ -1454,7 +1449,7 @@ function MinimapAPI:UpdateExternalMap()
 		local extlevel = {}
 		output.Level = extlevel
 		for _,v in ipairs(MinimapAPI:GetLevel()) do
-			if v.DisplayFlags > 0 then
+			if v:IsVisible() then
 				local x = {
 					Position = {X = v.Position.X, Y = v.Position.Y},
 					Shape = v.Shape,
