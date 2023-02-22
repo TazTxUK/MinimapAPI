@@ -1192,6 +1192,7 @@ function MinimapAPI:GetRoomByIdx(Idx)
 			return v
 		end
 	end
+	return nil
 end
 
 local function isRoomAdj(room1,room2)
