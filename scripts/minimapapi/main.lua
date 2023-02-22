@@ -191,7 +191,6 @@ local outlinePixelSize = Vector(16, 16)
 
 local largeRoomAnimPivot = Vector(-4, -4)
 local largeRoomSize = Vector(17, 15)
-local largeRoomPixelSize = Vector(18, 16)
 local unboundedMapOffset = vectorZero
 local largeIconOffset = Vector(-2, -2)
 
@@ -692,7 +691,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 	if not (MinimapAPI:GetConfig("OverrideVoid") or MinimapAPI.OverrideVoid) then
 		if not game:IsGreedMode() then
 			if cache.Stage == LevelStage.STAGE7 then
-				for i,v in ipairs(MinimapAPI:GetLevel(dimension)) do
+				for _,v in ipairs(MinimapAPI:GetLevel(dimension)) do
 					if v.Descriptor.Data.Type == RoomType.ROOM_BOSS then
 						if v.Shape == RoomShape.ROOMSHAPE_2x2 then
 							-- Hide delirium room
@@ -861,7 +860,7 @@ end
 ---@field VisitedIcons string[]
 ---@field Descriptor RoomDescriptor # may be nil for custom rooms
 ---@field TeleportHandler TeleportHandler # may be nil, used to handle minimapAPI map teleport for custom rooms
----@field Color Color
+---@field Color Color | nil
 ---@field RenderOffset Vector
 ---@field DisplayFlags integer
 ---@field Clear boolean
@@ -960,12 +959,12 @@ end
 
 function maproomfunctions:UpdateAdjacentRoomsCache()
 	if self.AdjacentRooms then
-		for i, v in ipairs(self:GetAdjacentRooms()) do
+		for _, v in ipairs(self:GetAdjacentRooms()) do
 			v:RemoveAdjacentRoom(self)
 		end
 	end
 	self.AdjacentRooms = {}
-	for i, v in ipairs(MinimapAPI.RoomShapeAdjacentCoords[self.Shape]) do
+	for _, v in ipairs(MinimapAPI.RoomShapeAdjacentCoords[self.Shape]) do
 		local roomatpos = MinimapAPI:GetRoomAtPosition(self.Position + v)
 		if roomatpos then
 			self.AdjacentRooms[#self.AdjacentRooms + 1] = roomatpos
@@ -1156,7 +1155,7 @@ function MinimapAPI:RemoveRoomByID(id)
 end
 
 ---@param position Vector
----@return MinimapAPI.Room
+---@return MinimapAPI.Room | nil
 function MinimapAPI:GetRoomAtPosition(position)
 	assert(MinimapAPI:InstanceOf(position, Vector), "bad argument #1 to 'GetRoomAtPosition', expected Vector")
 	for _, v in ipairs(MinimapAPI:GetLevel()) do
@@ -1171,7 +1170,7 @@ function MinimapAPI:GetRoomAtPosition(position)
 end
 
 ---@param ID any
----@return MinimapAPI.Room
+---@return MinimapAPI.Room | nil
 function MinimapAPI:GetRoomByID(ID)
 	for _, v in ipairs(MinimapAPI:GetLevel()) do
 		if v.ID == ID then
@@ -1182,7 +1181,7 @@ function MinimapAPI:GetRoomByID(ID)
 end
 
 ---@param Idx integer
----@return MinimapAPI.Room
+---@return MinimapAPI.Room | nil
 function MinimapAPI:GetRoomByIdx(Idx)
 	for _, v in ipairs(MinimapAPI:GetLevel()) do
 		if v.Descriptor and v.Descriptor.GridIndex == Idx then
@@ -1385,7 +1384,7 @@ function MinimapAPI:IsBadLoad()
 	return spr:GetFrame() ~= 0
 end
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_NEW_LEVEL, CALLBACK_PRIORITY, function(self)
+MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_NEW_LEVEL, CALLBACK_PRIORITY, function(_)
 	MinimapAPI:ClearLevels()
 	MinimapAPI:LoadDefaultMap()
 	MinimapAPI:updatePlayerPos()
@@ -1419,7 +1418,7 @@ end
 local currentMapStateCopy = {}
 local GlowingHourglassTriggered = false
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CALLBACK_PRIORITY, function(self, colltype, rng)
+MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CALLBACK_PRIORITY, function(_, colltype, _)
 	if colltype == CollectibleType.COLLECTIBLE_CRYSTAL_BALL then
 		MinimapAPI:EffectCrystalBall()
 		MinimapAPI:UpdateExternalMap()
@@ -1480,7 +1479,7 @@ function MinimapAPI:UpdateExternalMap()
 end
 
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CALLBACK_PRIORITY, function(self)
+MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CALLBACK_PRIORITY, function(_)
 	MinimapAPI.CurrentDimension = cache.Dimension
 	MinimapAPI:RunDimensionCallbacks()
 	if not MinimapAPI:GetLevel() then
@@ -1596,7 +1595,7 @@ function MinimapAPI:ShowMap()
 	MinimapAPI:UpdateExternalMap()
 end
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_CARD, CALLBACK_PRIORITY, function(self, card)
+MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_CARD, CALLBACK_PRIORITY, function(_, card)
 	if card == Card.CARD_WORLD or card == Card.CARD_SUN or card == Card.RUNE_ANSUZ then
 		MinimapAPI.lastCardUsedRoom = MinimapAPI:GetCurrentRoom()
 	elseif REPENTANCE and card == Card.CARD_CRACKED_KEY or card == Card.CARD_SOUL_CAIN then
@@ -1658,7 +1657,7 @@ function MinimapAPI:FirstMapDisplayMode()
 	end
 end
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_INPUT_ACTION, CALLBACK_PRIORITY, function(self, entity, inputHook, buttonAction)
+MinimapAPI:AddPriorityCallback(ModCallbacks.MC_INPUT_ACTION, CALLBACK_PRIORITY, function(_, entity, _, buttonAction)
 
 	if entity and buttonAction == ButtonAction.ACTION_MAP then
 		local player = entity:ToPlayer()
@@ -1857,7 +1856,7 @@ local function renderUnboundedMinimap(size,hide)
 	end
 
 	if MinimapAPI:GetConfig("ShowIcons") then
-		local sprite = MinimapAPI.SpriteIcons
+		sprite = MinimapAPI.SpriteIcons
 
 		for _, room in pairs(MinimapAPI:GetLevel()) do
 			local incurrent = MinimapAPI:PlayerInRoom(room) and not MinimapAPI:GetConfig("ShowCurrentRoomItems")
@@ -2039,17 +2038,17 @@ local function renderBoundedMinimap()
 
 				local locs = MinimapAPI:GetRoomShapeIconPositions(room.Shape, iconcount)
 
-				renderIcons(room.PermanentIcons, locs)
+				renderIconsInlineFunc(room.PermanentIcons, locs)
 				if room:IsVisited() then
-					renderIcons(room.VisitedIcons, locs)
+					renderIconsInlineFunc(room.VisitedIcons, locs)
 				end
 				if not incurrent and MinimapAPI:GetConfig("ShowPickupIcons") then
-					renderIcons(room.ItemIcons, locs)
+					renderIconsInlineFunc(room.ItemIcons, locs)
 				end
-			elseif displayflags & 0x2 > 0 then
+			elseif room:IsShadow() then
 				if room.LockedIcons and #room.LockedIcons > 0 then
 					local locs = MinimapAPI:GetRoomShapeIconPositions(room.Shape, #room.LockedIcons)
-					renderIcons(room.LockedIcons, locs)
+					renderIconsInlineFunc(room.LockedIcons, locs)
 				end
 			end
 		end
@@ -2093,7 +2092,7 @@ function MinimapAPI:renderRoomShadows(useCutOff)
 	end
 end
 
-local function renderCallbackFunction(self)
+local function renderCallbackFunction(_)
 	if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then return end
 
 	if badload then
@@ -2366,7 +2365,7 @@ function MinimapAPI:GetSaveTable(menuexit)
 		saved.LevelData = {}
 		for idx, level in pairs(MinimapAPI.Levels) do
 			saved.LevelData[idx] = {}
-			for i, v in ipairs(level) do
+			for _, v in ipairs(level) do
 				saved.LevelData[idx][#saved.LevelData[idx] + 1] = {
 					PositionX = v.Position.X,
 					PositionY = v.Position.Y,
@@ -2401,7 +2400,7 @@ local addRenderCall = true
 MinimapAPI:AddPriorityCallback(
 	ModCallbacks.MC_POST_GAME_STARTED,
 	CALLBACK_PRIORITY,
-	function(self, is_save)
+	function(_, is_save)
 		badload = MinimapAPI:IsBadLoad()
 		if addRenderCall then
 			MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, renderCallbackFunction)
@@ -2429,7 +2428,7 @@ MinimapAPI:AddPriorityCallback(
 MinimapAPI:AddPriorityCallback(
 	ModCallbacks.MC_PRE_GAME_EXIT,
 	CALLBACK_PRIORITY,
-	function(self, menuexit)
+	function(_, menuexit)
 		if not MinimapAPI.DisableSaving then
 			MinimapAPI:SaveData(json.encode(MinimapAPI:GetSaveTable(menuexit)))
 		end
