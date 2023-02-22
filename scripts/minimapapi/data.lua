@@ -220,7 +220,16 @@ end
 
 local function notCollected(pickup) return not pickup:GetSprite():IsPlaying("Collect") end
 local function chestNotCollected(pickup) return pickup.SubType ~= 0 end
-local function slotNotDead(pickup) return not (pickup:GetSprite():IsPlaying("Death") or pickup:GetSprite():IsFinished("Death") or pickup:GetSprite():IsPlaying("Broken") or pickup:GetSprite():IsFinished("Broken")) end
+local function slotNotDead(pickup) 
+	local sprite = pickup:GetSprite()
+	local animations = {"Death", "Broken", "CoinJam", "CoinJam2", "CoinJam3", "CoinJam4"}
+	for _,anim in ipairs(animations) do
+		if sprite:IsPlaying(anim) or sprite:IsFinished(anim) then
+			return false
+		end
+	end
+	return true
+end
 
 MinimapAPI.PickupNotCollected = notCollected
 MinimapAPI.PickupChestNotCollected = chestNotCollected
