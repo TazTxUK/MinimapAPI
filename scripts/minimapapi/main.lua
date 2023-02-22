@@ -33,48 +33,48 @@ end
 function MinimapAPI:GetScreenBottomRight(offset)
 
 	offset = offset or (MinimapAPI:GetHudOffset() * 10)
-	
+
 	local pos = MinimapAPI:GetScreenSize()
 	local hudOffset = Vector(-offset * 2.2, -offset * 1.6)
 	pos = pos + hudOffset
 
 	return pos
-	
+
 end
 
 function MinimapAPI:GetScreenBottomLeft(offset)
 
 	offset = offset or (MinimapAPI:GetHudOffset() * 10)
-	
+
 	local pos = Vector(0, MinimapAPI:GetScreenBottomRight(0).Y)
 	local hudOffset = Vector(offset * 2.2, -offset * 1.6)
 	pos = pos + hudOffset
-	
+
 	return pos
-	
+
 end
 
 function MinimapAPI:GetScreenTopRight(offset)
 	offset = offset or (MinimapAPI:GetHudOffset() * 10)
-	
+
 	local pos = Vector(MinimapAPI:GetScreenBottomRight(0).X, 0)
 	local hudOffset = Vector(-offset * 2.2, offset * 1.2)
 	pos = pos + hudOffset
 
 	return pos
-	
+
 end
 
 function MinimapAPI:GetScreenTopLeft(offset)
 
 	offset = offset or (MinimapAPI:GetHudOffset() * 10)
-	
+
 	local pos = vectorZero
 	local hudOffset = Vector(offset * 2, offset * 1.2)
 	pos = pos + hudOffset
-	
+
 	return pos
-	
+
 end
 
 function MinimapAPI:DeepCopy(orig)
@@ -556,7 +556,7 @@ function MinimapAPI:RunDisplayFlagsCallbacks(room, df)
 		else
 			s, ret = pcall(v.call, room, df)
 		end
-		
+
 		if s then
 			if ret then
 				return ret
@@ -599,7 +599,7 @@ function MinimapAPI:InstanceOf(obj, class)
 	end
 end
 
--- Level rooms:Get returns a constant room descriptor, 
+-- Level rooms:Get returns a constant room descriptor,
 -- we need the mutable one returned by GetFromGridIdx
 -- for SetDisplayFlags to work GetRoomDescAndDimFromListIndex
 local function GetRoomDescAndDimFromListIndex(listIndex)
@@ -635,8 +635,8 @@ function MinimapAPI:LoadDefaultMap(dimension)
 	local added_descriptors = {}
 	for i = 0, #rooms - 1 do
 		local roomDescriptor, roomDim = GetRoomDescAndDimFromListIndex(i)
-		if roomDescriptor and roomDim == dimension 
-		and not added_descriptors[roomDescriptor] 
+		if roomDescriptor and roomDim == dimension
+		and not added_descriptors[roomDescriptor]
 		and GetPtrHash(cache.Level:GetRoomByIdx(roomDescriptor.SafeGridIndex, dimension)) == GetPtrHash(roomDescriptor)
 		then
 			added_descriptors[roomDescriptor] = true
@@ -655,7 +655,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				Clear = roomDescriptor.Clear,
 				Color = REPENTANCE and roomDescriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 			}
-			
+
 			if roomDescriptor.Data.Type == RoomType.ROOM_SECRET or roomDescriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
 				t.Hidden = 1
 			elseif REPENTANCE and roomDescriptor.Data.Type == RoomType.ROOM_ULTRASECRET then
@@ -668,14 +668,14 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				if roomDescriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
 					t.PermanentIcons = { "TreasureRoomRed" }
 				end
-	
+
 				if roomDescriptor.Data.Type == RoomType.ROOM_DEFAULT then
 					if level:GetStageType() == StageType.STAGETYPE_REPENTANCE or level:GetStageType() == StageType.STAGETYPE_REPENTANCE_B then
 						local isCurseLabyrinth = level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH == LevelCurse.CURSE_OF_LABYRINTH
 						if (level:GetAbsoluteStage() == LevelStage.STAGE1_2 and not isCurseLabyrinth or level:GetAbsoluteStage() == LevelStage.STAGE1_1 and isCurseLabyrinth) and roomDescriptor.Data.Subtype == 34 then
 							t.VisitedIcons = { "MirrorRoom" }
 						end
-			
+
 						if (level:GetAbsoluteStage() == LevelStage.STAGE2_2 and not isCurseLabyrinth or level:GetAbsoluteStage() == LevelStage.STAGE2_1 and isCurseLabyrinth) and roomDescriptor.Data.Subtype == 10 then
 							t.VisitedIcons = { "MinecartRoom" }
 						end
@@ -764,7 +764,7 @@ function MinimapAPI:CurrentRoomContainsGridEntity(gridEntityDef)
 		local spawnList = cache.Level:GetCurrentRoomDesc().Data.Spawns
 		for i = 0, spawnList.Size-1 do
 			local roomConfigSpawn = spawnList:Get(i):PickEntry(0)
-			if roomConfigSpawn.Type == gridEntityDef.Type 
+			if roomConfigSpawn.Type == gridEntityDef.Type
 			and (gridEntityDef.Variant == -1 or roomConfigSpawn.Variant == gridEntityDef.Variant) then
 				return true
 			end
@@ -795,9 +795,9 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 	local added_descriptors = {}
 	for i = MinimapAPI.CheckedRoomCount, #rooms - 1 do
 		local roomDescriptor, roomDim = GetRoomDescAndDimFromListIndex(i)
-		if roomDescriptor and roomDim == dimension 
-		and not added_descriptors[roomDescriptor] 
-		and GetPtrHash(cache.Level:GetRoomByIdx(roomDescriptor.GridIndex)) == GetPtrHash(roomDescriptor) 
+		if roomDescriptor and roomDim == dimension
+		and not added_descriptors[roomDescriptor]
+		and GetPtrHash(cache.Level:GetRoomByIdx(roomDescriptor.GridIndex)) == GetPtrHash(roomDescriptor)
 		then
 			added_descriptors[roomDescriptor] = true
 			local t = {
@@ -827,12 +827,12 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 				if roomDescriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
 					t.PermanentIcons = { "TreasureRoomRed" }
 				end
-				
+
 				if roomDescriptor.Data.Type == RoomType.ROOM_DEFAULT then
 					if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE1_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and roomDescriptor.Data.Subtype == 34 then
 						t.VisitedIcons = { "MirrorRoom" }
 					end
-		
+
 					if (game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE2_2 and (game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE or game:GetLevel():GetStageType() == StageType.STAGETYPE_REPENTANCE_B)) and roomDescriptor.Data.Subtype == 10 then
 						t.VisitedIcons = { "MinecartRoom" }
 					end
@@ -1053,7 +1053,7 @@ function maproomfunctions:SyncRoomDescriptor()
 		self.Visited = self.Descriptor.VisitedCount > 0
 		self.Clear = self.Descriptor.Clear
 		self.Color = REPENTANCE and self.Descriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
-		
+
 		if self.Descriptor.Data.Type == RoomType.ROOM_SECRET or self.Descriptor.Data.Type == RoomType.ROOM_SUPERSECRET then
 			self.Hidden = 1
 		elseif REPENTANCE and self.Descriptor.Data.Type == RoomType.ROOM_ULTRASECRET then
@@ -1221,7 +1221,7 @@ function MinimapAPI:IsPositionFree(position,roomshape,dimension,redRoomsAreFree)
 	roomshape = roomshape or 1
 	dimension = dimension or MinimapAPI.CurrentDimension
 	redRoomsAreFree = redRoomsAreFree or false
-	
+
 	-- treat red rooms as free positions
 	if REPENTANCE and redRoomsAreFree then
 		local idx = MinimapAPI:GridVectorToIndex(position)
@@ -1230,7 +1230,7 @@ function MinimapAPI:IsPositionFree(position,roomshape,dimension,redRoomsAreFree)
 			return true
 		end
 	end
-	
+
 	for _,room in ipairs(MinimapAPI:GetLevel(dimension)) do
 		for _,pos in ipairs(MinimapAPI.RoomShapePositions[room.Shape]) do
 			for _,pos2 in ipairs(MinimapAPI.RoomShapePositions[roomshape]) do
@@ -1488,7 +1488,7 @@ MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CALLBACK_PRIORITY,
 	if not MinimapAPI:GetLevel() then
 		MinimapAPI:LoadDefaultMap()
 	end
-	
+
 	if REPENTANCE and not (game:GetLevel():GetStartingRoomIndex() == game:GetLevel():GetCurrentRoomIndex() and game:GetLevel():GetCurrentRoomDesc().VisitedCount == 1) then
 		-- only check if not in level transition
 		MinimapAPI:CheckForNewRedRooms()
@@ -1504,7 +1504,7 @@ MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CALLBACK_PRIORITY,
 		MinimapAPI:RewindLevels()
 	end
 	GlowingHourglassTriggered = false
-	
+
 	MinimapAPI:UpdateExternalMap()
 end)
 
@@ -1739,7 +1739,7 @@ local function renderIcons(icons, locs, k, room, sprite, size, renderRoomSize)
 	return k
 end
 
-local function renderUnboundedMinimap(size,hide)	
+local function renderUnboundedMinimap(size,hide)
 	if not(MinimapAPI:GetConfig("OverrideLost") or game:GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0) then
 		return
 	end
@@ -2232,7 +2232,7 @@ local function renderCallbackFunction(self)
 				end
 			end
 		end
-		
+
 		-- treasure rooms are the only room with a permanent icon that can dynamically change (devil's crown), so we have to constantly update its type
 		for _,v in ipairs(MinimapAPI:GetLevel()) do
 			if v.Type == RoomType.ROOM_TREASURE then

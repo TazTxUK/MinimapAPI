@@ -109,7 +109,7 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                 {str = 'map', dest = 'map'},
                 {str = 'modes', dest = 'modes'},
                 {str = 'colors', dest = 'colors'},
-    
+
                 dssmod.gamepadToggleButton,
                 dssmod.menuKeybindButton,
                 dssmod.paletteButton,
@@ -193,11 +193,11 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
                 {
                     str = 'reset map info',
                     tooltip = {strset = {'clears current', 'map data and', 'reinitialize', 'it, use to', 'fix crash', 'effects' }},
-                    func = function() 
+                    func = function()
                         MinimapAPI:ClearLevels()
                         MinimapAPI:LoadDefaultMap()
                         MinimapAPI:updatePlayerPos()
-                        MinimapAPI:UpdateExternalMap()        
+                        MinimapAPI:UpdateExternalMap()
                     end,
                 },
             },
@@ -835,7 +835,7 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
             tooltip = dssmod.menuOpenToolTip
         },
     }
-    
+
     local menuDirectoryKey = {
         Item = menuDirectory.main,
         Main = 'main',
@@ -847,11 +847,11 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
     }
 
     DeadSeaScrollsMenu.AddMenu("MinimapAPI", {
-        Run = dssmod.runMenu, 
-        Open = dssmod.openMenu, 
-        Close = dssmod.closeMenu, 
-        Directory = menuDirectory, 
-        DirectoryKey = menuDirectoryKey, 
+        Run = dssmod.runMenu,
+        Open = dssmod.openMenu,
+        Close = dssmod.closeMenu,
+        Directory = menuDirectory,
+        DirectoryKey = menuDirectoryKey,
     })
 
     AddedDSSMenu = true
