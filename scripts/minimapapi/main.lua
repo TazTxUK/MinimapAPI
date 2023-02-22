@@ -1172,6 +1172,7 @@ function MinimapAPI:GetRoomAtPosition(position)
 			end
 		end
 	end
+	return nil
 end
 
 ---@param ID any
@@ -1182,6 +1183,7 @@ function MinimapAPI:GetRoomByID(ID)
 			return v
 		end
 	end
+	return nil
 end
 
 ---@param Idx integer
