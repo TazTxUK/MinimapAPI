@@ -256,6 +256,7 @@ local function niceJourney_PostRender()
                     TeleportMarkerSprite.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
                     if room == MinimapAPI:GetCurrentRoom() then
                         TeleportMarkerSprite.Color = Color(1, 1, 1, 0.5, 0, 0, 0)
+                        teleportTarget = 'current'
                     else
                         TeleportMarkerSprite.Color = Color(1, 1, 1, 1, 0, 0, 0)
                         teleportTarget = room
@@ -270,7 +271,8 @@ local function niceJourney_PostRender()
     end
 
     local pressed = Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_LEFT) or Input.IsActionPressed(ButtonAction.ACTION_MENUCONFIRM, 0)
-    if pressed and not WasTriggered and teleportTarget then
+    if pressed and not WasTriggered and teleportTarget
+    and teleportTarget ~= 'current' then
         WasTriggered = true
         TeleportToRoom(teleportTarget)
     elseif not pressed and WasTriggered then
@@ -280,13 +282,15 @@ local function niceJourney_PostRender()
 end
 
 MinimapAPI:AddPriorityCallback(
-    ModCallbacks.MC_PRE_USE_ITEM,
-    CallbackPriority.DEFAULT,
-    function(self, id, rng, player, useFlags, activeSlot, customVarData)
-        if activeSlot == ActiveSlot.SLOT_PRIMARY and teleportTarget then
-            local p1 = Isaac.GetPlayer(0)
-            p1:SetActiveCharge(2 * p1:GetActiveCharge(ActiveSlot.SLOT_PRIMARY), ActiveSlot.SLOT_PRIMARY)
-            return true
+    ModCallbacks.MC_POST_PEFFECT_UPDATE,
+    constants.CALLBACK_PRIORITY,
+    ---@param player EntityPlayer
+    function(self, player)
+        print(teleportTarget)
+        if teleportTarget then
+            player.ControlsEnabled = false
+        else
+            player.ControlsEnabled = true
         end
     end
 )
