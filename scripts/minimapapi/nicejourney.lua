@@ -286,7 +286,7 @@ MinimapAPI:AddPriorityCallback(
     CALLBACK_PRIORITY,
     ---@param player EntityPlayer
     function(_, player)
-        if not MinimapAPI:IsLarge() or not MinimapAPI:GetConfig("MouseTeleport") or Game:IsPaused() or currentlyHighlighted == nil then
+        if not MinimapAPI:GetConfig("MouseTeleport") or Game:IsPaused() or currentlyHighlighted == nil then
             return
         end
         if teleportTarget then
