@@ -17,6 +17,7 @@ local lastMousePos = Vector(-1,-1)
 local TeleportMarkerSprite = Sprite()
 TeleportMarkerSprite:Load("gfx/ui/minimapapi/teleport_marker.anm2", true)
 TeleportMarkerSprite:SetFrame("Marker", 0)
+local teleportTarget
 
 local function niceJourney_ExecuteCmd(_, cmd, params)
     if cmd == "mapitel" then
@@ -232,7 +233,7 @@ local function niceJourney_PostRender()
     local TABpressed = Input.IsActionPressed(ButtonAction.ACTION_MAP, playerController)
     HandleMoveCursorWithButtons()
 
-    local teleportTarget = nil
+    teleportTarget = nil
     for _, room in pairs(MinimapAPI:GetLevel()) do
         if room:IsValidTeleportTarget()
             and (room.Descriptor or room.TeleportHandler)
@@ -277,6 +278,18 @@ local function niceJourney_PostRender()
     end
 
 end
+
+MinimapAPI:AddPriorityCallback(
+    ModCallbacks.MC_PRE_USE_ITEM,
+    CallbackPriority.DEFAULT,
+    function(self, id, rng, player, useFlags, activeSlot, customVarData)
+        if activeSlot == ActiveSlot.SLOT_PRIMARY and teleportTarget then
+            local p1 = Isaac.GetPlayer(0)
+            p1:SetActiveCharge(2 * p1:GetActiveCharge(ActiveSlot.SLOT_PRIMARY), ActiveSlot.SLOT_PRIMARY)
+            return true
+        end
+    end
+)
 
 local addRenderCall = true
 
