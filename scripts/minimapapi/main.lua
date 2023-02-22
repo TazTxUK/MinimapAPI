@@ -1893,7 +1893,7 @@ end
 
 local function renderBoundedMinimap()
 	local screen_size = MinimapAPI:GetScreenTopRight()
-	local offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 1, screen_size.Y + MinimapAPI:GetConfig("PositionY") - 2)
+	local offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") + outlinePixelSize.X, screen_size.Y + MinimapAPI:GetConfig("PositionY") - outlinePixelSize.Y/2 - 2)
 	do
 		local frameWidth = ((MinimapAPI:GetConfig("MapFrameWidth") + frameTL.X) / dframeHorizBarSize.X) -- * MinimapAPI.GlobalScaleX
 
@@ -2057,8 +2057,8 @@ function MinimapAPI:renderRoomShadows(useCutOff)
 	local defaultOutlineColor = Color(1, 1, 1, MinimapAPI:GetConfig("MinimapTransparency"), MinimapAPI:GetConfig("DefaultOutlineColorR") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorG") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorB") * dlcColorMult)
 	local renderRoomSize = not MinimapAPI:IsLarge() and roomSize or largeRoomSize
 	local screen_size = MinimapAPI:GetScreenTopRight()
-	local offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - 1,
-		screen_size.Y + MinimapAPI:GetConfig("PositionY") - 2)
+	local offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") + outlinePixelSize.X, screen_size.Y + MinimapAPI:GetConfig("PositionY") - outlinePixelSize.Y/2 - 2)
+	
 
 	local sprite = not MinimapAPI:IsLarge() and MinimapAPI.SpriteMinimapSmall or MinimapAPI.SpriteMinimapLarge
 	sprite.Color = defaultOutlineColor
@@ -2263,10 +2263,10 @@ local function renderCallbackFunction(_)
 				if not islarge and MinimapAPI:GetConfig("DisplayMode") == 2 and MinimapAPI.GlobalScaleX >= 1 then -- Bounded map
 					if MinimapAPI:GetConfig("DisplayLevelFlags") == 1 then -- LEFT
 						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX")
-							- 18,
-							MinimapAPI:GetConfig("PositionY") + 6)
+							- 10,
+							MinimapAPI:GetConfig("PositionY") + 8)
 					else -- BOTTOM
-						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX") - 14,
+						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX") - 10,
 							MinimapAPI:GetConfig("MapFrameHeight") + MinimapAPI:GetConfig("PositionY") + 10)
 					end
 				elseif not islarge and MinimapAPI:GetConfig("DisplayMode") == 4 then -- hidden map
@@ -2281,19 +2281,18 @@ local function renderCallbackFunction(_)
 								minx = math.min(minx, v.RenderOffset.X)
 							else
 								minx = math.min(minx,
-									v.RenderOffset.X + MinimapAPI.GlobalScaleX * MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size.X - 6)
+									v.RenderOffset.X + MinimapAPI.GlobalScaleX * MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size.X)
 							end
 							maxY = math.max(maxY,
-								v.RenderOffset.Y + MinimapAPI:GetConfig("PositionY") + MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size.Y + 6)
+								v.RenderOffset.Y + MinimapAPI:GetConfig("PositionY") + MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size.Y)
 						end
 					end
 					if MinimapAPI:GetConfig("DisplayLevelFlags") == 1 then -- LEFT
-						levelflagoffset = Vector(minx, 0)
+						levelflagoffset = Vector(minx, MinimapAPI:GetConfig("PositionY")) + Vector(0,10)
 					else -- BOTTOM
-						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), maxY)
+						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), maxY) + Vector(-10,0)
 					end
 				end
-				levelflagoffset = levelflagoffset + Vector(-9, 8) -- add nice padding
 				renderMinimapLevelFlags(levelflagoffset)
 			end
 		end
