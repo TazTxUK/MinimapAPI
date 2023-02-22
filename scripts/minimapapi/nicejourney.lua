@@ -283,7 +283,7 @@ end
 
 MinimapAPI:AddPriorityCallback(
     ModCallbacks.MC_POST_PEFFECT_UPDATE,
-    constants.CALLBACK_PRIORITY,
+    CALLBACK_PRIORITY,
     ---@param player EntityPlayer
     function(self, player)
         print(teleportTarget)
