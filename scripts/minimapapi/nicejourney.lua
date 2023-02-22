@@ -285,8 +285,10 @@ MinimapAPI:AddPriorityCallback(
     ModCallbacks.MC_POST_PEFFECT_UPDATE,
     CALLBACK_PRIORITY,
     ---@param player EntityPlayer
-    function(self, player)
-        print(teleportTarget)
+    function(_, player)
+        if not MinimapAPI:IsLarge() or not MinimapAPI:GetConfig("MouseTeleport") or Game:IsPaused() or currentlyHighlighted == nil then
+            return
+        end
         if teleportTarget then
             player.ControlsEnabled = false
         else
@@ -300,7 +302,7 @@ local addRenderCall = true
 MinimapAPI:AddPriorityCallback(
     ModCallbacks.MC_POST_GAME_STARTED,
     CALLBACK_PRIORITY,
-    function(self, is_save)
+    function(_, _)
         if addRenderCall then
             MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, niceJourney_PostRender)
             addRenderCall = false
