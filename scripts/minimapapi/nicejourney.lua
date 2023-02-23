@@ -114,8 +114,8 @@ local function CanTeleportToRoom(room)
         return true
     elseif (curRoom.Data.Type == RoomType.ROOM_BOSS and gameroom:GetBossID() == 6)
         or curRoom.GridIndex == GridRooms.ROOM_BOSSRUSH_IDX
-        or (onMomFloor and curRoom.GridIndex == GridRooms.ROOM_DEVIL_IDX and level:GetLastRoomDesc().Data.Type == RoomType.ROOM_BOSS) then -- Mom
-        return (REPENTANCE and level:IsAscent()) or false
+        or (onMomFloor and curRoom.GridIndex == GridRooms.ROOM_DEVIL_IDX and level:GetLastRoomDesc().Data.Type == RoomType.ROOM_BOSS)-- Mom
+        or (REPENTANCE and onMomFloor and curRoom.Data.Type == RoomType.ROOM_BOSS and gameroom:GetBossID() == 0) then -- Mausoleum Dads Note room
     elseif curRoom.Clear then
         if curRoom.Data.Type == RoomType.ROOM_CHALLENGE and not curRoom.ChallengeDone then
             for _, doorslot in ipairs(MinimapAPI.RoomShapeDoorSlots[curRoom.Data.Shape]) do
