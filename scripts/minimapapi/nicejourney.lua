@@ -12,7 +12,7 @@ local Sfx = SFXManager()
 
 local WasTriggered = false
 local currentlyHighlighted = nil
-local lastMousePos = Vector(-1,-1)
+local lastMousePos = Vector( -1, -1)
 local mouseMoved = false
 local controlsDisabled = false
 
@@ -113,8 +113,8 @@ local function CanTeleportToRoom(room)
     if MinimapAPI:GetConfig("MouseTeleportUncleared") or not curRoom then
         return true
     elseif (curRoom.Data.Type == RoomType.ROOM_BOSS and gameroom:GetBossID() == 6)
-    or curRoom.GridIndex == GridRooms.ROOM_BOSSRUSH_IDX
-    or (onMomFloor and curRoom.GridIndex == GridRooms.ROOM_DEVIL_IDX and level:GetLastRoomDesc().Data.Type == RoomType.ROOM_BOSS) then -- Mom
+        or curRoom.GridIndex == GridRooms.ROOM_BOSSRUSH_IDX
+        or (onMomFloor and curRoom.GridIndex == GridRooms.ROOM_DEVIL_IDX and level:GetLastRoomDesc().Data.Type == RoomType.ROOM_BOSS) then -- Mom
         return (REPENTANCE and level:IsAscent()) or false
     elseif curRoom.Clear then
         if curRoom.Data.Type == RoomType.ROOM_CHALLENGE and not curRoom.ChallengeDone then
@@ -181,40 +181,58 @@ local function HandleMoveCursorWithButtons()
         tabPressTimeStart = Isaac.GetTime()
     elseif not TABpressed then
         tabPressTimeStart = 0
-    elseif not currentlyHighlighted and Isaac.GetTime()-tabPressTimeStart > 500 then
+    elseif not currentlyHighlighted and Isaac.GetTime() - tabPressTimeStart > 500 then
         if MinimapAPI:GetCurrentRoom() then
-            currentlyHighlighted = MinimapAPI:GetCurrentRoom():GetAdjacentRooms()[1]
+            for _, room in ipairs(MinimapAPI:GetCurrentRoom():GetAdjacentRooms()) do
+                if room:IsValidTeleportTarget() then
+                    currentlyHighlighted = room
+                    break
+                end
+            end
         else
             currentlyHighlighted = MinimapAPI:GetRoomByIdx(Game:GetLevel():GetStartingRoomIndex())
         end
     end
 
     if currentlyHighlighted then
-        local rooms = currentlyHighlighted:GetAdjacentRooms()
         local teleportCheck = nil
+        local positionOffset = Vector(0, 0)
         if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTLEFT, playerController) then
-            teleportCheck = function(diffPos) return diffPos.X > 0 end
-        elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTRIGHT, playerController) then
             teleportCheck = function(diffPos) return diffPos.X < 0 end
+        elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTRIGHT, playerController) then
+            teleportCheck = function(diffPos) return diffPos.X > 0 end
+            positionOffset = (MinimapAPI.RoomShapeGridSizes[currentlyHighlighted.Shape] - Vector(1, 1)) * Vector(1, 0)
         elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTUP, playerController) then
-            teleportCheck = function(diffPos) return diffPos.Y > 0 end
-        elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTDOWN, playerController) then
             teleportCheck = function(diffPos) return diffPos.Y < 0 end
+        elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTDOWN, playerController) then
+            teleportCheck = function(diffPos) return diffPos.Y > 0 end
+            positionOffset = (MinimapAPI.RoomShapeGridSizes[currentlyHighlighted.Shape] - Vector(1, 1)) * Vector(0, 1)
         end
         if teleportCheck then
-            for _, room in ipairs(rooms) do
-                local diffPos = currentlyHighlighted.Position - room.Position
+            print("--")
+            local bestMatches = {}
+            for _, room in ipairs(currentlyHighlighted:GetAdjacentRooms()) do
+                local diffPos = room.Position - (currentlyHighlighted.Position + positionOffset)
+                print(diffPos, room:IsValidTeleportTarget(), teleportCheck(diffPos), room.Shape, room.Type)
                 if room:IsValidTeleportTarget() and teleportCheck(diffPos) then
-                    currentlyHighlighted = room
-                    break
+                    table.insert(bestMatches, { room, diffPos })
                 end
+            end
+            if #bestMatches > 0 then
+                local bestMatch = bestMatches[1]
+                for _, match in ipairs(bestMatches) do
+                    if math.abs(match[2].X) + math.abs(match[2].Y) < math.abs(bestMatch[2].X) + math.abs(bestMatch[2].Y) then
+                        bestMatch = match
+                    end
+                end
+                currentlyHighlighted = bestMatch[1]
             end
         end
     end
 end
 
 local function round(num)
-    local mult = 10^0
+    local mult = 10 ^ 0
     return math.floor(num * mult + 0.5) / mult
 end
 
@@ -222,6 +240,7 @@ local function niceJourney_PostRender()
     if not MinimapAPI:IsLarge() or not MinimapAPI:GetConfig("MouseTeleport") or Game:IsPaused() then
         currentlyHighlighted = nil
         tabPressTimeStart = 0
+        teleportTarget = nil
         return
     end
 
@@ -254,7 +273,7 @@ local function niceJourney_PostRender()
                 end
                 if (TABpressed and not mouseMoved and currentlyHighlighted == room)
                     or (mouseCoords.X > boundsTl.X and mouseCoords.X < boundsBr.X
-                        and mouseCoords.Y > boundsTl.Y and mouseCoords.Y < boundsBr.Y) then
+                    and mouseCoords.Y > boundsTl.Y and mouseCoords.Y < boundsBr.Y) then
                     TeleportMarkerSprite.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
                     if room == MinimapAPI:GetCurrentRoom() then
                         TeleportMarkerSprite.Color = Color(1, 1, 1, 0.5, 0, 0, 0)
@@ -269,18 +288,18 @@ local function niceJourney_PostRender()
                 end
             end
         end
-
     end
 
-    local pressed = Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_LEFT) or Input.IsActionPressed(ButtonAction.ACTION_MENUCONFIRM, 0)
+    local pressed = Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_LEFT) or
+        Input.IsActionPressed(ButtonAction.ACTION_MENUCONFIRM, 0)
     if pressed and not WasTriggered and teleportTarget
-    and teleportTarget ~= 'current' then
+        and teleportTarget ~= 'current' then
         WasTriggered = true
         TeleportToRoom(teleportTarget)
+        teleportTarget = nil
     elseif not pressed and WasTriggered then
         WasTriggered = false
     end
-
 end
 
 MinimapAPI:AddPriorityCallback(
@@ -288,16 +307,14 @@ MinimapAPI:AddPriorityCallback(
     CALLBACK_PRIORITY,
     ---@param player EntityPlayer
     function(_, player)
-        if not MinimapAPI:GetConfig("MouseTeleport") or mouseMoved then
+        if controlsDisabled then
+            player.ControlsEnabled = true
+            controlsDisabled = false
             return
         end
         if teleportTarget then
             player.ControlsEnabled = false
             controlsDisabled = true
-        elseif controlsDisabled then
-            player.ControlsEnabled = true
-            controlsDisabled = false
-            print("Deactivate")
         end
     end
 )
