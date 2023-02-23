@@ -13,6 +13,8 @@ local Sfx = SFXManager()
 local WasTriggered = false
 local currentlyHighlighted = nil
 local lastMousePos = Vector(-1,-1)
+local mouseMoved = false
+local controlsDisabled = false
 
 local TeleportMarkerSprite = Sprite()
 TeleportMarkerSprite:Load("gfx/ui/minimapapi/teleport_marker.anm2", true)
@@ -226,7 +228,7 @@ local function niceJourney_PostRender()
     -- gameCoords = false doesn't give proper render coords
     local mouseCoords = Isaac.WorldToScreen(Input.GetMousePosition(true))
     mouseCoords = Vector(round(mouseCoords.X), round(mouseCoords.Y))
-    local mouseMoved = mouseCoords.X ~= lastMousePos.X or mouseCoords.Y ~= lastMousePos.Y
+    mouseMoved = mouseCoords.X ~= lastMousePos.X or mouseCoords.Y ~= lastMousePos.Y
     lastMousePos = mouseCoords
 
     local playerController = Isaac.GetPlayer(0).ControllerIndex
@@ -286,13 +288,16 @@ MinimapAPI:AddPriorityCallback(
     CALLBACK_PRIORITY,
     ---@param player EntityPlayer
     function(_, player)
-        if not MinimapAPI:GetConfig("MouseTeleport") or Game:IsPaused() or currentlyHighlighted == nil then
+        if not MinimapAPI:GetConfig("MouseTeleport") or mouseMoved then
             return
         end
         if teleportTarget then
             player.ControlsEnabled = false
-        else
+            controlsDisabled = true
+        elseif controlsDisabled then
             player.ControlsEnabled = true
+            controlsDisabled = false
+            print("Deactivate")
         end
     end
 )
