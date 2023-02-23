@@ -2200,21 +2200,19 @@ local function renderCallbackFunction(_)
 		--update map display flags
 		if gamelevel:GetStateFlag(LevelStateFlag.STATE_MAP_EFFECT) then
 			for _,v in ipairs(MinimapAPI:GetLevel()) do
-				if not v.Hidden then
+				if not (v.Type == RoomType.ROOM_SECRET or v.Type == RoomType.ROOM_SUPERSECRET or v.Type == RoomType.ROOM_ULTRASECRET) then
 					v.DisplayFlags = v.DisplayFlags | 1
 				end
 			end
 		end
 		if gamelevel:GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT) then
 			for _,v in ipairs(MinimapAPI:GetLevel()) do
-				if v.Hidden then
-					v.DisplayFlags = v.DisplayFlags | 6
-				end
+				v.DisplayFlags = v.DisplayFlags | 6
 			end
 		end
 		if gamelevel:GetStateFlag(LevelStateFlag.STATE_COMPASS_EFFECT) then
 			for _,v in ipairs(MinimapAPI:GetLevel()) do
-				if not v.Hidden and #v.PermanentIcons > 0 then
+				if #v.PermanentIcons > 0 and not (v.Type == RoomType.ROOM_SECRET or v.Type == RoomType.ROOM_SUPERSECRET or v.Type == RoomType.ROOM_ULTRASECRET) then
 					v.DisplayFlags = v.DisplayFlags | 6
 				end
 			end
