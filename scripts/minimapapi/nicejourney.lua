@@ -195,37 +195,25 @@ local function HandleMoveCursorWithButtons()
     end
 
     if currentlyHighlighted then
-        local teleportCheck = nil
-        local positionOffset = Vector(0, 0)
+        local posToCheck = nil
         if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTLEFT, playerController) then
-            teleportCheck = function(diffPos) return diffPos.X < 0 end
+            posToCheck = { 1, 5 }
         elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTRIGHT, playerController) then
-            teleportCheck = function(diffPos) return diffPos.X > 0 end
-            positionOffset = (MinimapAPI.RoomShapeGridSizes[currentlyHighlighted.Shape] - Vector(1, 1)) * Vector(1, 0)
+            posToCheck = { 3, 7 }
         elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTUP, playerController) then
-            teleportCheck = function(diffPos) return diffPos.Y < 0 end
+            posToCheck = { 2, 6 }
         elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTDOWN, playerController) then
-            teleportCheck = function(diffPos) return diffPos.Y > 0 end
-            positionOffset = (MinimapAPI.RoomShapeGridSizes[currentlyHighlighted.Shape] - Vector(1, 1)) * Vector(0, 1)
+            posToCheck = { 4, 8 }
         end
-        if teleportCheck then
-            print("--")
-            local bestMatches = {}
-            for _, room in ipairs(currentlyHighlighted:GetAdjacentRooms()) do
-                local diffPos = room.Position - (currentlyHighlighted.Position + positionOffset)
-                print(diffPos, room:IsValidTeleportTarget(), teleportCheck(diffPos), room.Shape, room.Type)
-                if room:IsValidTeleportTarget() and teleportCheck(diffPos) then
-                    table.insert(bestMatches, { room, diffPos })
+
+        if posToCheck then
+            local doorPositions = MinimapAPI.RoomShapeDoorCoords[currentlyHighlighted.Shape]
+            for _, possiblePos in ipairs(posToCheck) do
+                local room = MinimapAPI:GetRoomAtPosition(currentlyHighlighted.Position + doorPositions[possiblePos])
+                if room and room:IsValidTeleportTarget() then
+                    currentlyHighlighted = room
+                    return
                 end
-            end
-            if #bestMatches > 0 then
-                local bestMatch = bestMatches[1]
-                for _, match in ipairs(bestMatches) do
-                    if math.abs(match[2].X) + math.abs(match[2].Y) < math.abs(bestMatch[2].X) + math.abs(bestMatch[2].Y) then
-                        bestMatch = match
-                    end
-                end
-                currentlyHighlighted = bestMatch[1]
             end
         end
     end
