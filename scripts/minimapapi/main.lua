@@ -7,7 +7,7 @@ require("scripts.minimapapi.apioverride")
 local json = require("json")
 
 local game = Game()
-local dlcColorMult = REPENTANCE and 1 or 255 -- converts colors into correct value range for the DLCs
+local dlcColorMult = MinimapAPI.isRepentance and 1 or 255 -- converts colors into correct value range for the DLCs
 local vectorZero = Vector(0,0)
 
 function MinimapAPI:GetScreenSize() --based off of code from kilburn
@@ -27,7 +27,7 @@ function MinimapAPI:GetScreenCenter()
 end
 
 function MinimapAPI:GetHudOffset()
-	return REPENTANCE and Options.HUDOffset or 0
+	return MinimapAPI.isRepentance and Options.HUDOffset or 0
 end
 
 function MinimapAPI:GetScreenBottomRight(offset)
@@ -214,7 +214,7 @@ MinimapAPI.SpriteMinimapCustomLarge = Sprite()
 MinimapAPI.SpriteMinimapCustomLarge:Load("gfx/ui/minimapapi/custom_minimap2.anm2", true)
 
 ------ Override original API -------
-if REPENTANCE then
+if MinimapAPI.isRepentance then
 	local MakeRedRoomDoor_Old = getmetatable(Level).__class.MakeRedRoomDoor
 	APIOverride.OverrideClassFunction(Level, "MakeRedRoomDoor", function(self,currentRoomIdx, slot)
 		local returnVal = MakeRedRoomDoor_Old(self, currentRoomIdx, slot)
@@ -610,7 +610,7 @@ local function GetRoomDescAndDimFromListIndex(listIndex)
     end
     local gridIndex = constDesc.SafeGridIndex
 	local fallbackDesc,fallbackDim = nil, 0
-	local maxDim = REPENTANCE and 2 or 0
+	local maxDim = MinimapAPI.isRepentance and 2 or 0
 	for dim = 0, maxDim do
 		local roomDesc = level:GetRoomByIdx(gridIndex, dim)
 		if roomDesc.ListIndex == listIndex then
@@ -652,13 +652,13 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				Dimension = dimension,
 				Visited = roomDescriptor.VisitedCount > 0,
 				Clear = roomDescriptor.Clear,
-				Color = REPENTANCE and roomDescriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
+				Color = MinimapAPI.isRepentance and roomDescriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 			}
 
 			if roomDescriptor.Data.Type == RoomType.ROOM_CHALLENGE and roomDescriptor.Data.Subtype == 1 then
 				t.PermanentIcons = {"BossAmbushRoom"}
 			end
-			if REPENTANCE then
+			if MinimapAPI.isRepentance then
 				if roomDescriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
 					t.PermanentIcons = { "TreasureRoomRed" }
 				end
@@ -745,7 +745,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 end
 
 function MinimapAPI:IsHUDVisible()
-	if REPENTANCE then
+	if MinimapAPI.isRepentance then
 		return game:GetHUD():IsVisible()
 	end
 	return not game:GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD)
@@ -812,7 +812,7 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 			if roomDescriptor.Data.Type == RoomType.ROOM_CHALLENGE and roomDescriptor.Data.Subtype == 1 then
 				t.PermanentIcons = {"BossAmbushRoom"}
 			end
-			if REPENTANCE then
+			if MinimapAPI.isRepentance then
 				if roomDescriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
 					t.PermanentIcons = { "TreasureRoomRed" }
 				end
@@ -1006,7 +1006,7 @@ function maproomfunctions:UpdateType()
 		if self.Descriptor.Data.Type == RoomType.ROOM_CHALLENGE and self.Descriptor.Data.Subtype == 1 then
 			self.PermanentIcons = { "BossAmbushRoom" }
 		end
-		if REPENTANCE then
+		if MinimapAPI.isRepentance then
 			if self.Descriptor.Flags & RoomDescriptor.FLAG_DEVIL_TREASURE == RoomDescriptor.FLAG_DEVIL_TREASURE then
 				self.PermanentIcons = { "TreasureRoomRed" }
 			end
@@ -1042,7 +1042,7 @@ function maproomfunctions:SyncRoomDescriptor()
 		self.Dimension = MinimapAPI.CurrentDimension
 		self.Visited = self.Descriptor.VisitedCount > 0
 		self.Clear = self.Descriptor.Clear
-		self.Color = REPENTANCE and self.Descriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
+		self.Color = MinimapAPI.isRepentance and self.Descriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 
 		self:UpdateType()
 	end
@@ -1210,7 +1210,7 @@ function MinimapAPI:IsPositionFree(position,roomshape,dimension,redRoomsAreFree)
 	redRoomsAreFree = redRoomsAreFree or false
 
 	-- treat red rooms as free positions
-	if REPENTANCE and redRoomsAreFree then
+	if MinimapAPI.isRepentance and redRoomsAreFree then
 		local idx = MinimapAPI:GridVectorToIndex(position)
 		local roomDesc = cache.Level:GetRoomByIdx(idx, dimension)
 		if roomDesc.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM then
@@ -1412,7 +1412,7 @@ MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CALLBACK_PRIORITY, func
 	if colltype == CollectibleType.COLLECTIBLE_CRYSTAL_BALL then
 		MinimapAPI:EffectCrystalBall()
 		MinimapAPI:UpdateExternalMap()
-	elseif REPENTANCE and colltype == CollectibleType.COLLECTIBLE_RED_KEY then
+	elseif MinimapAPI.isRepentance and colltype == CollectibleType.COLLECTIBLE_RED_KEY then
 		MinimapAPI:CheckForNewRedRooms()
 	elseif colltype == CollectibleType.COLLECTIBLE_DADS_KEY then
 		for _,room in ipairs(MinimapAPI:GetCurrentRoom():GetAdjacentRooms()) do
@@ -1430,7 +1430,7 @@ MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CALLBACK_PRIORITY, func
 	end
 end)
 
-if REPENTANCE then
+if MinimapAPI.isRepentance then
 	MinimapAPI:AddPriorityCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, CALLBACK_PRIORITY, function(_)
 		for i = 0, game:GetNumPlayers() - 1 do
 			local player = Isaac.GetPlayer(i)
@@ -1481,7 +1481,7 @@ MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CALLBACK_PRIORITY,
 		MinimapAPI:LoadDefaultMap()
 	end
 
-	if REPENTANCE and not (game:GetLevel():GetStartingRoomIndex() == game:GetLevel():GetCurrentRoomIndex() and game:GetLevel():GetCurrentRoomDesc().VisitedCount == 1) then
+	if MinimapAPI.isRepentance and not (game:GetLevel():GetStartingRoomIndex() == game:GetLevel():GetCurrentRoomIndex() and game:GetLevel():GetCurrentRoomDesc().VisitedCount == 1) then
 		-- only check if not in level transition
 		MinimapAPI:CheckForNewRedRooms()
 	end
@@ -1593,7 +1593,7 @@ end
 MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_CARD, CALLBACK_PRIORITY, function(_, card)
 	if card == Card.CARD_WORLD or card == Card.CARD_SUN or card == Card.RUNE_ANSUZ then
 		MinimapAPI.lastCardUsedRoom = MinimapAPI:GetCurrentRoom()
-	elseif REPENTANCE and card == Card.CARD_CRACKED_KEY or card == Card.CARD_SOUL_CAIN then
+	elseif MinimapAPI.isRepentance and card == Card.CARD_CRACKED_KEY or card == Card.CARD_SOUL_CAIN then
 		MinimapAPI:CheckForNewRedRooms()
 	end
 end)
@@ -2112,7 +2112,7 @@ local function renderCallbackFunction(_)
 		return
 	end
 	-- Hide in Beast fight
-	if REPENTANCE and gameroom:GetType() == RoomType.ROOM_DUNGEON and game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE8 then
+	if MinimapAPI.isRepentance and gameroom:GetType() == RoomType.ROOM_DUNGEON and game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE8 then
 		return
 	end
 

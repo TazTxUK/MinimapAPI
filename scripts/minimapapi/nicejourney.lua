@@ -76,7 +76,7 @@ local function ShouldDamagePlayer(room)
     end
 
     for i = 0, Game:GetNumPlayers() - 1 do
-        if REPENTANCE and Isaac.GetPlayer(i):HasTrinket(TrinketType.TRINKET_FLAT_FILE)
+        if MinimapAPI.isRepentance and Isaac.GetPlayer(i):HasTrinket(TrinketType.TRINKET_FLAT_FILE)
             or Isaac.GetPlayer(i):HasCollectible(CollectibleType.COLLECTIBLE_ISAACS_HEART) then
             return false
         end
@@ -115,7 +115,8 @@ local function CanTeleportToRoom(room)
     elseif (curRoom.Data.Type == RoomType.ROOM_BOSS and gameroom:GetBossID() == 6)
         or curRoom.GridIndex == GridRooms.ROOM_BOSSRUSH_IDX
         or (onMomFloor and curRoom.GridIndex == GridRooms.ROOM_DEVIL_IDX and level:GetLastRoomDesc().Data.Type == RoomType.ROOM_BOSS)-- Mom
-        or (REPENTANCE and onMomFloor and curRoom.Data.Type == RoomType.ROOM_BOSS and gameroom:GetBossID() == 0) then -- Mausoleum Dads Note room
+        or (MinimapAPI.isRepentance and onMomFloor and curRoom.Data.Type == RoomType.ROOM_BOSS and gameroom:GetBossID() == 0) then -- Mausoleum Dads Note room
+        return (MinimapAPI.isRepentance and level:IsAscent()) or false
     elseif curRoom.Clear then
         if curRoom.Data.Type == RoomType.ROOM_CHALLENGE and not curRoom.ChallengeDone then
             for _, doorslot in ipairs(MinimapAPI.RoomShapeDoorSlots[curRoom.Data.Shape]) do
@@ -143,7 +144,7 @@ local function CanTeleportToRoom(room)
             else
                 return allPlayersFullHealth
             end
-        elseif (REPENTANCE and level:GetStateFlag(LevelStateFlag.STATE_MINESHAFT_ESCAPE)) then
+        elseif (MinimapAPI.isRepentance and level:GetStateFlag(LevelStateFlag.STATE_MINESHAFT_ESCAPE)) then
             return MinimapAPI.CurrentDimension ~= 1
         else
             return true
@@ -155,18 +156,20 @@ end
 
 ---@param room MinimapAPI.Room # target room
 local function TeleportToRoom(room)
+    print(CanTeleportToRoom(room))
     if room.TeleportHandler and room.TeleportHandler.Teleport then
         if not room.TeleportHandler:Teleport(room) then
             Sfx:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, 0.8)
         end
     elseif room.Descriptor and CanTeleportToRoom(room) then
+        print("b")
         if ShouldDamagePlayer(room) then
             Isaac.GetPlayer(0):TakeDamage(1, DamageFlag.DAMAGE_CURSED_DOOR | DamageFlag.DAMAGE_NO_PENALTIES,
                 EntityRef(Isaac.GetPlayer(0)), 0)
         end
         Game:GetLevel().LeaveDoor = -1
         Game:StartRoomTransition(room.Descriptor.SafeGridIndex, Direction.NO_DIRECTION,
-            REPENTANCE and RoomTransitionAnim.FADE or 1)
+            MinimapAPI.isRepentance and RoomTransitionAnim.FADE or 1)
     else
         Sfx:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, 0.8)
     end

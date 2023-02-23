@@ -23,7 +23,7 @@ function cache.ReloadRoomCache()
 	cache.Seeds = cache.Game:GetSeeds()
 
 	--Dimension
-	if REPENTANCE then
+	if MinimapAPI.isRepentance then
 		if GetPtrHash(cache.RoomDescriptor) == GetPtrHash(cache.Level:GetRoomByIdx(cache.CurrentRoomIndex, 0)) then
 			cache.Dimension = 0
 		elseif GetPtrHash(cache.RoomDescriptor) == GetPtrHash(cache.Level:GetRoomByIdx(cache.CurrentRoomIndex, 2)) then

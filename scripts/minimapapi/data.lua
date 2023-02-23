@@ -179,7 +179,7 @@ MinimapAPI.RoomTypeIconIDs = {
     [RoomType.ROOM_BLACK_MARKET] = nil,
     [RoomType.ROOM_GREED_EXIT] = nil,
 }
-if REPENTANCE then
+if MinimapAPI.isRepentance then
 	MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_PLANETARIUM] = "Planetarium"
 	MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_TELEPORTER] = "TeleporterRoom"
 	MinimapAPI.RoomTypeIconIDs[RoomType.ROOM_TELEPORTER_EXIT] = "TeleporterRoom"
@@ -198,7 +198,7 @@ MinimapAPI.UnknownRoomTypeIconIDs = {
     [RoomType.ROOM_CHEST] = "LockedRoom",
     [RoomType.ROOM_DICE] = "LockedRoom",
 }
-if REPENTANCE then
+if MinimapAPI.isRepentance then
 	MinimapAPI.UnknownRoomTypeIconIDs[RoomType.ROOM_ULTRASECRET] = "UltraSecretRoom"
 end
 
@@ -214,7 +214,7 @@ MinimapAPI.RoomTypeDisplayFlagsAdjacent = {
 	[RoomType.ROOM_CHEST] = 3,
 	[RoomType.ROOM_DICE] = 3,
 }
-if REPENTANCE then
+if MinimapAPI.isRepentance then
 	MinimapAPI.RoomTypeDisplayFlagsAdjacent[RoomType.ROOM_ULTRASECRET] = 0
 end
 
@@ -266,7 +266,7 @@ MinimapAPI.PickupList = {
 	["HauntedChest"] = {IconID="SpikedChest",Type=5,Variant=58,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=11000},
 	["MimicChest"] = {IconID="SpikedChest",Type=5,Variant=54,Call=chestNotCollected,SubType=-1,IconGroup="chests",Priority=11000},
 	
-	["Rune"] = {IconID="Rune",Type=5,Variant=300,SubType=-1,Call=notCollected,IconGroup="runes",Priority=10000,Condition=function(pickup) return REPENTANCE and Isaac.GetItemConfig():GetCard(pickup.SubType):IsRune() or (pickup.SubType > 31 and pickup.SubType < 42) end},
+	["Rune"] = {IconID="Rune",Type=5,Variant=300,SubType=-1,Call=notCollected,IconGroup="runes",Priority=10000,Condition=function(pickup) return MinimapAPI.isRepentance and Isaac.GetItemConfig():GetCard(pickup.SubType):IsRune() or (pickup.SubType > 31 and pickup.SubType < 42) end},
 
 	["Card"] = {IconID="Card",Type=5,Variant=300,SubType=-1,Call=notCollected,IconGroup="cards",Priority=9000},
 

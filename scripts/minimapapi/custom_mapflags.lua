@@ -73,7 +73,7 @@ MinimapAPI:AddMapFlag("Unknown", UnknownCurse, MinimapAPI.SpriteMinimapIcons, "c
 MinimapAPI:AddMapFlag("Cursed", CursedCurse, MinimapAPI.SpriteMinimapIcons, "curses", 4)
 MinimapAPI:AddMapFlag("Maze", MazeCurse, MinimapAPI.SpriteMinimapIcons, "curses", 5)
 MinimapAPI:AddMapFlag("Blind", BlindCurse, MinimapAPI.SpriteMinimapIcons, "curses", 6)
-if REPENTANCE then
+if MinimapAPI.isRepentance then
 	MinimapAPI:AddMapFlag("Giant", GiantCurse, MinimapAPI.SpriteMinimapIcons, "curses", 7)
 end
 
