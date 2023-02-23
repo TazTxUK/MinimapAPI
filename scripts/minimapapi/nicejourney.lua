@@ -156,13 +156,11 @@ end
 
 ---@param room MinimapAPI.Room # target room
 local function TeleportToRoom(room)
-    print(CanTeleportToRoom(room))
     if room.TeleportHandler and room.TeleportHandler.Teleport then
         if not room.TeleportHandler:Teleport(room) then
             Sfx:Play(SoundEffect.SOUND_BOSS2INTRO_ERRORBUZZ, 0.8)
         end
     elseif room.Descriptor and CanTeleportToRoom(room) then
-        print("b")
         if ShouldDamagePlayer(room) then
             Isaac.GetPlayer(0):TakeDamage(1, DamageFlag.DAMAGE_CURSED_DOOR | DamageFlag.DAMAGE_NO_PENALTIES,
                 EntityRef(Isaac.GetPlayer(0)), 0)
@@ -212,10 +210,12 @@ local function HandleMoveCursorWithButtons()
         if posToCheck then
             local doorPositions = MinimapAPI.RoomShapeDoorCoords[currentlyHighlighted.Shape]
             for _, possiblePos in ipairs(posToCheck) do
-                local room = MinimapAPI:GetRoomAtPosition(currentlyHighlighted.Position + doorPositions[possiblePos])
-                if room and room:IsValidTeleportTarget() then
-                    currentlyHighlighted = room
-                    return
+                if doorPositions[possiblePos] then
+                    local room = MinimapAPI:GetRoomAtPosition(currentlyHighlighted.Position + doorPositions[possiblePos])
+                    if room and room:IsValidTeleportTarget() then
+                        currentlyHighlighted = room
+                        return
+                    end
                 end
             end
         end
