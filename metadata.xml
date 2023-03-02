@@ -25,13 +25,13 @@
 [h1][b]if you see two minimaps, restart your game![/b][/h1]
 
 [h1]Special Thanks:[/h1]
-- Kittenchilly and Mewlala for helping on development of this mod
+- filloax, Kittenchilly and Meowlala for helping on development of this mod
 - Chinpokomon_ for the White Fireplace Icon 
 
 [b][url=https://github.com/TazTxUK/MinimapAPI]visit this project on GitHub![/url][/b]
 
 [b][url=https://github.com/TazTxUK/MinimapAPI/wiki]A Documentation can be found here[/url][/b]</description>
-    <version>1.38</version>
+    <version>1.41</version>
     <visibility>Public</visibility>
     <tag id="Lua"/>
     <tag id="Floors"/>

@@ -19,13 +19,13 @@ function MinimapAPI.Debug.Icons()
 					DisplayFlags = 5,
 					PermanentIcons = {icon.ID}
 				}
-				
+
 				MinimapAPI:AddRoom(x)
 				iconn = iconn + 1
 			end
 		end
 	end
-	
+
 	local cent = math.floor(val/2)
 	MinimapAPI:SetPlayerPosition(Vector(cent,cent))
 end
@@ -74,7 +74,7 @@ function MinimapAPI.Debug.RandomMap(x,y)
 					DisplayFlags = 5,
 				}
 				x.PermanentIcons = {}
-				
+
 				for i=1,4 do
 					if math.random() <= 0.5 then
 						break
@@ -105,7 +105,7 @@ function MinimapAPI.Debug.Colors()
 				if not MinimapAPI:IsPositionFree(Vector(i,j),s) or size.X + i > 16 or size.Y + j > 16 or s == RoomShape.ROOMSHAPE_IH or s == RoomShape.ROOMSHAPE_IIH or s == RoomShape.ROOMSHAPE_IV or s == RoomShape.ROOMSHAPE_IIV then
 					s = 1
 				end
-			
+
 				MinimapAPI:AddRoom{
 					DisplayFlags = 5,
 					Position = Vector(i,j),
@@ -130,7 +130,7 @@ function MinimapAPI.Debug.OfSprite(sprite)
 			if MinimapAPI:IsPositionFree(Vector(i,j)) then
 				local s = 1
 				local size = MinimapAPI.RoomShapeGridSizes[s]
-			
+
 				local kcolor = sprite:GetTexel(Vector(i,j),Vector(0,0),1)
 				MinimapAPI:AddRoom{
 					DisplayFlags = 5,
@@ -148,7 +148,7 @@ end
 function MinimapAPI.Debug.Gen(r,noborderbreak)
 	MinimapAPI:ClearMap()
 	local x = MinimapAPI:AddRoom{Position=Vector(0,0),DisplayFlags=5}
-	
+
 	local powval = 2
 	local function addRoom(pw)
 		local rng = math.random()
@@ -173,7 +173,7 @@ function MinimapAPI.Debug.Gen(r,noborderbreak)
 			end
 		end
 	end
-	
+
 	local function getEndpoints()
 		local endpoints = {}
 		for i,v in ipairs(MinimapAPI.Level) do
@@ -185,11 +185,11 @@ function MinimapAPI.Debug.Gen(r,noborderbreak)
 		table.sort(endpoints, function(a,b) return math.abs(a.Position:Length()-25) < math.abs(a.Position:Length()-25) end)
 		return endpoints
 	end
-	
+
 	local game = Game()
 	local level = game:GetLevel()
 	local stageId = level:GetStage()
-	
+
 	local numberOfRooms = math.min(20, math.random(0,1) + 5 + math.floor(stageId * 10 / 3))
 	--curse laby
 	--curse lost
@@ -197,7 +197,7 @@ function MinimapAPI.Debug.Gen(r,noborderbreak)
 		numberOfRooms = 50 + math.random(0,9)
 	end
 	--hard mode
-	
+
 	local minDeadEnds = 5
 	if stageId ~= 1 then
 		minDeadEnds = minDeadEnds + 1
@@ -206,36 +206,36 @@ function MinimapAPI.Debug.Gen(r,noborderbreak)
 	if stageId == 12 then
 		minDeadEnds = minDeadEnds + 2
 	end
-	
+
 	local i = 2
 	r = r or numberOfRooms
 	while i <= r do
 		if addRoom(powval) then i = i + 1 end
 	end
-	
+
 	while #getEndpoints() < minDeadEnds do
 		local new = addRoom(1)
 		if new and #new:GetAdjacentRooms() ~= 1 then
 			MinimapAPI:RemoveRoom(new.Position)
 		end
 	end
-	
+
 	local endpoints = getEndpoints()
-	
+
 	local function deqEndp()
 		local ep = endpoints[#endpoints]
 		endpoints[#endpoints] = nil
 		return ep
 	end
-	
+
 	local function qEndp(x)
 		endpoints[#endpoints + 1] = x
 	end
-	
+
 	local function placeRoom(typ, room)
 		room.PermanentIcons = {typ}
 	end
-	
+
 	local last = deqEndp()
 	placeRoom("Boss",last)
 	placeRoom("SuperSecretRoom",deqEndp())
@@ -263,7 +263,7 @@ function MinimapAPI.Debug.Gen(r,noborderbreak)
 	--bedroom
 	--secret
 	--grave
-	
+
 	while true do
 		local dead = deqEndp()
 		if dead then
@@ -272,7 +272,7 @@ function MinimapAPI.Debug.Gen(r,noborderbreak)
 			break
 		end
 	end
-	
+
 	for i,v in ipairs(MinimapAPI.Level) do
 		local dist = v.Position:Distance(last.Position)
 		if dist <= 25 then
@@ -285,7 +285,7 @@ function MinimapAPI.Debug.Gen(r,noborderbreak)
 		v.Clear = true
 		v.Position.X = v.Position.X - v.Position.Y*0.2
 	end
-	
+
 	MinimapAPI:SetPlayerPosition(Vector(0,0))
 end
 
