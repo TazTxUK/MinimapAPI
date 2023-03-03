@@ -908,7 +908,7 @@ end
 function maproomfunctions:GetDisplayFlags()
 	local roomDesc = self.Descriptor
 	local df = self.DisplayFlags or 0
-	if self.Descriptor.Data.Type == RoomType.ROOM_ULTRASECRET and roomDesc.DisplayFlags == 0 then -- if red self is hidden and DFs not set
+	if roomDesc and roomDesc.Data.Type == RoomType.ROOM_ULTRASECRET and roomDesc.DisplayFlags == 0 then -- if red self is hidden and DFs not set
 		if not self:IsVisited() then
 			df = 0
 		end
