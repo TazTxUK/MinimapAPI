@@ -317,7 +317,11 @@ MinimapAPI:AddPriorityCallback(
     CALLBACK_PRIORITY,
     function(_, _)
         if addRenderCall then
-            MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, niceJourney_PostRender)
+            if StageAPI and StageAPI.Loaded then
+                StageAPI.AddCallback("MinimapAPI", "POST_HUD_RENDER", 1, niceJourney_PostRender)
+            else
+                MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, niceJourney_PostRender)
+            end
             addRenderCall = false
         end
     end
