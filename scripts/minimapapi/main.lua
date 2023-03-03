@@ -2123,6 +2123,11 @@ local function renderCallbackFunction(_)
 		if not gameroom:IsClear() then
 			return
 		end
+	end	
+	
+	--Hide during StageAPI reimplemented stage transition
+	if MinimapAPI.UsingPostHUDRender and StageAPI.TransitionAnimationData.State == 2 then
+		return
 	end
 
 	MinimapAPI.TargetGlobalScaleX = cache.MirrorDimension and -1 or 1
