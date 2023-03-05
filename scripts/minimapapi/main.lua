@@ -651,6 +651,7 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				Dimension = dimension,
 				Visited = roomDescriptor.VisitedCount > 0,
 				Clear = roomDescriptor.Clear,
+				Secret = roomDescriptor.Data.Type == RoomType.ROOM_SECRET or roomDescriptor.Data.Type == RoomType.ROOM_SUPERSECRET or roomDescriptor.Data.Type == RoomType.ROOM_ULTRASECRET,
 				Color = MinimapAPI.isRepentance and roomDescriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 			}
 
@@ -803,6 +804,7 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 				AdjacentDisplayFlags = MinimapAPI.RoomTypeDisplayFlagsAdjacent[roomDescriptor.Data.Type] or 5,
 				Type = roomDescriptor.Data.Type,
 				Level = dimension,
+				Secret = roomDescriptor.Data.Type == RoomType.ROOM_SECRET or roomDescriptor.Data.Type == RoomType.ROOM_SUPERSECRET or roomDescriptor.Data.Type == RoomType.ROOM_ULTRASECRET,
 				Color = roomDescriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 			}
 			if roomDescriptor.Data.Shape == RoomShape.ROOMSHAPE_LTL then
@@ -865,6 +867,7 @@ end
 ---@field IgnoreDescriptorFlags boolean
 ---@field TargetRenderOffset Vector
 ---@field PlayerDistance number
+---@field Secret boolean
 ---@field private AdjacentRooms MinimapAPI.Room[]
 local maproomfunctions = {}
 function maproomfunctions:IsVisible()
@@ -1041,6 +1044,7 @@ function maproomfunctions:SyncRoomDescriptor()
 		self.Dimension = MinimapAPI.CurrentDimension
 		self.Visited = self.Descriptor.VisitedCount > 0
 		self.Clear = self.Descriptor.Clear
+		self.Secret = self.Descriptor.Data.Type == RoomType.ROOM_SECRET or self.Descriptor.Data.Type == RoomType.ROOM_SUPERSECRET or self.Descriptor.Data.Type == RoomType.ROOM_ULTRASECRET
 		self.Color = MinimapAPI.isRepentance and self.Descriptor.Flags & RoomDescriptor.FLAG_RED_ROOM == RoomDescriptor.FLAG_RED_ROOM and Color(1,0.25,0.25,1,0,0,0) or nil
 
 		self:UpdateType()
@@ -1088,6 +1092,7 @@ function MinimapAPI:AddRoom(room)
 		Clear = room.Clear or false,
 		Visited = room.Visited or false,
 		AdjacentDisplayFlags = room.AdjacentDisplayFlags or 5,
+		Secret = room.Type == RoomType.ROOM_SECRET or room.Type == RoomType.ROOM_SUPERSECRET or room.Type == RoomType.ROOM_ULTRASECRET,
 		Hidden = room.Hidden or nil,
 		NoUpdate = room.NoUpdate or nil,
 		Dimension = room.Dimension or MinimapAPI.CurrentDimension,
@@ -1517,6 +1522,7 @@ function MinimapAPI:CopyLevels()
 				NoUpdate= room.NoUpdate,
 				RenderOffset= room.RenderOffset,
 				Shape= room.Shape,
+				Secret = room.Secret,
 				ItemIcons= MinimapAPI:DeepCopy(room.ItemIcons),
 				LockedIcons= MinimapAPI:DeepCopy(room.LockedIcons),
 				PermanentIcons= MinimapAPI:DeepCopy(room.PermanentIcons),
@@ -1546,6 +1552,7 @@ function MinimapAPI:RewindLevels()
 			newRoom.NoUpdate= room.NoUpdate
 			newRoom.RenderOffset= room.RenderOffset
 			newRoom.Shape= room.Shape
+			newRoom.Secret = room.Secret
 			newRoom.ItemIcons= MinimapAPI:DeepCopy(room.ItemIcons)
 			newRoom.LockedIcons= MinimapAPI:DeepCopy(room.LockedIcons)
 			newRoom.PermanentIcons= MinimapAPI:DeepCopy(room.PermanentIcons)
@@ -2205,19 +2212,21 @@ local function renderCallbackFunction(_)
 		--update map display flags
 		if gamelevel:GetStateFlag(LevelStateFlag.STATE_MAP_EFFECT) then
 			for _,v in ipairs(MinimapAPI:GetLevel()) do
-				if not (v.Type == RoomType.ROOM_SECRET or v.Type == RoomType.ROOM_SUPERSECRET or v.Type == RoomType.ROOM_ULTRASECRET) then
+				if not v.Secret then
 					v.DisplayFlags = v.DisplayFlags | 1
 				end
 			end
 		end
 		if gamelevel:GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT) then
 			for _,v in ipairs(MinimapAPI:GetLevel()) do
-				v.DisplayFlags = v.DisplayFlags | 6
+				if v.Secret then
+					v.DisplayFlags = v.DisplayFlags | 5
+				end
 			end
 		end
 		if gamelevel:GetStateFlag(LevelStateFlag.STATE_COMPASS_EFFECT) then
 			for _,v in ipairs(MinimapAPI:GetLevel()) do
-				if #v.PermanentIcons > 0 and not (v.Type == RoomType.ROOM_SECRET or v.Type == RoomType.ROOM_SUPERSECRET or v.Type == RoomType.ROOM_ULTRASECRET) then
+				if #v.PermanentIcons > 0 and not v.Secret then
 					v.DisplayFlags = v.DisplayFlags | 6
 				end
 			end
@@ -2334,6 +2343,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 						Clear = v.Clear,
 						Color = v.Color and Color(v.Color.R, v.Color.G, v.Color.B, v.Color.A, v.Color.RO, v.Color.GO, v.Color.BO),
 						AdjacentDisplayFlags = v.AdjacentDisplayFlags,
+						Secret = v.Secret,
 						Visited = v.Visited,
 						Hidden = v.Hidden,
 						NoUpdate = v.NoUpdate,
@@ -2379,6 +2389,7 @@ function MinimapAPI:GetSaveTable(menuexit)
 					Color = v.Color and
 						{ R = v.Color.R, G = v.Color.G, B = v.Color.B, A = v.Color.A, RO = v.Color.RO, GO = v.Color.GO, BO = v.Color.BO },
 					AdjacentDisplayFlags = v.AdjacentDisplayFlags,
+					Secret = v.Secret,
 					Visited = v.Visited,
 					Hidden = v.Hidden,
 					NoUpdate = v.NoUpdate,
