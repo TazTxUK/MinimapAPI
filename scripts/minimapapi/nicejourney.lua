@@ -15,6 +15,7 @@ local currentlyHighlighted = nil
 local lastMousePos = Vector( -1, -1)
 local mouseMoved = false
 local controlsDisabled = false
+local cursorMovedWithKeyboard = false
 
 local TeleportMarkerSprite = Sprite()
 TeleportMarkerSprite:Load("gfx/ui/minimapapi/teleport_marker.anm2", true)
@@ -207,6 +208,7 @@ local function HandleMoveCursorWithButtons()
             posToCheck = { 4, 8 }
         end
 
+        cursorMovedWithKeyboard = posToCheck
         if posToCheck then
             local doorPositions = MinimapAPI.RoomShapeDoorCoords[currentlyHighlighted.Shape]
             for _, possiblePos in ipairs(posToCheck) do
@@ -294,18 +296,17 @@ local function niceJourney_PostRender()
 end
 
 MinimapAPI:AddPriorityCallback(
-    ModCallbacks.MC_POST_PEFFECT_UPDATE,
+    ModCallbacks.MC_POST_UPDATE,
     CALLBACK_PRIORITY,
-    ---@param player EntityPlayer
-    function(_, player)
-        if controlsDisabled then
-            player.ControlsEnabled = true
-            controlsDisabled = false
-            return
-        end
-        if teleportTarget then
-            player.ControlsEnabled = false
+    function(_)
+        if tabPressTimeStart > 1000 and not controlsDisabled and cursorMovedWithKeyboard then
+            print("yes")
+            Isaac.GetPlayer(0).ControlsEnabled = false
             controlsDisabled = true
+        elseif tabPressTimeStart == 0 and controlsDisabled then
+            Isaac.GetPlayer(0).ControlsEnabled = true
+            controlsDisabled = false
+            print("no")
         end
     end
 )
