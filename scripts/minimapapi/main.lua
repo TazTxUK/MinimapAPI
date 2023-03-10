@@ -2412,7 +2412,7 @@ MinimapAPI:AddPriorityCallback(
 		badload = MinimapAPI:IsBadLoad()
 		if addRenderCall then
 			if StageAPI and StageAPI.Loaded then
-				StageAPI.AddCallback("MinimapAPI", "POST_HUD_RENDER", 1, renderCallbackFunction)
+				StageAPI.AddCallback("MinimapAPI", "POST_HUD_RENDER", constants.STAGEAPI_CALLBACK_PRIORITY, renderCallbackFunction)
 				MinimapAPI.UsingPostHUDRender = true
 			else
 				MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, renderCallbackFunction)
