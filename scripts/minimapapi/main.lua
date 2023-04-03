@@ -1551,26 +1551,28 @@ function MinimapAPI:RewindLevels()
 	MinimapAPI:LoadDefaultMap()
 	MinimapAPI:updatePlayerPos()
 	for i, lvl in pairs(currentMapStateCopy) do
-		for index, room in pairs(lvl) do
-			local newRoom = MinimapAPI.Levels[i][index]
-			if newRoom then -- safety check for corrupted rewind data
-				newRoom.AdjacentDisplayFlags= room.AdjacentDisplayFlags
-				newRoom.Color= room.Color
-				newRoom.Descriptor= room.Descriptor
-				newRoom.Dimension= room.Dimension
-				newRoom.DisplayFlags= room.DisplayFlags
-				newRoom.DisplayPosition= room.DisplayPosition
-				newRoom.Hidden= room.Hidden
-				newRoom.ID= room.ID
-				newRoom.IgnoreDescriptorFlags= room.IgnoreDescriptorFlags
-				newRoom.NoUpdate= room.NoUpdate
-				newRoom.RenderOffset= room.RenderOffset
-				newRoom.Shape= room.Shape
-				newRoom.Secret = room.Secret
-				newRoom.ItemIcons= MinimapAPI:DeepCopy(room.ItemIcons)
-				newRoom.LockedIcons= MinimapAPI:DeepCopy(room.LockedIcons)
-				newRoom.PermanentIcons= MinimapAPI:DeepCopy(room.PermanentIcons)
-				newRoom.VisitedIcons= MinimapAPI:DeepCopy(room.VisitedIcons)
+		if MinimapAPI.Levels[i] then
+			for index, room in pairs(lvl) do
+				local newRoom = MinimapAPI.Levels[i][index]
+				if newRoom then -- safety check for corrupted rewind data
+					newRoom.AdjacentDisplayFlags= room.AdjacentDisplayFlags
+					newRoom.Color= room.Color
+					newRoom.Descriptor= room.Descriptor
+					newRoom.Dimension= room.Dimension
+					newRoom.DisplayFlags= room.DisplayFlags
+					newRoom.DisplayPosition= room.DisplayPosition
+					newRoom.Hidden= room.Hidden
+					newRoom.ID= room.ID
+					newRoom.IgnoreDescriptorFlags= room.IgnoreDescriptorFlags
+					newRoom.NoUpdate= room.NoUpdate
+					newRoom.RenderOffset= room.RenderOffset
+					newRoom.Shape= room.Shape
+					newRoom.Secret = room.Secret
+					newRoom.ItemIcons= MinimapAPI:DeepCopy(room.ItemIcons)
+					newRoom.LockedIcons= MinimapAPI:DeepCopy(room.LockedIcons)
+					newRoom.PermanentIcons= MinimapAPI:DeepCopy(room.PermanentIcons)
+					newRoom.VisitedIcons= MinimapAPI:DeepCopy(room.VisitedIcons)
+				end
 			end
 		end
 	end
