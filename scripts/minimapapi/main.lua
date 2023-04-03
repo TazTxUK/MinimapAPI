@@ -2085,7 +2085,7 @@ function MinimapAPI:renderRoomShadows(useCutOff)
 	sprite:SetFrame("RoomOutline", 1)
 
 	for _, room in pairs(MinimapAPI:GetLevel()) do
-		if room:IsVisible() then
+		if room:IsShadow() or room:IsVisible() then
 			for _, pos in ipairs(MinimapAPI:GetRoomShapePositions(room.Shape)) do
 				pos = Vector(pos.X * renderRoomSize.X * MinimapAPI.GlobalScaleX, pos.Y * renderRoomSize.Y)
 				if useCutOff then
