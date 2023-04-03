@@ -2310,7 +2310,7 @@ local function renderCallbackFunction(_)
 				else
 					local minx = screen_size.X
 					local maxY = 0
-					local size = (MinimapAPI:IsLarge() and largeRoomSize or roomSize)
+					local size = (islarge and largeRoomSize or roomSize)
 					for _, v in ipairs(MinimapAPI:GetLevel()) do
 						if v.TargetRenderOffset then
 							if MinimapAPI.GlobalScaleX >= 0 then
@@ -2323,10 +2323,15 @@ local function renderCallbackFunction(_)
 								v.RenderOffset.Y + MinimapAPI:GetConfig("PositionY") + MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size.Y)
 						end
 					end
+					
+					local questionmarkOffset = Vector(0, 0)
+					if not (MinimapAPI:GetConfig("OverrideLost") or game:GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0) then
+						questionmarkOffset = Vector(32, 32)
+					end
 					if MinimapAPI:GetConfig("DisplayLevelFlags") == 1 then -- LEFT
-						levelflagoffset = Vector(minx, MinimapAPI:GetConfig("PositionY")) + Vector(-size.X*1.5,12)
+						levelflagoffset = Vector(minx, MinimapAPI:GetConfig("PositionY")) + Vector(-size.X*1.5,12) + Vector(-questionmarkOffset.X, 0)
 					else -- BOTTOM
-						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), maxY) + Vector(-12,size.Y*1.5)
+						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), maxY) + Vector(-12,size.Y*1.5) + Vector(0, questionmarkOffset.Y)
 					end
 				end
 				renderMinimapLevelFlags(levelflagoffset)
