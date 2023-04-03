@@ -2309,9 +2309,9 @@ local function renderCallbackFunction(_)
 				else
 					local minx = screen_size.X
 					local maxY = 0
+					local size = (MinimapAPI:IsLarge() and largeRoomSize or roomSize)
 					for _, v in ipairs(MinimapAPI:GetLevel()) do
 						if v.TargetRenderOffset then
-							local size = (MinimapAPI:IsLarge() and largeRoomSize or roomSize)
 							if MinimapAPI.GlobalScaleX >= 0 then
 								minx = math.min(minx, v.RenderOffset.X)
 							else
@@ -2323,9 +2323,9 @@ local function renderCallbackFunction(_)
 						end
 					end
 					if MinimapAPI:GetConfig("DisplayLevelFlags") == 1 then -- LEFT
-						levelflagoffset = Vector(minx, MinimapAPI:GetConfig("PositionY")) + Vector(0,10)
+						levelflagoffset = Vector(minx, MinimapAPI:GetConfig("PositionY")) + Vector(-size.X*1.5,12)
 					else -- BOTTOM
-						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), maxY) + Vector(-10,0)
+						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), maxY) + Vector(-12,size.Y*1.5)
 					end
 				end
 				renderMinimapLevelFlags(levelflagoffset)
