@@ -29,6 +29,15 @@ function MinimapAPI:GetHudOffset()
 	return MinimapAPI.isRepentance and Options.HUDOffset or 0
 end
 
+function MinimapAPI:AddCallbackFunc(callbackID, priority, func, extraAttr)
+	if MinimapAPI.isRepentance then
+
+		MinimapAPI:AddPriorityCallback(callbackID, priority, func, extraAttr)
+	else
+		MinimapAPI:AddCallback(callbackID, func, extraAttr)
+	end
+end
+
 function MinimapAPI:GetScreenBottomRight(offset)
 
 	offset = offset or (MinimapAPI:GetHudOffset() * 10)
@@ -1378,7 +1387,7 @@ function MinimapAPI:IsBadLoad()
 	return spr:GetFrame() ~= 0
 end
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_NEW_LEVEL, CALLBACK_PRIORITY, function(_)
+MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_NEW_LEVEL, CALLBACK_PRIORITY, function(_)
 	MinimapAPI:ClearLevels()
 	MinimapAPI:LoadDefaultMap()
 	MinimapAPI:updatePlayerPos()
@@ -1412,7 +1421,7 @@ end
 local currentMapStateCopy = {}
 local GlowingHourglassTriggered = false
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CALLBACK_PRIORITY, function(_, colltype, _)
+MinimapAPI:AddCallbackFunc(ModCallbacks.MC_USE_ITEM, CALLBACK_PRIORITY, function(_, colltype, _)
 	if colltype == CollectibleType.COLLECTIBLE_CRYSTAL_BALL then
 		MinimapAPI:EffectCrystalBall()
 		MinimapAPI:UpdateExternalMap()
@@ -1435,7 +1444,7 @@ MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_ITEM, CALLBACK_PRIORITY, func
 end)
 
 if MinimapAPI.isRepentance then
-	MinimapAPI:AddPriorityCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, CALLBACK_PRIORITY, function(_)
+	MinimapAPI:AddCallbackFunc(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, CALLBACK_PRIORITY, function(_)
 		for i = 0, game:GetNumPlayers() - 1 do
 			local player = Isaac.GetPlayer(i)
 			if player:HasTrinket(TrinketType.TRINKET_CRYSTAL_KEY) or
@@ -1478,7 +1487,7 @@ function MinimapAPI:UpdateExternalMap()
 end
 
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CALLBACK_PRIORITY, function(_)
+MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_NEW_ROOM, CALLBACK_PRIORITY, function(_)
 	MinimapAPI.CurrentDimension = cache.Dimension
 	MinimapAPI:RunDimensionCallbacks()
 	if not MinimapAPI:GetLevel() then
@@ -1596,7 +1605,7 @@ function MinimapAPI:ShowMap()
 	MinimapAPI:UpdateExternalMap()
 end
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_USE_CARD, CALLBACK_PRIORITY, function(_, card)
+MinimapAPI:AddCallbackFunc(ModCallbacks.MC_USE_CARD, CALLBACK_PRIORITY, function(_, card)
 	if card == Card.CARD_WORLD or card == Card.CARD_SUN or card == Card.RUNE_ANSUZ then
 		MinimapAPI.lastCardUsedRoom = MinimapAPI:GetCurrentRoom()
 	elseif MinimapAPI.isRepentance and card == Card.CARD_CRACKED_KEY or card == Card.CARD_SOUL_CAIN then
@@ -1658,7 +1667,7 @@ function MinimapAPI:FirstMapDisplayMode()
 	end
 end
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_INPUT_ACTION, CALLBACK_PRIORITY, function(_, entity, _, buttonAction)
+MinimapAPI:AddCallbackFunc(ModCallbacks.MC_INPUT_ACTION, CALLBACK_PRIORITY, function(_, entity, _, buttonAction)
 
 	if entity and buttonAction == ButtonAction.ACTION_MAP then
 		local player = entity:ToPlayer()
@@ -2405,7 +2414,7 @@ end
 -- LOADING SAVED GAME
 local isFirstGame = true
 local addRenderCall = true
-MinimapAPI:AddPriorityCallback(
+MinimapAPI:AddCallbackFunc(
 	ModCallbacks.MC_POST_GAME_STARTED,
 	CALLBACK_PRIORITY,
 	function(_, is_save)
@@ -2415,7 +2424,7 @@ MinimapAPI:AddPriorityCallback(
 				StageAPI.AddCallback("MinimapAPI", "POST_HUD_RENDER", constants.STAGEAPI_CALLBACK_PRIORITY, renderCallbackFunction)
 				MinimapAPI.UsingPostHUDRender = true
 			else
-				MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, renderCallbackFunction)
+				MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, renderCallbackFunction)
 			end
 			addRenderCall = false
 		end
@@ -2438,7 +2447,7 @@ MinimapAPI:AddPriorityCallback(
 )
 
 -- SAVING GAME
-MinimapAPI:AddPriorityCallback(
+MinimapAPI:AddCallbackFunc(
 	ModCallbacks.MC_PRE_GAME_EXIT,
 	CALLBACK_PRIORITY,
 	function(_, menuexit)

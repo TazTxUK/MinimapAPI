@@ -295,7 +295,7 @@ local function niceJourney_PostRender()
     end
 end
 
-MinimapAPI:AddPriorityCallback(
+MinimapAPI:AddCallbackFunc(
     ModCallbacks.MC_POST_UPDATE,
     CALLBACK_PRIORITY,
     function(_)
@@ -313,7 +313,7 @@ MinimapAPI:AddPriorityCallback(
 
 local addRenderCall = true
 
-MinimapAPI:AddPriorityCallback(
+MinimapAPI:AddCallbackFunc(
     ModCallbacks.MC_POST_GAME_STARTED,
     CALLBACK_PRIORITY,
     function(_, _)
@@ -321,11 +321,11 @@ MinimapAPI:AddPriorityCallback(
             if StageAPI and StageAPI.Loaded then
                 StageAPI.AddCallback("MinimapAPI", "POST_HUD_RENDER", constants.STAGEAPI_CALLBACK_PRIORITY, niceJourney_PostRender)
             else
-                MinimapAPI:AddPriorityCallback(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, niceJourney_PostRender)
+                MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, niceJourney_PostRender)
             end
             addRenderCall = false
         end
     end
 )
 
-MinimapAPI:AddPriorityCallback(ModCallbacks.MC_EXECUTE_CMD, CALLBACK_PRIORITY, niceJourney_ExecuteCmd)
+MinimapAPI:AddCallbackFunc(ModCallbacks.MC_EXECUTE_CMD, CALLBACK_PRIORITY, niceJourney_ExecuteCmd)

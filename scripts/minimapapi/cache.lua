@@ -36,6 +36,10 @@ function cache.ReloadRoomCache()
 end
 cache.ReloadRoomCache()
 
-mod:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CALLBACK_PRIORITY, cache.ReloadRoomCache)
+if MinimapAPI.isRepentance then
+	mod:AddPriorityCallback(ModCallbacks.MC_POST_NEW_ROOM, CALLBACK_PRIORITY, cache.ReloadRoomCache)
+else
+	mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, cache.ReloadRoomCache)
+end
 
 return cache
