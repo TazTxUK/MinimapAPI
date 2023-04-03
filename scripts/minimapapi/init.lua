@@ -1,5 +1,5 @@
 MinimapAPI = require("scripts.minimapapi")
-MinimapAPI.isRepentance = getmetatable(Sprite) ~= nil and getmetatable(Sprite).__class ~= nil and getmetatable(Sprite).__class.GetAnimation ~= nil -- REPENTANCE variable can be altered by any mod, so we try alternative method and save the result
+MinimapAPI.isRepentance = REPENTANCE -- REPENTANCE variable can be altered by any mod, so we save it early so later changes dont affect it
 
 require("scripts.minimapapi.version")
 
