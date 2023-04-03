@@ -1191,7 +1191,7 @@ end
 ---@return MinimapAPI.Room | nil
 function MinimapAPI:GetRoomByIdx(Idx)
 	for _, v in ipairs(MinimapAPI:GetLevel()) do
-		if v.Descriptor and v.Descriptor.GridIndex == Idx then
+		if v.Descriptor and v.Descriptor.SafeGridIndex == Idx then
 			return v
 		end
 	end
