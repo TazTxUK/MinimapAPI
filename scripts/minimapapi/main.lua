@@ -841,6 +841,7 @@ function MinimapAPI:CheckForNewRedRooms(dimension)
 		end
 	end
 	MinimapAPI.CheckedRoomCount = #rooms
+	MinimapAPI:UpdateExternalMap()
 end
 
 function MinimapAPI:ClearMap(dimension)
@@ -1609,6 +1610,10 @@ MinimapAPI:AddCallbackFunc(ModCallbacks.MC_USE_CARD, CALLBACK_PRIORITY, function
 	if card == Card.CARD_WORLD or card == Card.CARD_SUN or card == Card.RUNE_ANSUZ then
 		MinimapAPI.lastCardUsedRoom = MinimapAPI:GetCurrentRoom()
 	elseif MinimapAPI.isRepentance and card == Card.CARD_CRACKED_KEY or card == Card.CARD_SOUL_CAIN then
+		--Update visibility of adjacent rooms like secret rooms
+		for _,room in ipairs(MinimapAPI:GetCurrentRoom():GetAdjacentRooms()) do
+			room:SetDisplayFlags(5)
+		end
 		MinimapAPI:CheckForNewRedRooms()
 	end
 end)
