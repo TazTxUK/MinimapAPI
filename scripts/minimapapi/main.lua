@@ -215,6 +215,9 @@ MinimapAPI.SpriteMinimapLarge:Load("gfx/ui/minimapapi_minimap2.anm2", true)
 
 MinimapAPI.SpriteIcons = Sprite()
 MinimapAPI.SpriteIcons:Load("gfx/ui/minimapapi_icons.anm2", true)
+MinimapAPI.SpriteQuestionmark = Sprite()
+MinimapAPI.SpriteQuestionmark:Load("gfx/ui/minimapapi/questionmark.anm2", true)
+MinimapAPI.SpriteQuestionmark:Play("questionmark")
 
 MinimapAPI.SpriteMinimapCustomSmall = Sprite()
 MinimapAPI.SpriteMinimapCustomSmall:Load("gfx/ui/minimapapi/custom_minimap1.anm2", true)
@@ -1751,13 +1754,18 @@ local function renderIcons(icons, locs, k, room, sprite, size, renderRoomSize)
 	return k
 end
 
+function MinimapAPI:renderQuestionMark(offsetVec)
+	MinimapAPI.SpriteQuestionmark:Render(offsetVec, vectorZero, vectorZero)
+end
+
 local function renderUnboundedMinimap(size,hide)
+	local screen_size = MinimapAPI:GetScreenTopRight()
+	local offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), screen_size.Y + MinimapAPI:GetConfig("PositionY"))
 	if not(MinimapAPI:GetConfig("OverrideLost") or game:GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0) then
+		MinimapAPI:renderQuestionMark(offsetVec+Vector(0,5))
 		return
 	end
 	MinimapAPI:UpdateUnboundedMapOffset()
-	local screen_size = MinimapAPI:GetScreenTopRight()
-	local offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), screen_size.Y + MinimapAPI:GetConfig("PositionY"))
 	local renderRoomSize = size == "small" and roomSize or largeRoomSize
 	local renderAnimPivot = size == "small" and roomAnimPivot or largeRoomAnimPivot
 	local sprite = size == "small" and MinimapAPI.SpriteMinimapSmall or MinimapAPI.SpriteMinimapLarge
@@ -1951,6 +1959,7 @@ local function renderBoundedMinimap()
 	end
 
 	if not(MinimapAPI:GetConfig("OverrideLost") or game:GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0) then
+		MinimapAPI:renderQuestionMark(offsetVec + Vector(MinimapAPI:GetConfig("MapFrameWidth")/2,MinimapAPI:GetConfig("MapFrameHeight")/2))
 		return
 	end
 	MinimapAPI:UpdateMinimapCenterOffset()
