@@ -284,7 +284,7 @@ local function niceJourney_PostRender()
     end
 
     local pressed = Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_LEFT) or
-        Input.IsActionPressed(ButtonAction.ACTION_MENUCONFIRM, 0)
+        Input.IsActionPressed(ButtonAction.ACTION_MENUCONFIRM, playerController)
     if pressed and not WasTriggered and teleportTarget
         and teleportTarget ~= 'current' then
         WasTriggered = true
