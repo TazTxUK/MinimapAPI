@@ -25,14 +25,5 @@ You can find this mod on the [Steam Workshop](https://steamcommunity.com/sharedf
 ### Documentation
 Go to the wiki section or [click here](https://github.com/TazTxUK/MinimapAPI/wiki)
 
-## Backlog / Todo-List
-### Planned Features:
-* Change position of the Map Curse icons (left, bottom[vanilla])
-* Implement grid entity icons
-* Dynamic room shapes
-
-
-### Known issues:
-* Curse of the Lost questionmark isnt drawn
-* Using "Glowing Hourglass" to undo a card that reveals the map, will still display the map
-* See [Issues](https://github.com/TazTxUK/MinimapAPI/issues)
+## Issues and Todo-List
+* See [Issues on GitHub](https://github.com/TazTxUK/MinimapAPI/issues)

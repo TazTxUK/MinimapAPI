@@ -15,13 +15,6 @@
 - Add Map Curse Icons (restock, curses)
 - And loads of other QoL improvements
 
-[h1][b]Planned Features:[/b][/h1]
-- Change position of the Map Curse icons (left, bottom[vanilla])
-- Add pickup display config options: (One pickup per item group, one pickup per corresponding icon, show all)
-- Draw new pickup icons (where applicable):
--- Trapdoor/ladder (Grid Entity icons not implemented)
-- Hovering over a room will display a list of its contents (Thanks JSG!)
-
 [h1][b]if you see two minimaps, restart your game![/b][/h1]
 
 [h1]Special Thanks:[/h1]
