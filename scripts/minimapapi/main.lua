@@ -2186,7 +2186,8 @@ local function renderCallbackFunction(_)
 				currentroomdata.Clear = gamelevel:GetCurrentRoomDesc().Clear
 				currentroomdata.Visited = true
 			end
-			if currentroomdata.Hidden then
+			if currentroomdata.Secret then
+				-- Special handling for Secret rooms and updating the adjacent room visibility
 				for _,doorslot in ipairs(MinimapAPI.RoomShapeDoorSlots[currentroomdata.Shape]) do
 					local doorent = gameroom:GetDoor(doorslot)
 					if doorent and doorent:IsOpen() then
