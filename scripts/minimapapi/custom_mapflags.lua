@@ -18,22 +18,22 @@ local function anyPlayerHasCollectible(collectible)
 end
 
 local function MindCondition()
-	return anyPlayerHasCollectible(CollectibleType.COLLECTIBLE_MIND)
+	return game:GetLevel():GetStateFlag(LevelStateFlag.STATE_FULL_MAP_EFFECT) or anyPlayerHasCollectible(CollectibleType.COLLECTIBLE_MIND)
 end
 
 local function TreasureMapCondition()
 	if MindCondition() then return false end
-	return anyPlayerHasCollectible(CollectibleType.COLLECTIBLE_TREASURE_MAP)
+	return game:GetLevel():GetStateFlag(LevelStateFlag.STATE_MAP_EFFECT) or anyPlayerHasCollectible(CollectibleType.COLLECTIBLE_TREASURE_MAP)
 end
 
 local function BlueMapCondition()
 	if MindCondition() then return false end
-	return anyPlayerHasCollectible(CollectibleType.COLLECTIBLE_BLUE_MAP)
+	return game:GetLevel():GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT) or anyPlayerHasCollectible(CollectibleType.COLLECTIBLE_BLUE_MAP)
 end
 
 local function CompassCondition()
 	if MindCondition() then return false end
-	return anyPlayerHasCollectible(CollectibleType.COLLECTIBLE_COMPASS)
+	return game:GetLevel():GetStateFlag(LevelStateFlag.STATE_COMPASS_EFFECT) or anyPlayerHasCollectible(CollectibleType.COLLECTIBLE_COMPASS)
 end
 
 local function RestockCondition()
