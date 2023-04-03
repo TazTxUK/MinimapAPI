@@ -300,13 +300,11 @@ MinimapAPI:AddCallbackFunc(
     CALLBACK_PRIORITY,
     function(_)
         if tabPressTimeStart > 1000 and not controlsDisabled and cursorMovedWithKeyboard then
-            print("yes")
             Isaac.GetPlayer(0).ControlsEnabled = false
             controlsDisabled = true
         elseif tabPressTimeStart == 0 and controlsDisabled then
             Isaac.GetPlayer(0).ControlsEnabled = true
             controlsDisabled = false
-            print("no")
         end
     end
 )
