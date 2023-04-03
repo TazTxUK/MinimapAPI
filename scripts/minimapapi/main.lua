@@ -617,7 +617,8 @@ local function GetRoomDescAndDimFromListIndex(listIndex)
     local constDesc = level:GetRooms():Get(listIndex)
 
     if not constDesc then
-        error(("GetRoomDescFromListIndex: bad index %d"):format(listIndex), 2)
+		Isaac.ConsoleOutput("Error in MinimapAPI GetRoomDescFromListIndex: room listindex '"..tostring(listIndex).."' doesnt exist\n")
+		return nil, 0
     end
     local gridIndex = constDesc.SafeGridIndex
 	local fallbackDesc,fallbackDim = nil, 0
