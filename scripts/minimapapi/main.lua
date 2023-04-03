@@ -475,10 +475,10 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 	local addIcons = {}
 	for _, ent in ipairs(Isaac.GetRoomEntities()) do
 		local success = false
-		local id = type(ent:GetData()) == "table" and ent:GetData().MinimapAPIPickupID
+		local id = type(ent:GetData()) == "table" and ent:GetData().MinimapAPIPickupID -- sanity checks to get entity Data
 		if id == nil then
 			for i, v in pairs(MinimapAPI.PickupList) do
-				local currentid = MinimapAPI.PickupList[ent:GetData().MinimapAPIPickupID]
+				local currentid = MinimapAPI.PickupList[id]
 				if not currentid or (currentid.Priority < v.Priority) then
 					if ent.Type == v.Type then
 						local toPickup = ent:ToPickup()
@@ -866,7 +866,7 @@ end
 ---@field LockedIcons string[]
 ---@field ItemIcons string[]
 ---@field VisitedIcons string[]
----@field Descriptor RoomDescriptor # may be nil for custom rooms
+---@field Descriptor RoomDescriptor | nil # may be nil for custom rooms
 ---@field TeleportHandler TeleportHandler # may be nil, used to handle minimapAPI map teleport for custom rooms
 ---@field Color Color | nil
 ---@field RenderOffset Vector
@@ -876,7 +876,7 @@ end
 ---@field AdjacentDisplayFlags integer
 ---@field Hidden boolean
 ---@field NoUpdate boolean
----@field Dimension integer
+---@field Dimension number?
 ---@field IgnoreDescriptorFlags boolean
 ---@field TargetRenderOffset Vector
 ---@field PlayerDistance number
@@ -1632,7 +1632,7 @@ function MinimapAPI:PrevMapDisplayMode()
 		[3] = MinimapAPI:GetConfig("AllowToggleLargeMap"),
 		[4] = MinimapAPI:GetConfig("AllowToggleNoMap"),
 	}
-	for i=1,4 do
+	for _ = 1, 4 do
 		MinimapAPI.Config.DisplayMode = MinimapAPI.Config.DisplayMode - 1
 		if MinimapAPI.Config.DisplayMode < 1 then
 			MinimapAPI.Config.DisplayMode = 4
@@ -1650,7 +1650,7 @@ function MinimapAPI:NextMapDisplayMode()
 		[3] = MinimapAPI:GetConfig("AllowToggleLargeMap"),
 		[4] = MinimapAPI:GetConfig("AllowToggleNoMap"),
 	}
-	for i=1,4 do
+	for _ = 1, 4 do
 		MinimapAPI.Config.DisplayMode = MinimapAPI.Config.DisplayMode + 1
 		if MinimapAPI.Config.DisplayMode > 4 then
 			MinimapAPI.Config.DisplayMode = 1
@@ -1734,12 +1734,14 @@ local function renderMinimapLevelFlags(renderOffset)
 	end
 end
 
+
+---@return integer
 local function renderIcons(icons, locs, k, room, sprite, size, renderRoomSize)
 	for _, icon in ipairs(icons) do
 		local icontb = MinimapAPI:GetIconAnimData(icon)
 		if icontb then
 			local loc = locs[k]
-			if not loc then return end
+			if not loc then return k end
 			local iconlocOffset = Vector(loc.X * renderRoomSize.X, loc.Y * renderRoomSize.Y)
 			local spr = icontb.sprite or sprite
 			updateMinimapIcon(spr, icontb)
