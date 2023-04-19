@@ -17,6 +17,74 @@ if modconfigexists then
 		"As much information as possible.",
 		"The map is long and thin.",
 	}
+	Controller = Controller or {}
+	Controller.DPAD_LEFT = 0
+	Controller.DPAD_RIGHT = 1
+	Controller.DPAD_UP = 2
+	Controller.DPAD_DOWN = 3
+	Controller.BUTTON_A = 4
+	Controller.BUTTON_B = 5
+	Controller.BUTTON_X = 6
+	Controller.BUTTON_Y = 7
+	Controller.BUMPER_LEFT = 8
+	Controller.TRIGGER_LEFT = 9
+	Controller.STICK_LEFT = 10
+	Controller.BUMPER_RIGHT = 11
+	Controller.TRIGGER_RIGHT = 12
+	Controller.STICK_RIGHT = 13
+	Controller.BUTTON_BACK = 14
+	Controller.BUTTON_START = 15
+
+	function MinimapAPI:AddHotkeySetting(category, optionName, displayText, infoText, isController)
+		if (type(infoText) == "string") then infoText = {infoText} end
+		local optionType = ModConfigMenu.OptionType.KEYBIND_KEYBOARD
+		local hotkeyToString = InputHelper.KeyboardToString
+		local deviceString = "keyboard"
+		local backString = "ESCAPE"
+		if isController then
+			optionType = ModConfigMenu.OptionType.KEYBIND_CONTROLLER
+			hotkeyToString = InputHelper.ControllerToString
+			deviceString = "controller"
+			backString = "BACK"
+		end
+		MCM.AddSetting(
+			"Minimap API",
+			category,
+			{
+				Type = optionType,
+				CurrentSetting = function()
+					return MinimapAPI.Config[optionName]
+				end,
+				Display = function()
+					local key = "None"
+					if (hotkeyToString[MinimapAPI.Config[optionName]]) then key = hotkeyToString[MinimapAPI.Config[optionName]] end
+					return displayText .. ": " .. key
+				end,
+				OnChange = function(currentNum)
+					if not isController and currentNum == nil then
+							currentNum = Keyboard.KEY_ENTER
+					end
+
+					MinimapAPI.Config[optionName] = currentNum or -1
+				end,
+				PopupGfx = ModConfigMenu.PopupGfx.WIDE_SMALL,
+				PopupWidth = 280,
+				Popup = function()
+					local currentValue = MinimapAPI.Config[optionName]
+					local keepSettingString = ""
+					if currentValue > -1 then
+						local currentSettingString = hotkeyToString[currentValue]
+						keepSettingString = "This setting is currently set to \"" .. currentSettingString .. "\".$newlinePress this button to keep it unchanged.$newline$newline"
+					end
+					return "Press a button on your "..deviceString.." to change this setting.$newline$newline" .. keepSettingString .. "Press "..backString.." to go back and clear this setting."				
+				end,
+				Info = infoText
+			}
+		)
+	end
+
+
+	-- START MOD CONFIG MENU --
 
 	MCM.AddText("Minimap API", "Presets", function() return "Mod by Taz and Wofsauge" end)
 
@@ -434,15 +502,19 @@ if modconfigexists then
 				return MinimapAPI.Config.MouseTeleport
 			end,
 			Display = function()
-				return "Mouse teleportation: " .. (MinimapAPI.Config.MouseTeleport and "ON" or "OFF")
+				return "Map teleportation: " .. (MinimapAPI.Config.MouseTeleport and "ON" or "OFF")
 			end,
 			OnChange = function(currentBool)
 				MinimapAPI.Config.MouseTeleport = currentBool
 				MinimapAPI.Config.ConfigPreset = 0
 			end,
-			Info = {"Allows you to teleport by clicking on rooms on the map."}
+			Info = {"Allows you to teleport by clicking on rooms on the map or by holding down the map button and use directional buttons and confirm to teleport."}
 		}
 	)
+	MinimapAPI:AddHotkeySetting("Modes", "TeleportConfirmKey", "Teleport Confirm (Keyboard)",
+		"Press this key to confirm the selected teleport location and teleport to it. Choose A or Escape to reset it back to ENTER", false)
+	MinimapAPI:AddHotkeySetting("Modes", "TeleportConfirmButton", "Teleport Confirm (Controller)",
+		"Press this key to confirm the selected teleport location and teleport to it.", true)
 
 	MCM.AddSetting(
 		"Minimap API",

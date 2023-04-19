@@ -208,8 +208,8 @@ local function HandleMoveCursorWithButtons()
             posToCheck = { 4, 8 }
         end
 
-        cursorMovedWithKeyboard = posToCheck
         if posToCheck then
+            cursorMovedWithKeyboard = true
             local doorPositions = MinimapAPI.RoomShapeDoorCoords[currentlyHighlighted.Shape]
             for _, possiblePos in ipairs(posToCheck) do
                 if doorPositions[possiblePos] then
@@ -284,7 +284,8 @@ local function niceJourney_PostRender()
     end
 
     local pressed = Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_LEFT) or
-        Input.IsActionPressed(ButtonAction.ACTION_MENUCONFIRM, playerController)
+        Input.IsButtonTriggered(MinimapAPI.Config.TeleportConfirmKey, 0) or
+        Input.IsButtonTriggered(MinimapAPI.Config.TeleportConfirmButton, playerController)
     if pressed and not WasTriggered and teleportTarget
         and teleportTarget ~= 'current' then
         WasTriggered = true
