@@ -487,6 +487,7 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 								if v.SubType == -1 or ent.SubType == v.SubType then
 									if (not v.Condition) or v.Condition(ent) then
 										ent:GetData().MinimapAPIPickupID = i
+										id = i
 										success = true
 									end
 								end
