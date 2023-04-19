@@ -1770,7 +1770,7 @@ local function renderUnboundedMinimap(size,hide)
 	local screen_size = MinimapAPI:GetScreenTopRight()
 	local offsetVec = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), screen_size.Y + MinimapAPI:GetConfig("PositionY"))
 	if not(MinimapAPI:GetConfig("OverrideLost") or game:GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0) then
-		MinimapAPI:renderQuestionMark(offsetVec+Vector(0,5))
+		MinimapAPI:renderQuestionMark(offsetVec + Vector(-10,10))
 		return
 	end
 	MinimapAPI:UpdateUnboundedMapOffset()
@@ -2177,7 +2177,6 @@ local function renderCallbackFunction(_)
 	end
 	MinimapAPI.GlobalScaleX = MinimapAPI.ValueGlobalScaleX
 
-	local screen_size = MinimapAPI:GetScreenSize()
 	if MinimapAPI:GetConfig("DisplayOnNoHUD") or MinimapAPI:IsHUDVisible() or MinimapAPI.ForceMapRender then
 		MinimapAPI.ForceMapRender = false
 		local currentroomdata = MinimapAPI:GetCurrentRoom()
@@ -2304,42 +2303,50 @@ local function renderCallbackFunction(_)
 			if MinimapAPI:GetConfig("DisplayLevelFlags") > 0 then
 				local levelflagoffset
 				local islarge = MinimapAPI:IsLarge()
+				local screen_size = MinimapAPI:GetScreenTopRight()
 				if not islarge and MinimapAPI:GetConfig("DisplayMode") == 2 and MinimapAPI.GlobalScaleX >= 1 then -- Bounded map
-					if MinimapAPI:GetConfig("DisplayLevelFlags") == 1 then -- LEFT
-						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX")
-							- 10,
-							MinimapAPI:GetConfig("PositionY") + 8)
+					if MinimapAPI:GetConfig("DisplayLevelFlags") == 1 then                            -- LEFT
+						levelflagoffset = Vector(
+							screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX")
+							+ roomPixelSize.X,
+							screen_size.Y + MinimapAPI:GetConfig("PositionY") + 3)
 					else -- BOTTOM
-						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX") - 10,
-							MinimapAPI:GetConfig("MapFrameHeight") + MinimapAPI:GetConfig("PositionY") + 10)
+						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX") + roomPixelSize.X,
+							screen_size.Y + MinimapAPI:GetConfig("MapFrameHeight") + MinimapAPI:GetConfig("PositionY") +
+							3)
 					end
 				elseif not islarge and MinimapAPI:GetConfig("DisplayMode") == 4 then -- hidden map
-					levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), 0)
+					levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX") - roomPixelSize.X,
+					screen_size.Y + roomPixelSize.Y)
 				else
 					local minx = screen_size.X
 					local maxY = 0
 					local size = (islarge and largeRoomSize or roomSize)
-					for _, v in ipairs(MinimapAPI:GetLevel()) do
-						if v.TargetRenderOffset then
-							if MinimapAPI.GlobalScaleX >= 0 then
-								minx = math.min(minx, v.RenderOffset.X)
-							else
-								minx = math.min(minx,
-									v.RenderOffset.X + MinimapAPI.GlobalScaleX * MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size.X)
-							end
-							maxY = math.max(maxY,
-								v.RenderOffset.Y + MinimapAPI:GetConfig("PositionY") + MinimapAPI:GetRoomShapeGridSize(v.Shape).X * size.Y)
-						end
-					end
-
 					local questionmarkOffset = Vector(0, 0)
 					if not (MinimapAPI:GetConfig("OverrideLost") or game:GetLevel():GetCurses() & LevelCurse.CURSE_OF_THE_LOST <= 0) then
 						questionmarkOffset = Vector(32, 32)
+					else
+						for _, room in ipairs(MinimapAPI:GetLevel()) do
+							if room.TargetRenderOffset and room:IsVisible() then
+								if MinimapAPI.GlobalScaleX >= 0 then
+									minx = math.min(minx, room.RenderOffset.X)
+								else
+									minx = math.min(minx,
+										room.RenderOffset.X +
+										MinimapAPI.GlobalScaleX * MinimapAPI:GetRoomShapeGridSize(room.Shape).X * size.X)
+								end
+								maxY = math.max(maxY,
+									room.RenderOffset.Y + MinimapAPI:GetConfig("PositionY") +
+									MinimapAPI:GetRoomShapeGridSize(room.Shape).X * size.Y)
+							end
+						end
 					end
 					if MinimapAPI:GetConfig("DisplayLevelFlags") == 1 then -- LEFT
-						levelflagoffset = Vector(minx, MinimapAPI:GetConfig("PositionY")) + Vector(-size.X*1.5,12) + Vector(-questionmarkOffset.X, 0)
-					else -- BOTTOM
-						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), maxY) + Vector(-12,size.Y*1.5) + Vector(0, questionmarkOffset.Y)
+						levelflagoffset = Vector(minx, MinimapAPI:GetConfig("PositionY")) + Vector(-size.X/2, size.Y/2+2) +
+						Vector(-questionmarkOffset.X, 0)
+					else                                    -- BOTTOM
+						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX"), maxY) +
+						Vector( - roomPixelSize.X/2, size.Y/2+2) + Vector(0, questionmarkOffset.Y)
 					end
 				end
 				renderMinimapLevelFlags(levelflagoffset)
