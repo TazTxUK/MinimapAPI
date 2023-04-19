@@ -30,6 +30,7 @@ MinimapAPI:AddIcon("Trophy", MinimapAPI.CustomIcons, "CustomIconTrophy", 0)
 MinimapAPI:AddIcon("CheckeredFlag", MinimapAPI.CustomIcons, "CustomIconFlag", 0)
 MinimapAPI:AddIcon("Shovel", MinimapAPI.CustomIcons, "CustomIconShovel", 0)
 
+MinimapAPI:AddIcon("CanTrippedCard", MinimapAPI.CustomIcons, "CustomIconCanTrippedCard", 0)
 MinimapAPI:AddIcon("TarotCard", MinimapAPI.CustomIcons, "CustomIconTarotCard", 0)
 MinimapAPI:AddIcon("SuitCard", MinimapAPI.CustomIcons, "CustomIconSuitCard", 0)
 MinimapAPI:AddIcon("RuneRight", MinimapAPI.CustomIcons, "CustomIconRuneRight", 0)
@@ -88,23 +89,30 @@ MinimapAPI:AddPickup("DoubleHeart","DoubleHeart",5,10,5,MinimapAPI.PickupNotColl
 for i=81,97 do
 	MinimapAPI:AddPickup("Soul"..i,"Soul"..i,5,300,i,MinimapAPI.PickupNotCollected,"runes",10050) -- so many souls this is just easier
 end
-MinimapAPI:AddPickup("RuneBlack","RuneBlack",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10050,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 7 end)
-MinimapAPI:AddPickup("RuneLeft","Rune",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10010,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 3 end)
-MinimapAPI:AddPickup("RuneRight","RuneRight",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10010,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 4 end)
-MinimapAPI:AddPickup("RuneShard","RuneShard",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 13 end)
 
-MinimapAPI:AddPickup("TarotCard","TarotCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 1 end)
-MinimapAPI:AddPickup("SuitCard","SuitCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 2 end)
-MinimapAPI:AddPickup("MomsContract","MomsContract",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 5 end)
-MinimapAPI:AddPickup("DiceShard","DiceShard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 6 end)
-MinimapAPI:AddPickup("MagicCard","MagicCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 8 end)
-MinimapAPI:AddPickup("CardAgainstHumanity","CardAgainstHumanity",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 9 end)
-MinimapAPI:AddPickup("CreditCard","CreditCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 10 end)
-MinimapAPI:AddPickup("HolyCard","HolyCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 11 end)
-MinimapAPI:AddPickup("GetOutOfJail","GetOutOfJail",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 12 end)
-MinimapAPI:AddPickup("ReverseCard","ReverseCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 14 end)
-MinimapAPI:AddPickup("KeyShard","KeyShard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 15 end)
-MinimapAPI:AddPickup("UnusCard","UnusCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return itemConfig:GetCard(p.SubType).PickupSubtype == 17 end)
+local function isCanTripped()
+	return MinimapAPI.isRepentance and Isaac.GetChallenge() == Challenge.CHALLENGE_CANTRIPPED 
+end
+
+MinimapAPI:AddPickup("CanTrippedCard","CanTrippedCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",10100,function(p) return isCanTripped() end)
+
+MinimapAPI:AddPickup("RuneBlack","RuneBlack",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10050,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 7 end)
+MinimapAPI:AddPickup("RuneLeft","Rune",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10010,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 3 end)
+MinimapAPI:AddPickup("RuneRight","RuneRight",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10010,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 4 end)
+MinimapAPI:AddPickup("RuneShard","RuneShard",5,300,-1,MinimapAPI.PickupNotCollected,"runes",10001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 13 end)
+
+MinimapAPI:AddPickup("TarotCard","TarotCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 1 end)
+MinimapAPI:AddPickup("SuitCard","SuitCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 2 end)
+MinimapAPI:AddPickup("MomsContract","MomsContract",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 5 end)
+MinimapAPI:AddPickup("DiceShard","DiceShard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 6 end)
+MinimapAPI:AddPickup("MagicCard","MagicCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 8 end)
+MinimapAPI:AddPickup("CardAgainstHumanity","CardAgainstHumanity",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 9 end)
+MinimapAPI:AddPickup("CreditCard","CreditCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 10 end)
+MinimapAPI:AddPickup("HolyCard","HolyCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 11 end)
+MinimapAPI:AddPickup("GetOutOfJail","GetOutOfJail",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 12 end)
+MinimapAPI:AddPickup("ReverseCard","ReverseCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 14 end)
+MinimapAPI:AddPickup("KeyShard","KeyShard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 15 end)
+MinimapAPI:AddPickup("UnusCard","UnusCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",9001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 17 end)
 
 MinimapAPI:AddPickup("HorsePillGold","HorsePillGold",5,70,PillColor.PILL_GOLD + PillColor.PILL_GIANT_FLAG,MinimapAPI.PickupNotCollected,"pills",8150)
 MinimapAPI:AddPickup("HorsePillBlueBlue","HorsePillBlueBlue",5,70,PillColor.PILL_BLUE_BLUE + PillColor.PILL_GIANT_FLAG,MinimapAPI.PickupNotCollected,"pills",8050)
