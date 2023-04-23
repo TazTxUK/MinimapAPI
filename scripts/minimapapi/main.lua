@@ -926,7 +926,7 @@ end
 function maproomfunctions:GetDisplayFlags()
 	local roomDesc = self.Descriptor
 	local df = self.DisplayFlags or 0
-	if roomDesc and self.Type == RoomType.ROOM_ULTRASECRET and roomDesc.DisplayFlags == 0 then -- if red self is hidden and DFs not set
+	if roomDesc and self.Type == RoomType.ROOM_ULTRASECRET and (roomDesc.DisplayFlags == 0 and self.DisplayFlags == 0)  then -- if red self is hidden and DFs not set
 		if not self:IsVisited() then
 			df = 0
 		end
@@ -2250,7 +2250,7 @@ local function renderCallbackFunction(_)
 		end
 		if gamelevel:GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT) then
 			for _,v in ipairs(MinimapAPI:GetLevel()) do
-				if v.Secret then
+				if v.Secret and v.Type ~= RoomType.ROOM_ULTRASECRET then
 					v.DisplayFlags = v.DisplayFlags | 5
 				end
 			end
