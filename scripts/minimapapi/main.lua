@@ -1016,7 +1016,7 @@ function maproomfunctions:Reveal()
 end
 
 function maproomfunctions:UpdateType()
-	if self.Descriptor and self.Descriptor.Data then
+	if self.Descriptor and self.Descriptor.Data and not self.NoUpdate then
 		self.Type = self.Descriptor.Data.Type
 		self.PermanentIcons = { MinimapAPI:GetRoomTypeIconID(self.Type) }
 
