@@ -91,6 +91,7 @@ return {
         TeleportConfirmButton = ButtonAction.ACTION_PAUSE,
         MouseTeleportUncleared = false,
         MouseTeleportDamageOnCurseRoom = true,
+        MouseTeleportDisableMovement = true,
     },
     { -- minimal
         ShowIcons = true,

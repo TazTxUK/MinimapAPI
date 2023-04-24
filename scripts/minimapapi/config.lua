@@ -49,6 +49,7 @@ MinimapAPI.Config = {
 	["TeleportConfirmButton"] = ButtonAction.ACTION_PAUSE,
 	["MouseTeleportUncleared"] = false,
 	["MouseTeleportDamageOnCurseRoom"] = true,
+	["MouseTeleportDisableMovement"] = true,
 
 	["ConfigPreset"] = 1,
 

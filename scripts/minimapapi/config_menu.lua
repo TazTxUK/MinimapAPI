@@ -491,11 +491,9 @@ if modconfigexists then
 		}
 	)
 
-	MCM.AddSpace("Minimap API", "Modes")
-
 	MCM.AddSetting(
 		"Minimap API",
-		"Modes",
+		"Teleport",
 		{
 			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -518,7 +516,26 @@ if modconfigexists then
 
 	MCM.AddSetting(
 		"Minimap API",
-		"Modes",
+		"Teleport",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.MouseTeleportDisableMovement
+			end,
+			Display = function()
+				return "Disable movement on map teleport: " .. (MinimapAPI.Config.MouseTeleportDisableMovement and "ON" or "OFF")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.MouseTeleportDisableMovement = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {"Stops you from moving and shooting while in the teleport selection action."}
+		}
+	)
+
+	MCM.AddSetting(
+		"Minimap API",
+		"Teleport",
 		{
 			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
@@ -536,7 +553,7 @@ if modconfigexists then
 	)
 	MCM.AddSetting(
 		"Minimap API",
-		"Modes",
+		"Teleport",
 		{
 			Type = MCM.OptionType.BOOLEAN,
 			CurrentSetting = function()
