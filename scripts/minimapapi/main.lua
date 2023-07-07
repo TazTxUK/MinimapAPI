@@ -1042,7 +1042,7 @@ function maproomfunctions:UpdateType()
 						self.VisitedIcons = { "MirrorRoom" }
 					end
 
-					(level:GetAbsoluteStage() == LevelStage.STAGE2_2 and not isCurseLabyrinth or level:GetAbsoluteStage() == LevelStage.STAGE2_1 and isCurseLabyrinth) and roomDescriptor.Data.Subtype == 10 then
+					if (level:GetAbsoluteStage() == LevelStage.STAGE2_2 and not isCurseLabyrinth or level:GetAbsoluteStage() == LevelStage.STAGE2_1 and isCurseLabyrinth) and roomDescriptor.Data.Subtype == 10 then
 						self.VisitedIcons = { "MinecartRoom" }
 					end
 				end
