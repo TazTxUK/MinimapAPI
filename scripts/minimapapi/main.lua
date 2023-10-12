@@ -164,7 +164,6 @@ end
 local badload = false
 local font = Font()
 font:Load("font/pftempestasevencondensed.fnt")
-local rooms
 local playerMapPos = vectorZero
 ---@type table<any, MinimapAPI.Room[]>
 MinimapAPI.Levels = {}
@@ -1445,8 +1444,10 @@ MinimapAPI:AddCallbackFunc(ModCallbacks.MC_USE_ITEM, CALLBACK_PRIORITY, function
 	elseif MinimapAPI.isRepentance and colltype == CollectibleType.COLLECTIBLE_RED_KEY then
 		MinimapAPI:CheckForNewRedRooms()
 	elseif colltype == CollectibleType.COLLECTIBLE_DADS_KEY then
-		for _,room in ipairs(MinimapAPI:GetCurrentRoom():GetAdjacentRooms()) do
-			room:SetDisplayFlags(5)
+		if MinimapAPI:GetCurrentRoom() then
+			for _,room in ipairs(MinimapAPI:GetCurrentRoom():GetAdjacentRooms()) do
+				room:SetDisplayFlags(5)
+			end
 		end
 		MinimapAPI:UpdateExternalMap()
 	elseif colltype == CollectibleType.COLLECTIBLE_GLOWING_HOUR_GLASS then
