@@ -794,9 +794,9 @@ function MinimapAPI:CurrentRoomContainsGridEntity(gridEntityDef)
 end
 
 function MinimapAPI:EffectCrystalBall()
-	for _,v in ipairs(MinimapAPI:GetLevel()) do
-		if v.Type ~= RoomType.ROOM_SUPERSECRET then
-			v:Reveal()
+	for _,room in ipairs(MinimapAPI:GetLevel()) do
+		if room.Type ~= RoomType.ROOM_SUPERSECRET and room.Type ~= RoomType.ROOM_ULTRASECRET then
+			room:Reveal()
 		end
 	end
 end
