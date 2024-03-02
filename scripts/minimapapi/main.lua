@@ -1693,23 +1693,30 @@ function MinimapAPI:FirstMapDisplayMode()
 	end
 end
 
-MinimapAPI:AddCallbackFunc(ModCallbacks.MC_INPUT_ACTION, CALLBACK_PRIORITY, function(_, entity, _, buttonAction)
+MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_UPDATE, CALLBACK_PRIORITY, function() -- this is the most accurate I believe it can be
 
-	if entity and buttonAction == ButtonAction.ACTION_MAP then
-		local player = entity:ToPlayer()
-		if player then
-			if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then
-				mapheldframes = mapheldframes + 1
-			elseif mapheldframes > 0 then
-				if mapheldframes <= 8 or (MinimapAPI:GetConfig("DisplayMode") == 3 and mapheldframes == 9) then -- this is dumb but for some reason it works
-					MinimapAPI:NextMapDisplayMode()
-				end
-
-				mapheldframes = 0
-			end
+	local mapheld = false
+	for i=0, Game():GetNumPlayers()-1 do
+		local player = Isaac.GetPlayer(i)
+		if Input.IsActionPressed(ButtonAction.ACTION_MAP, player.ControllerIndex) then -- without repentogon, desyncs can still happen i believe due to input being polled at different times than vanilla, which can't be fixed
+			mapheld = true
+			break
 		end
 	end
-end, InputHook.IS_ACTION_PRESSED)
+	if mapheld then
+		if REPENTOGON then
+			mapheldframes = Minimap.GetHoldTime() -- from testing this fixes all desyncs by properly syncing them if they are mismatched
+		else
+			mapheldframes = mapheldframes + 1
+		end
+	elseif mapheldframes > 0 then
+		if mapheldframes < 9 then
+			MinimapAPI:NextMapDisplayMode()
+		end
+
+		mapheldframes = 0
+	end
+end)
 
 local defaultColor = Color(1, 1, 1, 1, 0, 0, 0)
 local function updateMinimapIcon(spr, t)
@@ -2107,7 +2114,7 @@ function MinimapAPI:renderRoomShadows(useCutOff)
 	local renderRoomSize = not MinimapAPI:IsLarge() and roomSize or largeRoomSize
 	local screen_size = MinimapAPI:GetScreenTopRight()
 	local offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") + outlinePixelSize.X, screen_size.Y + MinimapAPI:GetConfig("PositionY") - outlinePixelSize.Y/2 - 2)
-	
+
 
 	local sprite = not MinimapAPI:IsLarge() and MinimapAPI.SpriteMinimapSmall or MinimapAPI.SpriteMinimapLarge
 	sprite.Color = defaultOutlineColor
@@ -2173,10 +2180,10 @@ local function renderCallbackFunction(_)
 		if not gameroom:IsClear() then
 			return
 		end
-	end	
-	
+	end
+
 	--Hide during StageAPI reimplemented stage transition
-	if MinimapAPI.UsingPostHUDRender and StageAPI.TransitionAnimationData.State == 2 then
+	if MinimapAPI.UsingStageAPIPostHUDRender and StageAPI.TransitionAnimationData.State == 2 then
 		return
 	end
 
@@ -2467,9 +2474,11 @@ MinimapAPI:AddCallbackFunc(
 	function(_, is_save)
 		badload = MinimapAPI:IsBadLoad()
 		if addRenderCall then
-			if StageAPI and StageAPI.Loaded then
+			if REPENTOGON then
+				MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_HUD_RENDER, CALLBACK_PRIORITY, renderCallbackFunction)
+			elseif StageAPI and StageAPI.Loaded then
 				StageAPI.AddCallback("MinimapAPI", "POST_HUD_RENDER", constants.STAGEAPI_CALLBACK_PRIORITY, renderCallbackFunction)
-				MinimapAPI.UsingPostHUDRender = true
+				MinimapAPI.UsingStageAPIPostHUDRender = true -- only for stage api
 			else
 				MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, renderCallbackFunction)
 			end
