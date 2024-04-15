@@ -2107,7 +2107,6 @@ function MinimapAPI:renderRoomShadows(useCutOff)
 	local renderRoomSize = not MinimapAPI:IsLarge() and roomSize or largeRoomSize
 	local screen_size = MinimapAPI:GetScreenTopRight()
 	local offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") + outlinePixelSize.X, screen_size.Y + MinimapAPI:GetConfig("PositionY") - outlinePixelSize.Y/2 - 2)
-	
 
 	local sprite = not MinimapAPI:IsLarge() and MinimapAPI.SpriteMinimapSmall or MinimapAPI.SpriteMinimapLarge
 	sprite.Color = defaultOutlineColor
@@ -2173,8 +2172,8 @@ local function renderCallbackFunction(_)
 		if not gameroom:IsClear() then
 			return
 		end
-	end	
-	
+	end
+
 	--Hide during StageAPI reimplemented stage transition
 	if MinimapAPI.UsingPostHUDRender and StageAPI.TransitionAnimationData.State == 2 then
 		return
@@ -2467,9 +2466,11 @@ MinimapAPI:AddCallbackFunc(
 	function(_, is_save)
 		badload = MinimapAPI:IsBadLoad()
 		if addRenderCall then
-			if StageAPI and StageAPI.Loaded then
+			if REPENTOGON then
+				MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_HUD_RENDER, CALLBACK_PRIORITY, renderCallbackFunction)
+			elseif StageAPI and StageAPI.Loaded then
 				StageAPI.AddCallback("MinimapAPI", "POST_HUD_RENDER", constants.STAGEAPI_CALLBACK_PRIORITY, renderCallbackFunction)
-				MinimapAPI.UsingPostHUDRender = true
+				MinimapAPI.UsingStageAPIPostHUDRender = true -- only for stage api
 			else
 				MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, renderCallbackFunction)
 			end
