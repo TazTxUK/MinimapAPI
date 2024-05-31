@@ -1309,7 +1309,7 @@ function MinimapAPI:IsModTable(modtable)
 end
 
 -- Callbacks
--- it's recommended to use the vanilla callback system, old functions are kept as follwos for backwards compatibility
+-- it's recommended to use the vanilla callback system, old functions are kept as follows for backwards compatibility
 -- try to handle both using a mod table as key
 -- for backwards compatibility, and using a string
 
