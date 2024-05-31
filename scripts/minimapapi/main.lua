@@ -1,6 +1,7 @@
 local MinimapAPI = require("scripts.minimapapi")
 local cache = require("scripts.minimapapi.cache")
 local constants = require("scripts.minimapapi.constants")
+local Callbacks = require("scripts.minimapapi.callbacks")
 local CALLBACK_PRIORITY = constants.CALLBACK_PRIORITY
 require("scripts.minimapapi.apioverride")
 
@@ -537,13 +538,21 @@ function MinimapAPI:GetCurrentRoomGridIDs()
 end
 
 function MinimapAPI:RunPlayerPosCallbacks()
+	local currentRoom = MinimapAPI:GetCurrentRoom()
+	local ret = Isaac.RunCallback(Callbacks.PLAYER_POS_CHANGED, currentRoom, playerMapPos)
+	if ret then
+		playerMapPos = ret
+		return ret
+	end
+
+	-- still run old callbacks for backwards compatibility
 	for _, v in ipairs(callbacks_playerpos) do
 		local s, ret
 		-- backwards compatibility mode, pass mod reference
 		if v.modReference then
-			s, ret = pcall(v.call, v.modReference, MinimapAPI:GetCurrentRoom(), playerMapPos)
+			s, ret = pcall(v.call, v.modReference, currentRoom, playerMapPos)
 		else
-			s, ret = pcall(v.call, MinimapAPI:GetCurrentRoom(), playerMapPos)
+			s, ret = pcall(v.call, currentRoom, playerMapPos)
 		end
 		if s then
 			if ret then
@@ -557,6 +566,12 @@ function MinimapAPI:RunPlayerPosCallbacks()
 end
 
 function MinimapAPI:RunDisplayFlagsCallbacks(room, df)
+	local ret = Isaac.RunCallback(Callbacks.GET_DISPLAY_FLAGS, room, df)
+	if ret then
+		return ret
+	end
+
+	-- still run old callbacks for backwards compatibility
 	for _, v in ipairs(callbacks_displayflags) do
 		local s, ret
 		-- backwards compatibility mode, pass mod reference
@@ -578,6 +593,13 @@ function MinimapAPI:RunDisplayFlagsCallbacks(room, df)
 end
 
 function MinimapAPI:RunDimensionCallbacks()
+	local ret = Isaac.RunCallback(Callbacks.GET_DIMENSION, MinimapAPI.CurrentDimension)
+	if ret then
+		MinimapAPI.CurrentDimension = ret
+		return ret
+	end
+
+	-- still run old callbacks for backwards compatibility
 	for _, v in ipairs(callbacks_dimension) do
 		local s, ret
 		-- backwards compatibility mode, pass mod reference
@@ -1287,11 +1309,13 @@ function MinimapAPI:IsModTable(modtable)
 end
 
 -- Callbacks
+-- it's recommended to use the vanilla callback system, old functions are kept as follows for backwards compatibility
 -- try to handle both using a mod table as key
 -- for backwards compatibility, and using a string
 
 -- Use of a string as key or something else that doesn't change between
 -- mod reloads is recommended
+---@deprecated Use vanilla callbacks as defined in callbacks.lua
 function MinimapAPI:AddPlayerPositionCallback(modkey, func)
 	local modtable
 
@@ -1309,6 +1333,7 @@ end
 
 -- Use of a string as key or something else that doesn't change between
 -- mod reloads is recommended
+---@deprecated Use vanilla callbacks as defined in callbacks.lua
 function MinimapAPI:AddDisplayFlagsCallback(modkey, func)
 	local modtable
 
@@ -1326,6 +1351,7 @@ end
 
 -- Use of a string as key or something else that doesn't change between
 -- mod reloads is recommended
+---@deprecated Use vanilla callbacks as defined in callbacks.lua
 function MinimapAPI:AddDimensionCallback(modkey, func)
 	local modtable
 
@@ -1341,6 +1367,7 @@ function MinimapAPI:AddDimensionCallback(modkey, func)
 	}
 end
 
+---@deprecated Use vanilla callbacks as defined in callbacks.lua
 function MinimapAPI:RemoveAllCallbacks(modkey)
 	MinimapAPI:RemovePlayerPositionCallbacks(modkey)
 	MinimapAPI:RemoveDisplayFlagsCallbacks(modkey)
@@ -1364,19 +1391,22 @@ local function RemoveFromCallbackTable(tbl, modkey)
 	end
 end
 
+---@deprecated Use vanilla callbacks as defined in callbacks.lua
 function MinimapAPI:RemovePlayerPositionCallbacks(modkey)
 	RemoveFromCallbackTable(callbacks_playerpos, modkey)
 end
 
----@deprecated
+---@deprecated Use vanilla callbacks as defined in callbacks.lua
 function MinimapAPI:RemovePlayerPositionCallback(modkey)
 	MinimapAPI:RemovePlayerPositionCallbacks(modkey)
 end
 
+---@deprecated Use vanilla callbacks as defined in callbacks.lua
 function MinimapAPI:RemoveDisplayFlagsCallbacks(modkey)
 	RemoveFromCallbackTable(callbacks_displayflags, modkey)
 end
 
+---@deprecated Use vanilla callbacks as defined in callbacks.lua
 function MinimapAPI:RemoveDimensionCallbacks(modkey)
 	RemoveFromCallbackTable(callbacks_dimension, modkey)
 end
