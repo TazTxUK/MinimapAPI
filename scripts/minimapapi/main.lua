@@ -2193,6 +2193,10 @@ local function renderCallbackFunction(_)
 	if MinimapAPI.isRepentance and gameroom:GetType() == RoomType.ROOM_DUNGEON and game:GetLevel():GetAbsoluteStage() == LevelStage.STAGE8 then
 		return
 	end
+	-- Hide if No HUD seed is enabled
+	if game:GetSeeds():HasSeedEffect(SeedEffect.SEED_NO_HUD) then
+		return
+	end
 
 	if MinimapAPI:GetConfig("HideInCombat") == 2 then
 		if not gameroom:IsClear() and gameroom:GetType() == RoomType.ROOM_BOSS then
