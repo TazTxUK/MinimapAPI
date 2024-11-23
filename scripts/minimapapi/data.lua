@@ -284,7 +284,9 @@ MinimapAPI.PickupList = {
 
 	["Poop"] = {IconID="Poop",Type=5,Variant=42,SubType=-1,Call=notCollected,IconGroup="poops",Priority=5000},
 
-	["GoldenCoin"] = {IconID="GoldenCoin",Type=5,Variant=20,SubType=7,Call=notCollected,IconGroup="coins",Priority=4100},
+	["GoldenCoin"] = {IconID="GoldenCoin",Type=5,Variant=20,SubType=7,Call=notCollected,IconGroup="coins",Priority=4300},
+	["Dime"] = {IconID="Dime",Type=5,Variant=20,SubType=3,Call=notCollected,IconGroup="coins",Priority=4200},
+	["Nickel"] = {IconID="Nickel",Type=5,Variant=20,SubType=2,Call=notCollected,IconGroup="coins",Priority=4100},
 	["Coin"] = {IconID="Coin",Type=5,Variant=20,SubType=-1,Call=notCollected,IconGroup="coins",Priority=4000},
 
 	["GoldenBattery"] = {IconID="GoldenBattery",Type=5,Variant=90,SubType=4,Call=notCollected,IconGroup="batteries",Priority=3100},
@@ -299,6 +301,7 @@ MinimapAPI.PickupList = {
 	["ShellGame"] = {IconID="Beggar",Type=6,Variant=6,SubType=-1,Call=slotNotDead,IconGroup="beggars",Priority=2000},
 	["Beggar"] = {IconID="Beggar",Type=6,Variant=4,SubType=-1,Call=slotNotDead,IconGroup="beggars",Priority=2000},
 
+	["ReviveMachine"] = {IconID="ReviveMachine",Type=6,Variant=19,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=1800},
 	["Confessional"] = {IconID="Confessional",Type=6,Variant=17,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=1700},
 	["RestockMachine"] = {IconID="RestockMachine",Type=6,Variant=10,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=1600},
 	["CraneGame"] = {IconID="CraneGame",Type=6,Variant=16,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=1500},
@@ -365,7 +368,9 @@ MinimapAPI.IconList = {
 	{ID="Bomb",anim="IconBomb",frame=0},
 	{ID="GoldenBomb",anim="IconBomb",frame=1},
 	{ID="Coin",anim="IconCoin",frame=0},
-	{ID="GoldenCoin",anim="IconCoin",frame=1},
+	{ID="Nickel",anim="IconCoin",frame=1},
+	{ID="Dime",anim="IconCoin",frame=2},
+	{ID="GoldenCoin",anim="IconCoin",frame=3},
 	{ID="Battery",anim="IconBattery",frame=0},
 	{ID="GoldenBattery",anim="IconBattery",frame=1},
 	{ID="Card",anim="IconCard",frame=0},
@@ -392,6 +397,7 @@ MinimapAPI.IconList = {
 	{ID="CraneGame",anim="IconSlot",frame=5},
 	{ID="RestockMachine",anim="IconSlot",frame=6},
 	{ID="Confessional",anim="IconSlot",frame=7},
+	{ID="ReviveMachine",anim="IconSlot",frame=8},
 	{ID="Beggar",anim="IconBeggar",frame=0},
 	{ID="RottenBeggar",anim="IconBeggar",frame=1},
 	{ID="DemonBeggar",anim="IconBeggar",frame=2},
