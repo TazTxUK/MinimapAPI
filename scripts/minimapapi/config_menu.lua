@@ -324,8 +324,7 @@ if modconfigexists then
 				MinimapAPI.Config.ConfigPreset = 0
 			end,
 			Info = {
-				"The room furthest from the starting room",
-				"will be highlighted when having a map."
+				"The starting room will be highlighted when having a map."
 			}
 		}
 	)
