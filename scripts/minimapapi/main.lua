@@ -703,7 +703,6 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				end
 
 				if roomDescriptor.Data.Type == RoomType.ROOM_DEFAULT then
-					local currentStage = StageAPI and StageAPI.Loaded and StageAPI.GetCurrentStage()
 					if IsAltPath() then
 						local isCurseLabyrinth = level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH == LevelCurse.CURSE_OF_LABYRINTH
 						if ((level:GetAbsoluteStage() == LevelStage.STAGE1_2 and not isCurseLabyrinth or level:GetAbsoluteStage() == LevelStage.STAGE1_1 and isCurseLabyrinth) or (StageAPI and StageAPI.Loaded and StageAPI.GetCurrentStage() and StageAPI.GetCurrentStage():HasMirrorDimension())) and roomDescriptor.Data.Subtype == 34 then
@@ -2407,9 +2406,10 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 		end
 
 		if is_save and saved.LevelData and saved.Seed == game:GetSeeds():GetStartSeed() then
-			MinimapAPI:ClearMap()
+			MinimapAPI:ClearLevels()
 			for dim, level in pairs(saved.LevelData) do
 				dim = tonumber(dim)
+				MinimapAPI.Levels[dim] = {}
 				for _, v in ipairs(level) do
 					local desc
 					if v.DescriptorListIndex then
