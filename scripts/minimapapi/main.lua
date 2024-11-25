@@ -899,7 +899,7 @@ end
 ---@field ItemIcons string[]
 ---@field VisitedIcons string[]
 ---@field Descriptor RoomDescriptor | nil # may be nil for custom rooms
----@field TeleportHandler TeleportHandler # may be nil, used to handle minimapAPI map teleport for custom rooms
+---@field TeleportHandler TeleportHandler | nil # may be nil, used to handle minimapAPI map teleport for custom rooms
 ---@field Color Color | nil
 ---@field RenderOffset Vector
 ---@field DisplayFlags integer
@@ -1144,8 +1144,8 @@ function MinimapAPI:AddRoom(room)
 		Hidden = room.Hidden or nil,
 		NoUpdate = room.NoUpdate or nil,
 		Dimension = room.Dimension or MinimapAPI.CurrentDimension,
-		IgnoreDescriptorFlags = room.IgnoreDescriptorFlags,
-		TeleportHandler = room.TeleportHandler,
+		IgnoreDescriptorFlags = room.IgnoreDescriptorFlags or false,
+		TeleportHandler = room.TeleportHandler or nil,
 	}
 	setmetatable(newRoom, maproommeta)
 
@@ -2409,13 +2409,13 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 			MinimapAPI:ClearLevels()
 			for dim, level in pairs(saved.LevelData) do
 				dim = tonumber(dim)
-				MinimapAPI.Levels[dim] = {}
+				MinimapAPI.Levels[dim or 0] = {}
 				for _, v in ipairs(level) do
 					local desc
 					if v.DescriptorListIndex then
 						desc, _ = GetRoomDescAndDimFromListIndex(v.DescriptorListIndex)
 					end
-					MinimapAPI:AddRoom{
+					MinimapAPI:AddRoom({
 						Position = Vector(v.PositionX, v.PositionY),
 						DisplayPosition = (v.DisplayPositionX and v.DisplayPositionY) and Vector(v.DisplayPositionX, v.DisplayPositionY),
 						ID = v.ID,
@@ -2435,7 +2435,7 @@ function MinimapAPI:LoadSaveTable(saved,is_save)
 						Hidden = v.Hidden,
 						NoUpdate = v.NoUpdate,
 						Dimension = dim,
-					}
+					})
 				end
 			end
 			if saved.playerMapPosX and saved.playerMapPosY then
@@ -2492,39 +2492,37 @@ end
 -- LOADING SAVED GAME
 local isFirstGame = true
 local addRenderCall = true
-MinimapAPI:AddCallbackFunc(
-	ModCallbacks.MC_POST_GAME_STARTED,
-	CALLBACK_PRIORITY,
-	function(_, is_save)
-		badload = MinimapAPI:IsBadLoad()
-		if addRenderCall then
-			if REPENTOGON then
-				MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_HUD_RENDER, CALLBACK_PRIORITY, renderCallbackFunction)
-			elseif StageAPI and StageAPI.Loaded then
-				StageAPI.AddCallback("MinimapAPI", "POST_HUD_RENDER", constants.STAGEAPI_CALLBACK_PRIORITY, renderCallbackFunction)
-				MinimapAPI.UsingStageAPIPostHUDRender = true -- only for stage api
-			else
-				MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, renderCallbackFunction)
-			end
-			addRenderCall = false
+function MinimapAPI:OnGameLoad(_, is_save)
+	badload = MinimapAPI:IsBadLoad()
+	if addRenderCall then
+		if REPENTOGON then
+			MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_HUD_RENDER, CALLBACK_PRIORITY, renderCallbackFunction)
+		elseif StageAPI and StageAPI.Loaded then
+			StageAPI.AddCallback("MinimapAPI", "POST_HUD_RENDER", constants.STAGEAPI_CALLBACK_PRIORITY, renderCallbackFunction)
+			MinimapAPI.UsingStageAPIPostHUDRender = true -- only for stage api
+		else
+			MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_RENDER, CALLBACK_PRIORITY, renderCallbackFunction)
 		end
-		if MinimapAPI:HasData() then
-			if not MinimapAPI.DisableSaving then
-				local saved = json.decode(Isaac.LoadModData(MinimapAPI))
-				MinimapAPI:LoadSaveTable(saved, is_save)
-			else
-				MinimapAPI:LoadDefaultMap()
-			end
-			MinimapAPI:UpdateExternalMap()
+		addRenderCall = false
+	end
+	if MinimapAPI:HasData() then
+		if not MinimapAPI.DisableSaving then
+			local saved = json.decode(Isaac.LoadModData(MinimapAPI))
+			MinimapAPI:LoadSaveTable(saved, is_save)
 		else
 			MinimapAPI:LoadDefaultMap()
 		end
-		if isFirstGame then
-			MinimapAPI:FirstMapDisplayMode()
-			isFirstGame = false
-		end
+		MinimapAPI:UpdateExternalMap()
+	else
+		MinimapAPI:LoadDefaultMap()
 	end
-)
+	if isFirstGame then
+		MinimapAPI:FirstMapDisplayMode()
+		isFirstGame = false
+	end
+end
+
+MinimapAPI:AddCallbackFunc(ModCallbacks.MC_POST_GAME_STARTED, CALLBACK_PRIORITY, MinimapAPI.OnGameLoad)
 
 -- SAVING GAME
 MinimapAPI:AddCallbackFunc(
