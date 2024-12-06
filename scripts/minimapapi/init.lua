@@ -1,5 +1,5 @@
 MinimapAPI = require("scripts.minimapapi")
-MinimapAPI.isRepentance = REPENTANCE -- REPENTANCE variable can be altered by any mod, so we save it early so later changes dont affect it
+MinimapAPI.isRepentance = REPENTANCE or REPENTANCE_PLUS -- REPENTANCE variable can be altered by any mod, so we save it early so later changes dont affect it
 
 require("scripts.minimapapi.version")
 
