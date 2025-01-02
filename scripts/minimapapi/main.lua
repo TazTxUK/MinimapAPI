@@ -539,10 +539,12 @@ end
 
 function MinimapAPI:RunPlayerPosCallbacks()
 	local currentRoom = MinimapAPI:GetCurrentRoom()
-	local returnVal = Isaac.RunCallback(Callbacks.PLAYER_POS_CHANGED, currentRoom, playerMapPos)
-	if returnVal then
-		playerMapPos = returnVal
-		return returnVal
+	if REPENTANCE then
+		local returnVal = Isaac.RunCallback(Callbacks.PLAYER_POS_CHANGED, currentRoom, playerMapPos)
+		if returnVal then
+			playerMapPos = returnVal
+			return returnVal
+		end
 	end
 
 	-- still run old callbacks for backwards compatibility
@@ -566,9 +568,11 @@ function MinimapAPI:RunPlayerPosCallbacks()
 end
 
 function MinimapAPI:RunDisplayFlagsCallbacks(room, df)
-	local returnVal = Isaac.RunCallback(Callbacks.GET_DISPLAY_FLAGS, room, df)
-	if returnVal then
-		return returnVal
+	if REPENTANCE then
+		local returnVal = Isaac.RunCallback(Callbacks.GET_DISPLAY_FLAGS, room, df)
+		if returnVal then
+			return returnVal
+		end
 	end
 
 	-- still run old callbacks for backwards compatibility
@@ -593,10 +597,12 @@ function MinimapAPI:RunDisplayFlagsCallbacks(room, df)
 end
 
 function MinimapAPI:RunDimensionCallbacks()
-	local returnVal = Isaac.RunCallback(Callbacks.GET_DIMENSION, MinimapAPI.CurrentDimension)
-	if returnVal then
-		MinimapAPI.CurrentDimension = returnVal
-		return returnVal
+	if REPENTANCE then
+		local returnVal = Isaac.RunCallback(Callbacks.GET_DIMENSION, MinimapAPI.CurrentDimension)
+		if returnVal then
+			MinimapAPI.CurrentDimension = returnVal
+			return returnVal
+		end
 	end
 
 	-- still run old callbacks for backwards compatibility
