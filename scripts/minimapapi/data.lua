@@ -310,6 +310,7 @@ MinimapAPI.PickupList = {
 	["Slot"] = {IconID="Slot",Type=6,Variant=1,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=1200},
 	["DonationMachine"] = {IconID="DonationMachine",Type=6,Variant=8,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=1100},
 	["DressingTable"] = {IconID="DressingTable",Type=6,Variant=12,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=1000},
+	["Portal"] = {IconID="Portal",Type=1000,Variant=161,SubType=-1,Call=slotNotDead,IconGroup="slots",Priority=1000},
 }
 
 -- IsPrespawnObject can be used for grid entities that exist on room creation. These objects are mostly defined by very big Type IDs
@@ -406,6 +407,7 @@ MinimapAPI.IconList = {
 	{ID="ChargeBeggar",anim="IconBeggar",frame=5},
 	--Misc
 	{ID="Ladder",anim="IconLadder",frame=0},
+	{ID="Portal",anim="IconPortal",frame=0},
 }
 
 MinimapAPI.RoomShapeAdjacentCoords = {
