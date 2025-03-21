@@ -173,6 +173,7 @@ MinimapAPI.CurrentDimension = 0
 MinimapAPI.OverrideVoid = false
 MinimapAPI.changedRoomsWithShowMap = {}
 MinimapAPI.DisableSpelunkerHat = false
+MinimapAPI.Cache = cache
 
 MinimapAPI.TargetGlobalScaleX = 1 --when in mirror dimension this goes to -1
 MinimapAPI.ValueGlobalScaleX = 1

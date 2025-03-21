@@ -199,9 +199,9 @@ local function HandleMoveCursorWithButtons()
     if currentlyHighlighted then
         local posToCheck = nil
         if Input.IsActionTriggered(ButtonAction.ACTION_SHOOTLEFT, playerController) then
-            posToCheck = { 1, 5 }
+            posToCheck = MinimapAPI.Cache.MirrorDimension and { 3, 7 } or { 1, 5 } 
         elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTRIGHT, playerController) then
-            posToCheck = { 3, 7 }
+            posToCheck = MinimapAPI.Cache.MirrorDimension and { 1, 5 } or { 3, 7 }
         elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTUP, playerController) then
             posToCheck = { 2, 6 }
         elseif Input.IsActionTriggered(ButtonAction.ACTION_SHOOTDOWN, playerController) then
