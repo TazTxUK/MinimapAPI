@@ -1908,8 +1908,11 @@ local function renderUnboundedMinimap(size,hide)
 
 		if MinimapAPI:GetConfig("HighlightStartRoom") then
 			local startRoom = MinimapAPI:GetRoomByIdx(game:GetLevel():GetStartingRoomIndex())
-			if startRoom then
-				startRoom.Color = Color(0, 1, 0, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
+			if startRoom and startRoom.Visited then
+				local r = MinimapAPI:GetConfig("HighlightStartRoomColorR")
+				local g = MinimapAPI:GetConfig("HighlightStartRoomColorG")
+				local b = MinimapAPI:GetConfig("HighlightStartRoomColorB")
+				startRoom.Color = Color(r, g, b, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
 			end
 		end
 

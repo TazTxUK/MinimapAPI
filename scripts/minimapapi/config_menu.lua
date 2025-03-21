@@ -1025,6 +1025,69 @@ if modconfigexists then
 		}
 	)
 
+	MCM.AddSpace("Minimap API", "Colors")
+
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.HighlightStartRoomColorR
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Starting Room Color Red: " .. MinimapAPI.Config.HighlightStartRoomColorR
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.HighlightStartRoomColorR = currentNum
+			end
+		}
+	)
+
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.HighlightStartRoomColorG
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Starting Room Color Green: " .. MinimapAPI.Config.HighlightStartRoomColorG
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.HighlightStartRoomColorG = currentNum
+			end
+		}
+	)
+
+	MCM.AddSetting(
+		"Minimap API",
+		"Colors",
+		{
+			Type = MCM.OptionType.NUMBER,
+			CurrentSetting = function()
+				return MinimapAPI.Config.HighlightStartRoomColorB
+			end,
+			Minimum = 0,
+			Maximum = 1,
+			ModifyBy = 0.1,
+			Display = function()
+				return "Starting Room Color Blue: " .. MinimapAPI.Config.HighlightStartRoomColorB
+			end,
+			OnChange = function(currentNum)
+				MinimapAPI.Config.HighlightStartRoomColorB = currentNum
+			end
+		}
+	)
+	----------------------
+
 	MCM.AddSetting(
 		"Minimap API",
 		"General",
