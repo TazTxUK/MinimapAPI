@@ -1427,6 +1427,10 @@ function MinimapAPI:updatePlayerPos()
 	local currentroom = cache.RoomDescriptor
 	if currentroom.GridIndex < 0 then
 		playerMapPos = Vector(-32768,-32768)
+	elseif Isaac.GetChallenge() == Challenge.CHALLENGE_APRILS_FOOL then
+		local level = game:GetLevel()
+		local randomRoom = level:GetRooms():Get(level:GetRoomByIdx(level:GetRandomRoomIndex(false, cache.RoomDescriptor.DecorationSeed), MinimapAPI.CurrentDimension).ListIndex)
+		playerMapPos = MinimapAPI:GridIndexToVector(randomRoom.GridIndex) + MinimapAPI.RoomShapeGridPivots[randomRoom.Data.Shape]
 	else
 		playerMapPos = MinimapAPI:GridIndexToVector(currentroom.GridIndex) + MinimapAPI.RoomShapeGridPivots[currentroom.Data.Shape]
 	end
