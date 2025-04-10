@@ -24,7 +24,6 @@ MinimapAPI:AddIcon("LuckyPenny", MinimapAPI.CustomIcons, "CustomIconLuckyPenny",
 MinimapAPI:AddIcon("StickyNickel", MinimapAPI.CustomIcons, "CustomIconNickelSticky", 0)
 MinimapAPI:AddIcon("KeyRing", MinimapAPI.CustomIcons, "CustomIconKeyRing", 0)
 MinimapAPI:AddIcon("DoubleBomb", MinimapAPI.CustomIcons, "CustomIconDoubleBomb", 0)
-MinimapAPI:AddIcon("Trophy", MinimapAPI.CustomIcons, "CustomIconTrophy", 0)
 MinimapAPI:AddIcon("CheckeredFlag", MinimapAPI.CustomIcons, "CustomIconFlag", 0)
 MinimapAPI:AddIcon("Shovel", MinimapAPI.CustomIcons, "CustomIconShovel", 0)
 
@@ -84,15 +83,15 @@ MinimapAPI:AddPickup("Shovel","Shovel",5,110,-1,nil,"trophies",16000)
 
 MinimapAPI:AddPickup("DoubleHeart","DoubleHeart",5,10,5,MinimapAPI.PickupNotCollected,"hearts",15150)
 
-for i=81,97 do
-	MinimapAPI:AddPickup("Soul"..i,"Soul"..i,5,300,i,MinimapAPI.PickupNotCollected,"runes",11050) -- so many souls this is just easier
-end
-
 local function isCanTripped()
 	return MinimapAPI.isRepentance and Isaac.GetChallenge() == Challenge.CHALLENGE_CANTRIPPED 
 end
 
 MinimapAPI:AddPickup("CanTrippedCard","CanTrippedCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",11100,function(p) return isCanTripped() end)
+
+for i=81,97 do
+	MinimapAPI:AddPickup("Soul"..i,"Soul"..i,5,300,i,MinimapAPI.PickupNotCollected,"runes",11050) -- so many souls this is just easier
+end
 
 MinimapAPI:AddPickup("RuneBlack","RuneBlack",5,300,-1,MinimapAPI.PickupNotCollected,"runes",11050,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 7 end)
 MinimapAPI:AddPickup("RuneLeft","Rune",5,300,-1,MinimapAPI.PickupNotCollected,"runes",11010,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 3 end)
@@ -125,7 +124,7 @@ MinimapAPI:AddPickup("HorsePillOrangedotsWhite","HorsePillOrangedotsWhite",5,70,
 MinimapAPI:AddPickup("HorsePillWhiteAzure","HorsePillWhiteAzure",5,70,PillColor.PILL_WHITE_AZURE + PillColor.PILL_GIANT_FLAG,MinimapAPI.PickupNotCollected,"pills",9050)
 MinimapAPI:AddPickup("HorsePillBlackYellow","HorsePillBlackYellow",5,70,PillColor.PILL_BLACK_YELLOW + PillColor.PILL_GIANT_FLAG,MinimapAPI.PickupNotCollected,"pills",9050)
 MinimapAPI:AddPickup("HorsePillWhiteBlack","HorsePillWhiteBlack",5,70,PillColor.PILL_WHITE_BLACK + PillColor.PILL_GIANT_FLAG,MinimapAPI.PickupNotCollected,"pills",9050)
-MinimapAPI:AddPickup("PillWhiteYellow","HorsePillWhiteYellow",5,70,PillColor.PILL_WHITE_YELLOW + PillColor.PILL_GIANT_FLAG,MinimapAPI.PickupNotCollected,"pills",9050)
+MinimapAPI:AddPickup("HorsePillWhiteYellow","HorsePillWhiteYellow",5,70,PillColor.PILL_WHITE_YELLOW + PillColor.PILL_GIANT_FLAG,MinimapAPI.PickupNotCollected,"pills",9050)
 MinimapAPI:AddPickup("PillBlueBlue","PillBlueBlue",5,70,PillColor.PILL_BLUE_BLUE,MinimapAPI.PickupNotCollected,"pills",9001)
 MinimapAPI:AddPickup("PillWhiteBlue","Pill",5,70,PillColor.PILL_WHITE_BLUE,MinimapAPI.PickupNotCollected,"pills",9001)
 MinimapAPI:AddPickup("PillOrangeOrange","PillOrangeOrange",5,70,PillColor.PILL_ORANGE_ORANGE,MinimapAPI.PickupNotCollected,"pills",9001)
