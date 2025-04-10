@@ -944,11 +944,11 @@ end
 
 function maproomfunctions:GetColor()
 	if self.Color then
-		return Color(self.Color.R, self.Color.G, self.Color.B, MinimapAPI:GetConfig("MinimapTransparency"), self.Color.RO,
+		return Color(self.Color.R, self.Color.G, self.Color.B, MinimapAPI:GetTransparency(), self.Color.RO,
 			self.Color.GO, self.Color.BO)
 	end
 	return Color(MinimapAPI:GetConfig("DefaultRoomColorR"), MinimapAPI:GetConfig("DefaultRoomColorG"),
-		MinimapAPI:GetConfig("DefaultRoomColorB"), MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
+		MinimapAPI:GetConfig("DefaultRoomColorB"), MinimapAPI:GetTransparency(), 0, 0, 0)
 end
 
 function maproomfunctions:GetDisplayPosition()
@@ -1423,6 +1423,20 @@ function MinimapAPI:GetCurrentRoom() --DOESNT ALWAYS RETURN SOMETHING!!!
 	return MinimapAPI:GetRoomAtPosition(MinimapAPI:GetPlayerPosition())
 end
 
+function MinimapAPI:GetTransparency()
+	if MinimapAPI:IsLarge() then
+		local transparency = Options and Options.MapOpacity or MinimapAPI:GetConfig("TransparencyLargeMap")
+		if MinimapAPI:GetConfig("LargeMapFadeInOnHold") then
+			-- Fade in the large map, if tab is held down
+			local duration = 5
+			local percent = math.min(mapheldframes / duration, 1)
+			return transparency + (1 - transparency) * percent
+		end
+		return transparency
+	end
+	return MinimapAPI:GetConfig("TransparencySmallMap")
+end
+
 function MinimapAPI:updatePlayerPos()
 	local currentroom = cache.RoomDescriptor
 	if currentroom.GridIndex < 0 then
@@ -1777,7 +1791,7 @@ local function renderMinimapLevelFlags(renderOffset)
 				frame = mapFlag.frame
 			end
 
-			mapFlag.sprite.Color = Color(1,1,1,MinimapAPI:GetConfig("MinimapTransparency"),0,0,0)
+			mapFlag.sprite.Color = Color(1,1,1,MinimapAPI:GetTransparency(),0,0,0)
 			mapFlag.sprite:SetFrame(mapFlag.anim, frame)
 			mapFlag.sprite:Render(renderOffset + offset, vectorZero, vectorZero)
 
@@ -1808,7 +1822,7 @@ local function renderIcons(icons, locs, k, room, sprite, size, renderRoomSize)
 			end
 			pos.X = pos.X * MinimapAPI.GlobalScaleX
 			pos = pos + room.RenderOffset
-			spr.Color = Color(1, 1, 1, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
+			spr.Color = Color(1, 1, 1, MinimapAPI:GetTransparency(), 0, 0, 0)
 			spr:Render(pos, vectorZero, vectorZero)
 			k = k + 1
 		end
@@ -1879,7 +1893,7 @@ local function renderUnboundedMinimap(size,hide)
 			if MinimapAPI:GetConfig("VanillaSecretRoomDisplay") and (room.PermanentIcons[1] == "SecretRoom" or room.PermanentIcons[1] == "SuperSecretRoom") and anim == "RoomUnvisited" then
 				-- skip room rendering for secret rooms so only shadow is visible
 				if not MinimapAPI:GetConfig("ShowShadows") then
-					spr.Color = Color(0, 0, 0, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
+					spr.Color = Color(0, 0, 0, MinimapAPI:GetTransparency(), 0, 0, 0)
 					spr:SetFrame(anim, frame)
 					spr:Render(room.RenderOffset, vectorZero, vectorZero)
 					spr.Color = room:GetColor()
@@ -1906,7 +1920,7 @@ local function renderUnboundedMinimap(size,hide)
 						offsetX = offsetX * MinimapAPI.TargetGlobalScaleX * 3 + 2
 					end
 					font:DrawString(s, room.RenderOffset.X + offsetX, room.RenderOffset.Y + 3,
-						KColor(0.2, 0.2, 0.2, MinimapAPI:GetConfig("MinimapTransparency")), 0, false)
+						KColor(0.2, 0.2, 0.2, MinimapAPI:GetTransparency()), 0, false)
 				end
 			end
 		end
@@ -1917,7 +1931,7 @@ local function renderUnboundedMinimap(size,hide)
 				local r = MinimapAPI:GetConfig("HighlightStartRoomColorR")
 				local g = MinimapAPI:GetConfig("HighlightStartRoomColorG")
 				local b = MinimapAPI:GetConfig("HighlightStartRoomColorB")
-				startRoom.Color = Color(r, g, b, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
+				startRoom.Color = Color(r, g, b, MinimapAPI:GetTransparency(), 0, 0, 0)
 			end
 		end
 
@@ -1935,9 +1949,9 @@ local function renderUnboundedMinimap(size,hide)
 			end
 			if furthestRoom ~= nil then
 				if furthestRoom:GetDisplayFlags() ~= 5 then
-					furthestRoom.Color = Color(1, 0, 0, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
+					furthestRoom.Color = Color(1, 0, 0, MinimapAPI:GetTransparency(), 0, 0, 0)
 				else
-					furthestRoom.Color = Color(1, 1, 1, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
+					furthestRoom.Color = Color(1, 1, 1, MinimapAPI:GetTransparency(), 0, 0, 0)
 				end
 			end
 		end
@@ -2019,7 +2033,7 @@ local function renderBoundedMinimap()
 		MinimapAPI.SpriteMinimapSmall:SetFrame("MinimapAPIFrameShadowE", 0)
 		MinimapAPI.SpriteMinimapSmall:Render(offsetVec + Vector(frameTL.X + MinimapAPI:GetFrameBR().X, frameTL.Y), vectorZero, vectorZero)
 
-		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,MinimapAPI:GetConfig("MinimapTransparency"),0,0,0)
+		MinimapAPI.SpriteMinimapSmall.Color = Color(1,1,1,MinimapAPI:GetTransparency(),0,0,0)
 		MinimapAPI.SpriteMinimapSmall.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
 	end
 
@@ -2085,7 +2099,7 @@ local function renderBoundedMinimap()
 			end
 		end
 	end
-	MinimapAPI.SpriteMinimapSmall.Color = Color(1, 1, 1, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
+	MinimapAPI.SpriteMinimapSmall.Color = Color(1, 1, 1, MinimapAPI:GetTransparency(), 0, 0, 0)
 
 	if MinimapAPI:GetConfig("ShowIcons") then
 		for _, room in pairs(MinimapAPI:GetLevel()) do
@@ -2100,7 +2114,7 @@ local function renderBoundedMinimap()
 
 						local iconlocOffset = Vector(loc.X * roomSize.X, loc.Y * roomSize.Y)
 						local spr = icontb.sprite or MinimapAPI.SpriteIcons
-						spr.Color = Color(1, 1, 1, MinimapAPI:GetConfig("MinimapTransparency"), 0, 0, 0)
+						spr.Color = Color(1, 1, 1, MinimapAPI:GetTransparency(), 0, 0, 0)
 						updateMinimapIcon(spr, icontb)
 						local brcutoff = room.RenderOffset - offsetVec + iconlocOffset + iconPixelSize - MinimapAPI:GetFrameBR()
 						local tlcutoff = frameTL - (room.RenderOffset - offsetVec + iconlocOffset)
@@ -2145,10 +2159,10 @@ local function renderBoundedMinimap()
 end
 
 function MinimapAPI:renderRoomShadows(useCutOff)
-	if not (MinimapAPI:GetConfig("ShowShadows") and MinimapAPI:GetConfig("MinimapTransparency") == 1) then
+	if not (MinimapAPI:GetConfig("ShowShadows") and MinimapAPI:GetTransparency() == 1) then
 		return
 	end
-	local defaultOutlineColor = Color(1, 1, 1, MinimapAPI:GetConfig("MinimapTransparency"), MinimapAPI:GetConfig("DefaultOutlineColorR") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorG") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorB") * dlcColorMult)
+	local defaultOutlineColor = Color(1, 1, 1, MinimapAPI:GetTransparency(), MinimapAPI:GetConfig("DefaultOutlineColorR") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorG") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorB") * dlcColorMult)
 	local renderRoomSize = not MinimapAPI:IsLarge() and roomSize or largeRoomSize
 	local screen_size = MinimapAPI:GetScreenTopRight()
 	local offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") + outlinePixelSize.X, screen_size.Y + MinimapAPI:GetConfig("PositionY") - outlinePixelSize.Y/2 - 2)

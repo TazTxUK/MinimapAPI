@@ -600,18 +600,46 @@ function MinimapAPI:AddDSSMenu(DSSModName, dssmod, MenuProvider)
             title = 'color settings',
             buttons = {
                 {
-                    str = 'map transparency',
+                    str = 'map transparency (small)',
                     min = 0,
                     max = 1,
                     increment = 0.1,
                     setting = 1,
                     tooltip = {strset = {'values other', 'than 1', 'will hide', 'room borders', 'to improve', 'visibility' }},
-                    variable = 'MinimapTransparency',
+                    variable = 'TransparencySmallMap',
                     load = function()
-                        return MinimapAPI.Config.MinimapTransparency
+                        return MinimapAPI.Config.TransparencySmallMap
                     end,
                     store = function(var)
-                        MinimapAPI.Config.MinimapTransparency = var
+                        MinimapAPI.Config.TransparencySmallMap = var
+                    end
+                },
+                {
+                    str = 'map transparency (large)',
+                    min = 0,
+                    max = 1,
+                    increment = 0.1,
+                    setting = 1,
+                    tooltip = {strset = {'values other', 'than 1', 'will hide', 'room borders', 'to improve', 'visibility' }},
+                    variable = 'TransparencyLargeMap',
+                    load = function()
+                        return MinimapAPI.Config.TransparencyLargeMap
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.TransparencyLargeMap = var
+                    end
+                },
+                {
+                    str = 'Opaque Large map on Hold',
+                    choices = {'on', 'off'},
+                    tooltip = {strset = {"Enables if", "the map button", "is held down", ", will make", "the large map", "100% opaque" }},
+                    variable = 'MouseTeleportDamageOnCurseRoom',
+                    setting = 1,
+                    load = function()
+                        return MinimapAPI.Config.MouseTeleportDamageOnCurseRoom and 1 or 2
+                    end,
+                    store = function(var)
+                        MinimapAPI.Config.MouseTeleportDamageOnCurseRoom = var == 1
                     end
                 },
                 {
