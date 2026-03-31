@@ -234,6 +234,24 @@ if MinimapAPI.isRepentance then
 		return returnVal
 	end)
 end
+if REPENTOGON then
+	local TryPlaceRoom_Old = getmetatable(Level).__class.TryPlaceRoom
+	local TryPlaceRoomAtDoor_Old = getmetatable(Level).__class.TryPlaceRoomAtDoor
+	if type(TryPlaceRoom_Old) == "function" then
+		APIOverride.OverrideClassFunction(Level, "TryPlaceRoom", function(self, roomConfig, gridIdx, dimension, seed, allowMultDoors, allowSpecialNeighbors, allowNoNeighbors)
+			local returnVal = TryPlaceRoom_Old(self, roomConfig, gridIdx, dimension, seed, allowMultDoors, allowSpecialNeighbors, allowNoNeighbors)
+			MinimapAPI:CheckForNewRedRooms()
+			return returnVal
+		end)
+	end
+	if type(TryPlaceRoomAtDoor_Old) == "function" then
+		APIOverride.OverrideClassFunction(Level, "TryPlaceRoomAtDoor", function(self, roomConfig, neighborRoomDesc, doorSlot, seed, allowMultDoors, allowSpecialNeighbors)
+			local returnVal = TryPlaceRoomAtDoor_Old(self, roomConfig, neighborRoomDesc, doorSlot, seed, allowMultDoors, allowSpecialNeighbors)
+			MinimapAPI:CheckForNewRedRooms()
+			return returnVal
+		end)
+	end
+end
 
 MinimapAPI.OverrideConfig = {}
 function MinimapAPI:GetConfig(option)
