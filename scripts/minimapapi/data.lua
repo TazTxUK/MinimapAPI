@@ -411,6 +411,11 @@ MinimapAPI.IconList = {
 	--Misc
 	{ID="Ladder",anim="IconLadder",frame=0},
 	{ID="Portal",anim="IconPortal",frame=0},
+	{ID="ItemPoolGoldenChest",anim="ItemPoolChests",frame=0},
+	{ID="ItemPoolRedChest",anim="ItemPoolChests",frame=1},
+	{ID="ItemPoolWoodenChest",anim="ItemPoolChests",frame=2},
+	{ID="ItemPoolOldChest",anim="ItemPoolChests",frame=3},
+	{ID="ItemPoolMomsChest",anim="ItemPoolChests",frame=4},
 }
 
 MinimapAPI.RoomShapeAdjacentCoords = {
