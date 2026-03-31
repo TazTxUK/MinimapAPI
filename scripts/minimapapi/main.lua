@@ -154,11 +154,11 @@ function MinimapAPI:RoomDistance(room1,room2)
 end
 
 function MinimapAPI:GetFrameBR()
-	return Vector(MinimapAPI.Config.MapFrameWidth, MinimapAPI.Config.MapFrameHeight)
+	return Vector(MinimapAPI:GetConfig("MapFrameWidth"), MinimapAPI:GetConfig("MapFrameHeight"))
 end
 
 function MinimapAPI:GetFrameCenterOffset()
-	return Vector(MinimapAPI.Config.MapFrameWidth + 1, MinimapAPI.Config.MapFrameHeight + 1) / 2
+	return Vector(MinimapAPI:GetConfig("MapFrameWidth") + 1, MinimapAPI:GetConfig("MapFrameHeight") + 1) / 2
 end
 
 --minimap api
@@ -1708,7 +1708,7 @@ function MinimapAPI:PrevMapDisplayMode()
 		[4] = MinimapAPI:GetConfig("AllowToggleNoMap"),
 	}
 	for _ = 1, 4 do
-		MinimapAPI.Config.DisplayMode = MinimapAPI.Config.DisplayMode - 1
+		MinimapAPI.Config.DisplayMode = MinimapAPI:GetConfig("DisplayMode") - 1
 		if MinimapAPI.Config.DisplayMode < 1 then
 			MinimapAPI.Config.DisplayMode = 4
 		end
@@ -1726,7 +1726,7 @@ function MinimapAPI:NextMapDisplayMode()
 		[4] = MinimapAPI:GetConfig("AllowToggleNoMap"),
 	}
 	for _ = 1, 4 do
-		MinimapAPI.Config.DisplayMode = MinimapAPI.Config.DisplayMode + 1
+		MinimapAPI.Config.DisplayMode = MinimapAPI:GetConfig("DisplayMode") + 1
 		if MinimapAPI.Config.DisplayMode > 4 then
 			MinimapAPI.Config.DisplayMode = 1
 		end
