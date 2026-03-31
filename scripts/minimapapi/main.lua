@@ -723,7 +723,8 @@ function MinimapAPI:LoadDefaultMap(dimension)
 				end
 			end
 			if override_greed and game:IsGreedMode() then
-				if roomDescriptor.Data.Type == RoomType.ROOM_TREASURE and roomDescriptor.GridIndex == 98 then
+				-- Use silver treasure room icon for greed mode treasure rooms, except for the one right next to the shop
+				if roomDescriptor.Data.Type == RoomType.ROOM_TREASURE and roomDescriptor.GridIndex ~= 85 then
 					t.PermanentIcons = {"TreasureRoomGreed"}
 				end
 			end
@@ -1078,7 +1079,8 @@ function maproomfunctions:UpdateType()
 			end
 		end
 		if override_greed and game:IsGreedMode() then
-			if self.Descriptor.Data.Type == RoomType.ROOM_TREASURE and self.Descriptor.GridIndex == 98 then
+			-- Use silver treasure room icon for greed mode treasure rooms, except for the one right next to the shop
+			if self.Descriptor.Data.Type == RoomType.ROOM_TREASURE and self.Descriptor.GridIndex ~= 85 then
 				self.PermanentIcons = { "TreasureRoomGreed" }
 			end
 		end
