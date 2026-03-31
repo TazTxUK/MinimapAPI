@@ -1688,8 +1688,11 @@ MinimapAPI:AddCallbackFunc(ModCallbacks.MC_USE_CARD, CALLBACK_PRIORITY, function
 		MinimapAPI.lastCardUsedRoom = MinimapAPI:GetCurrentRoom()
 	elseif MinimapAPI.isRepentance and card == Card.CARD_CRACKED_KEY or card == Card.CARD_SOUL_CAIN then
 		--Update visibility of adjacent rooms like secret rooms
-		for _,room in ipairs(MinimapAPI:GetCurrentRoom():GetAdjacentRooms()) do
-			room:SetDisplayFlags(5)
+		local currentRoom = MinimapAPI:GetCurrentRoom()
+		if currentRoom then
+			for _,room in ipairs(currentRoom:GetAdjacentRooms()) do
+				room:SetDisplayFlags(5)
+			end
 		end
 		MinimapAPI:CheckForNewRedRooms()
 	end
