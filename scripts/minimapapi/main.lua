@@ -304,7 +304,8 @@ function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup
 	MinimapAPI.PickupList[id] = newPickup
 	MinimapAPI.PickupListByType[newPickup.Type] = MinimapAPI.PickupListByType[newPickup.Type] or {}
 	MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant] = MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant] or {}
-	MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant][newPickup.SubType] = newPickup.IconID
+	MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant][newPickup.SubType] = MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant][newPickup.SubType] or {}
+	table.insert(MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant][newPickup.SubType], id)
 	table.sort(MinimapAPI.PickupList, function(a, b) return a.Priority > b.Priority	end	)
 	return newPickup
 end
@@ -489,25 +490,36 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 		local id = type(ent:GetData()) == "table" and ent:GetData().MinimapAPIPickupID -- sanity checks to get entity Data
 		if id == nil then
 			local checkType = ent.Type
-			if MinimapAPI.PickupListByType[-1] then
+			if not MinimapAPI.PickupListByType[checkType] then
 				checkType = -1
 			end
 			if MinimapAPI.PickupListByType[checkType] then
 				local checkVariant = ent.Variant
-				if MinimapAPI.PickupListByType[checkType][-1] then
+				if not MinimapAPI.PickupListByType[checkType][checkVariant] then
 					checkVariant = -1
 				end
 				if MinimapAPI.PickupListByType[checkType][checkVariant] then
 					local checkSubType = ent.SubType
-					if MinimapAPI.PickupListByType[checkType][checkVariant][-1] then
+					if not MinimapAPI.PickupListByType[checkType][checkVariant][checkSubType] then
 						checkSubType = -1
 					end
 					if MinimapAPI.PickupListByType[checkType][checkVariant][checkSubType] then
-						local currentid = MinimapAPI.PickupListByType[checkType][checkVariant][checkSubType]
-						if currentid then
-							ent:GetData().MinimapAPIPickupID = currentid
-							id = currentid
-							success = true
+						local currentidtable = MinimapAPI.PickupListByType[checkType][checkVariant][checkSubType]
+						if currentidtable then
+							local lastPriority = -9999
+							for i, v in pairs(currentidtable) do
+								local currentid = MinimapAPI.PickupList[v]
+								if currentid then
+									if not currentid.Priority or lastPriority < currentid.Priority then
+										if not currentid.Condition or currentid.Condition(ent) then
+											lastPriority = currentid.Priority
+											ent:GetData().MinimapAPIPickupID = v
+											id = v
+											success = true
+										end
+									end
+								end
+							end
 						end
 					end
 				end

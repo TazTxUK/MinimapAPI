@@ -328,7 +328,10 @@ for i, v in pairs(MinimapAPI.PickupList) do
 		if not MinimapAPI.PickupListByType[typ][variant] then
 			MinimapAPI.PickupListByType[typ][variant] = {}
 		end
-		MinimapAPI.PickupListByType[typ][variant][subtype] = i
+		if not MinimapAPI.PickupListByType[typ][variant][subtype] then
+			MinimapAPI.PickupListByType[typ][variant][subtype] = {}
+		end
+		table.insert(MinimapAPI.PickupListByType[typ][variant][subtype], i)
 	end
 end
 
