@@ -11,15 +11,20 @@ local game = Game()
 local dlcColorMult = MinimapAPI.isRepentance and 1 or 255 -- converts colors into correct value range for the DLCs
 local vectorZero = Vector(0,0)
 
-function MinimapAPI:GetScreenSize() --based off of code from kilburn
-	local room = game:GetRoom()
+function MinimapAPI:GetScreenSize()
+	if MinimapAPI.isRepentance then
+		return Vector(Isaac.GetScreenWidth(), Isaac.GetScreenHeight())
+	else
+		--based off of code from kilburn
+		local room = game:GetRoom()
 
-	local pos = room:WorldToScreenPosition(vectorZero) - room:GetRenderScrollOffset() - game.ScreenShakeOffset
+		local pos = room:WorldToScreenPosition(vectorZero) - room:GetRenderScrollOffset() - game.ScreenShakeOffset
 
-	local rx = pos.X + 60 * 26 / 40
-	local ry = pos.Y + 140 * (26 / 40)
+		local rx = pos.X + 60 * 26 / 40
+		local ry = pos.Y + 140 * (26 / 40)
 
-	return Vector(rx*2 + 13*26, ry*2 + 7*26)
+		return Vector(rx*2 + 13*26, ry*2 + 7*26)
+	end
 end
 
 function MinimapAPI:GetScreenCenter()
@@ -297,11 +302,18 @@ function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup
 		}
 	end
 	MinimapAPI.PickupList[id] = newPickup
+	MinimapAPI.PickupListByType[newPickup.Type] = MinimapAPI.PickupListByType[newPickup.Type] or {}
+	MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant] = MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant] or {}
+	MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant][newPickup.SubType] = MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant][newPickup.SubType] or {}
+	table.insert(MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant][newPickup.SubType], id)
 	table.sort(MinimapAPI.PickupList, function(a, b) return a.Priority > b.Priority	end	)
 	return newPickup
 end
 
 function MinimapAPI:RemovePickup(id)
+	if MinimapAPI.PickupList[id] and MinimapAPI.PickupList[id].Type and MinimapAPI.PickupList[id].Variant and MinimapAPI.PickupList[id].SubType then
+		MinimapAPI.PickupListByType[MinimapAPI.PickupList[id].Type][MinimapAPI.PickupList[id].Variant][MinimapAPI.PickupList[id].SubType] = nil
+	end
 	MinimapAPI.PickupList[id] = nil
 end
 
@@ -477,18 +489,34 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 		local success = false
 		local id = type(ent:GetData()) == "table" and ent:GetData().MinimapAPIPickupID -- sanity checks to get entity Data
 		if id == nil then
-			for i, v in pairs(MinimapAPI.PickupList) do
-				local currentid = MinimapAPI.PickupList[id]
-				if not currentid or (currentid.Priority < v.Priority) then
-					if ent.Type == v.Type then
-						local toPickup = ent:ToPickup()
-						if (not toPickup) or (not toPickup:IsShopItem()) then
-							if v.Variant == -1 or ent.Variant == v.Variant then
-								if v.SubType == -1 or ent.SubType == v.SubType then
-									if (not v.Condition) or v.Condition(ent) then
-										ent:GetData().MinimapAPIPickupID = i
-										id = i
-										success = true
+			local checkType = ent.Type
+			if not MinimapAPI.PickupListByType[checkType] then
+				checkType = -1
+			end
+			if MinimapAPI.PickupListByType[checkType] then
+				local checkVariant = ent.Variant
+				if not MinimapAPI.PickupListByType[checkType][checkVariant] then
+					checkVariant = -1
+				end
+				if MinimapAPI.PickupListByType[checkType][checkVariant] then
+					local checkSubType = ent.SubType
+					if not MinimapAPI.PickupListByType[checkType][checkVariant][checkSubType] then
+						checkSubType = -1
+					end
+					if MinimapAPI.PickupListByType[checkType][checkVariant][checkSubType] then
+						local currentidtable = MinimapAPI.PickupListByType[checkType][checkVariant][checkSubType]
+						if currentidtable then
+							local lastPriority = -9999
+							for i, v in pairs(currentidtable) do
+								local currentid = MinimapAPI.PickupList[v]
+								if currentid then
+									if not currentid.Priority or lastPriority < currentid.Priority then
+										if not currentid.Condition or currentid.Condition(ent) then
+											lastPriority = currentid.Priority
+											ent:GetData().MinimapAPIPickupID = v
+											id = v
+											success = true
+										end
 									end
 								end
 							end
@@ -2293,10 +2321,10 @@ local function renderCallbackFunction(_)
 			return
 		end
 
+		local minimapLevel = MinimapAPI:GetLevel()
+		local resetPlayerDistance = false
 		if currentroomdata and (MinimapAPI:GetConfig("ShowGridDistances") or MinimapAPI:GetConfig("HighlightFurthestRoom")) then
-			for _,room in ipairs(MinimapAPI:GetLevel()) do
-				room.PlayerDistance = nil
-			end
+			resetPlayerDistance = true
 			currentroomdata.PlayerDistance = 0
 
 			local function calcadjdistances(thisroom)
@@ -2311,38 +2339,37 @@ local function renderCallbackFunction(_)
 					end
 				end
 			end
-
-			calcadjdistances(currentroomdata)
 		end
 
 		--update map display flags
+		local hasMapEffect = gamelevel:GetStateFlag(LevelStateFlag.STATE_MAP_EFFECT)
+		local hasBlueMapEffect = gamelevel:GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT)
+		local hasCompassEffect = gamelevel:GetStateFlag(LevelStateFlag.STATE_COMPASS_EFFECT)
 		if gamelevel:GetStateFlag(LevelStateFlag.STATE_MAP_EFFECT) then
-			for _,v in ipairs(MinimapAPI:GetLevel()) do
+			for _,v in ipairs(minimapLevel) do
+				if resetPlayerDistance then
+					v.PlayerDistance = nil
+				end
 				if not v.Secret then
-					v.DisplayFlags = v.DisplayFlags | 1
+					if hasMapEffect then
+						v.DisplayFlags = v.DisplayFlags | 1
+					end
+					if hasCompassEffect and #v.PermanentIcons > 0 then
+						v.DisplayFlags = v.DisplayFlags | 6
+					end
+					-- treasure rooms are the only room with a permanent icon that can dynamically change (devil's crown), so we have to constantly update its type
+					if v.Type == RoomType.ROOM_TREASURE then
+						v:UpdateType()
+					end
+				elseif v.Type ~= RoomType.ROOM_ULTRASECRET then --is secret but not ultra secret
+					if hasBlueMapEffect then
+						v.DisplayFlags = v.DisplayFlags | 5
+					end
 				end
 			end
 		end
-		if gamelevel:GetStateFlag(LevelStateFlag.STATE_BLUE_MAP_EFFECT) then
-			for _,v in ipairs(MinimapAPI:GetLevel()) do
-				if v.Secret and v.Type ~= RoomType.ROOM_ULTRASECRET then
-					v.DisplayFlags = v.DisplayFlags | 5
-				end
-			end
-		end
-		if gamelevel:GetStateFlag(LevelStateFlag.STATE_COMPASS_EFFECT) then
-			for _,v in ipairs(MinimapAPI:GetLevel()) do
-				if #v.PermanentIcons > 0 and not v.Secret then
-					v.DisplayFlags = v.DisplayFlags | 6
-				end
-			end
-		end
-
-		-- treasure rooms are the only room with a permanent icon that can dynamically change (devil's crown), so we have to constantly update its type
-		for _,v in ipairs(MinimapAPI:GetLevel()) do
-			if v.Type == RoomType.ROOM_TREASURE then
-				v:UpdateType()
-			end
+		if resetPlayerDistance then
+			calcadjdistances(currentroomdata)
 		end
 
 		if MinimapAPI:GetConfig("AltSemivisitedSprite") then
@@ -2359,7 +2386,7 @@ local function renderCallbackFunction(_)
 			end
 		end
 
-		if MinimapAPI:GetLevel() then
+		if minimapLevel then
 			MinimapAPI.SpriteMinimapSmall.Scale = Vector(1, 1)
 			if MinimapAPI:IsLarge() then -- big unbound map
 				renderUnboundedMinimap("huge")

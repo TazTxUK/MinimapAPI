@@ -94,8 +94,8 @@ for i=81,97 do
 end
 
 MinimapAPI:AddPickup("RuneBlack","RuneBlack",5,300,-1,MinimapAPI.PickupNotCollected,"runes",11050,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 7 end)
-MinimapAPI:AddPickup("RuneLeft","Rune",5,300,-1,MinimapAPI.PickupNotCollected,"runes",11010,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 3 end)
-MinimapAPI:AddPickup("RuneRight","RuneRight",5,300,-1,MinimapAPI.PickupNotCollected,"runes",11010,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 4 end)
+MinimapAPI:AddPickup("RuneLeft","RuneRight",5,300,-1,MinimapAPI.PickupNotCollected,"runes",11010,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 3 end)
+MinimapAPI:AddPickup("RuneRight","Rune",5,300,-1,MinimapAPI.PickupNotCollected,"runes",11010,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 4 end)
 MinimapAPI:AddPickup("RuneShard","RuneShard",5,300,-1,MinimapAPI.PickupNotCollected,"runes",11001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 13 end)
 
 MinimapAPI:AddPickup("TarotCard","TarotCard",5,300,-1,MinimapAPI.PickupNotCollected,"cards",10001,function(p) return not isCanTripped() and itemConfig:GetCard(p.SubType).PickupSubtype == 1 end)
