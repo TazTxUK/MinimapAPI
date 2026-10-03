@@ -1897,7 +1897,7 @@ local function renderUnboundedMinimap(size,hide)
 			spr.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
 			if MinimapAPI:GetConfig("VanillaSecretRoomDisplay") and (room.PermanentIcons[1] == "SecretRoom" or room.PermanentIcons[1] == "SuperSecretRoom") and anim == "RoomUnvisited" then
 				-- skip room rendering for secret rooms so only shadow is visible
-				if not MinimapAPI:GetConfig("ShowShadows") then
+				if not MinimapAPI:GetConfig("ShowShadows") or MinimapAPI:GetTransparency() < 1 then
 					spr.Color = Color(0, 0, 0, MinimapAPI:GetTransparency(), 0, 0, 0)
 					spr:SetFrame(anim, frame)
 					spr:Render(room.RenderOffset, vectorZero, vectorZero)
