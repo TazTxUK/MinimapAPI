@@ -239,6 +239,24 @@ if MinimapAPI.isRepentance then
 		return returnVal
 	end)
 end
+if REPENTOGON then
+	local TryPlaceRoom_Old = getmetatable(Level).__class.TryPlaceRoom
+	local TryPlaceRoomAtDoor_Old = getmetatable(Level).__class.TryPlaceRoomAtDoor
+	if type(TryPlaceRoom_Old) == "function" then
+		APIOverride.OverrideClassFunction(Level, "TryPlaceRoom", function(self, roomConfig, gridIdx, dimension, seed, allowMultDoors, allowSpecialNeighbors, allowNoNeighbors)
+			local returnVal = TryPlaceRoom_Old(self, roomConfig, gridIdx, dimension, seed, allowMultDoors, allowSpecialNeighbors, allowNoNeighbors)
+			MinimapAPI:CheckForNewRedRooms()
+			return returnVal
+		end)
+	end
+	if type(TryPlaceRoomAtDoor_Old) == "function" then
+		APIOverride.OverrideClassFunction(Level, "TryPlaceRoomAtDoor", function(self, roomConfig, neighborRoomDesc, doorSlot, seed, allowMultDoors, allowSpecialNeighbors)
+			local returnVal = TryPlaceRoomAtDoor_Old(self, roomConfig, neighborRoomDesc, doorSlot, seed, allowMultDoors, allowSpecialNeighbors)
+			MinimapAPI:CheckForNewRedRooms()
+			return returnVal
+		end)
+	end
+end
 
 MinimapAPI.OverrideConfig = {}
 function MinimapAPI:GetConfig(option)
@@ -1925,7 +1943,7 @@ local function renderUnboundedMinimap(size,hide)
 			spr.Scale = Vector(MinimapAPI.GlobalScaleX, 1)
 			if MinimapAPI:GetConfig("VanillaSecretRoomDisplay") and (room.PermanentIcons[1] == "SecretRoom" or room.PermanentIcons[1] == "SuperSecretRoom") and anim == "RoomUnvisited" then
 				-- skip room rendering for secret rooms so only shadow is visible
-				if not MinimapAPI:GetConfig("ShowShadows") then
+				if not MinimapAPI:GetConfig("ShowShadows") or MinimapAPI:GetTransparency() < 1 then
 					spr.Color = Color(0, 0, 0, MinimapAPI:GetTransparency(), 0, 0, 0)
 					spr:SetFrame(anim, frame)
 					spr:Render(room.RenderOffset, vectorZero, vectorZero)
