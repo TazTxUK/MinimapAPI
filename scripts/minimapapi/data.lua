@@ -316,6 +316,25 @@ MinimapAPI.PickupList = {
 	["Portal"] = {IconID="Portal",Type=1000,Variant=161,SubType=980,Call=slotNotDead,IconGroup="portals",Priority=0},
 }
 
+MinimapAPI.PickupListByType = {}
+for i, v in pairs(MinimapAPI.PickupList) do
+	if v and v.Type then
+		local typ = v.Type or -1
+		local variant = v.Variant or -1
+		local subtype = v.SubType or -1
+		if not MinimapAPI.PickupListByType[typ] then
+			MinimapAPI.PickupListByType[typ] = {}
+		end
+		if not MinimapAPI.PickupListByType[typ][variant] then
+			MinimapAPI.PickupListByType[typ][variant] = {}
+		end
+		if not MinimapAPI.PickupListByType[typ][variant][subtype] then
+			MinimapAPI.PickupListByType[typ][variant][subtype] = {}
+		end
+		table.insert(MinimapAPI.PickupListByType[typ][variant][subtype], i)
+	end
+end
+
 -- IsPrespawnObject can be used for grid entities that exist on room creation. These objects are mostly defined by very big Type IDs
 MinimapAPI.GridEntityList = {
 	["Ladder"] = {IconID="Ladder",Type=18,Variant=-1,Priority=1000},
