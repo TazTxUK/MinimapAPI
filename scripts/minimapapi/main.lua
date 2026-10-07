@@ -1999,11 +1999,7 @@ local function renderUnboundedMinimap(size,hide)
 				end
 			end
 			if furthestRoom ~= nil then
-				if furthestRoom:GetDisplayFlags() ~= 5 then
-					furthestRoom.Color = Color(1, 0, 0, MinimapAPI:GetTransparency(), 0, 0, 0)
-				else
-					furthestRoom.Color = Color(1, 1, 1, MinimapAPI:GetTransparency(), 0, 0, 0)
-				end
+				furthestRoom.Color = Color(1, 0, 0, MinimapAPI:GetTransparency(), 0, 0, 0)
 			end
 		end
 	end
@@ -2245,6 +2241,19 @@ function MinimapAPI:renderRoomShadows(useCutOff)
 	end
 end
 
+local function calcAdjacentDistances(curRoomData)
+	for _,room in ipairs(curRoomData:GetAdjacentRooms()) do
+		if room.PlayerDistance == nil or (room.PlayerDistance and room.PlayerDistance > curRoomData.PlayerDistance + 1) then
+			if room:GetDisplayFlags() > 0 then
+				room.PlayerDistance = curRoomData.PlayerDistance + 1
+				calcAdjacentDistances(room)
+			else
+				room.PlayerDistance = false
+			end
+		end
+	end
+end
+
 local function renderCallbackFunction(_)
 	if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then return end
 
@@ -2343,7 +2352,6 @@ local function renderCallbackFunction(_)
 		local resetPlayerDistance = false
 		if currentroomdata and (MinimapAPI:GetConfig("ShowGridDistances") or MinimapAPI:GetConfig("HighlightFurthestRoom")) then
 			resetPlayerDistance = true
-			currentroomdata.PlayerDistance = 0
 		end
 
 		--update map display flags
@@ -2374,7 +2382,8 @@ local function renderCallbackFunction(_)
 			end
 		end
 		if resetPlayerDistance then
-			calcadjdistances(currentroomdata)
+			currentroomdata.PlayerDistance = 0
+			calcAdjacentDistances(currentroomdata)
 		end
 
 		if MinimapAPI:GetConfig("AltSemivisitedSprite") then
