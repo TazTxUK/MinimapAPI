@@ -2212,7 +2212,7 @@ function MinimapAPI:renderRoomShadows(useCutOff)
 	local defaultOutlineColor = Color(1, 1, 1, MinimapAPI:GetTransparency(), MinimapAPI:GetConfig("DefaultOutlineColorR") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorG") * dlcColorMult, MinimapAPI:GetConfig("DefaultOutlineColorB") * dlcColorMult)
 	local renderRoomSize = not MinimapAPI:IsLarge() and roomSize or largeRoomSize
 	local screen_size = MinimapAPI:GetScreenTopRight()
-	local offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") + outlinePixelSize.X, screen_size.Y + MinimapAPI:GetConfig("PositionY") - outlinePixelSize.Y/2 - 2)
+	local offsetVec = Vector( screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX"), screen_size.Y + MinimapAPI:GetConfig("PositionY") - 2)
 
 	local sprite = not MinimapAPI:IsLarge() and MinimapAPI.SpriteMinimapSmall or MinimapAPI.SpriteMinimapLarge
 	sprite.Color = defaultOutlineColor
