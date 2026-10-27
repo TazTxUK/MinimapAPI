@@ -323,8 +323,16 @@ function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup
 	MinimapAPI.PickupListByType[newPickup.Type] = MinimapAPI.PickupListByType[newPickup.Type] or {}
 	MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant] = MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant] or {}
 	MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant][newPickup.SubType] = MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant][newPickup.SubType] or {}
-	table.insert(MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant][newPickup.SubType], id)
-	table.sort(MinimapAPI.PickupList, function(a, b) return a.Priority > b.Priority	end	)
+	local pickupIDs = MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant][newPickup.SubType]
+	table.insert(pickupIDs, id)
+	table.sort(pickupIDs, function(a, b)
+		local priorityA = MinimapAPI.PickupList[a].Priority
+		local priorityB = MinimapAPI.PickupList[b].Priority
+		if priorityA == priorityB then -- sort by ID if priority is the same
+			return tostring(a) < tostring(b)
+		end
+		return priorityA > priorityB
+	end)
 	return newPickup
 end
 

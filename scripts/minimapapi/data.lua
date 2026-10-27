@@ -334,6 +334,20 @@ for i, v in pairs(MinimapAPI.PickupList) do
 		table.insert(MinimapAPI.PickupListByType[typ][variant][subtype], i)
 	end
 end
+for _, variants in pairs(MinimapAPI.PickupListByType) do
+	for _, subtypes in pairs(variants) do
+		for _, pickupIDs in pairs(subtypes) do
+			table.sort(pickupIDs, function(a, b)
+				local priorityA = MinimapAPI.PickupList[a].Priority
+				local priorityB = MinimapAPI.PickupList[b].Priority
+				if priorityA == priorityB then -- if two pickups have the same priority, sort them by their ID to ensure consistent ordering
+					return tostring(a) < tostring(b)
+				end
+				return priorityA > priorityB
+			end)
+		end
+	end
+end
 
 -- IsPrespawnObject can be used for grid entities that exist on room creation. These objects are mostly defined by very big Type IDs
 MinimapAPI.GridEntityList = {
