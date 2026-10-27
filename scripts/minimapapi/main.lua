@@ -515,33 +515,39 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 		local success = false
 		local id = type(ent:GetData()) == "table" and ent:GetData().MinimapAPIPickupID -- sanity checks to get entity Data
 		if id == nil then
-			local checkType = ent.Type
-			if not MinimapAPI.PickupListByType[checkType] then
-				checkType = -1
-			end
-			if MinimapAPI.PickupListByType[checkType] then
-				local checkVariant = ent.Variant
-				if not MinimapAPI.PickupListByType[checkType][checkVariant] then
-					checkVariant = -1
+			local toPickup = ent:ToPickup()
+			-- Shop pickups should not receive minimap pickup icons.
+			if not toPickup or not toPickup:IsShopItem() then
+				-- Fall back to wildcard entries when an exact type, variant, or subtype is missing.
+				local checkType = ent.Type
+				if not MinimapAPI.PickupListByType[checkType] then
+					checkType = -1
 				end
-				if MinimapAPI.PickupListByType[checkType][checkVariant] then
-					local checkSubType = ent.SubType
-					if not MinimapAPI.PickupListByType[checkType][checkVariant][checkSubType] then
-						checkSubType = -1
+				if MinimapAPI.PickupListByType[checkType] then
+					local checkVariant = ent.Variant
+					if not MinimapAPI.PickupListByType[checkType][checkVariant] then
+						checkVariant = -1
 					end
-					if MinimapAPI.PickupListByType[checkType][checkVariant][checkSubType] then
-						local currentidtable = MinimapAPI.PickupListByType[checkType][checkVariant][checkSubType]
-						if currentidtable then
-							local lastPriority = -9999
-							for _, v in pairs(currentidtable) do
-								local currentid = MinimapAPI.PickupList[v]
-								if currentid then
-									if not currentid.Priority or lastPriority < currentid.Priority then
-										if not currentid.Condition or currentid.Condition(ent) then
-											lastPriority = currentid.Priority
-											ent:GetData().MinimapAPIPickupID = v
-											id = v
-											success = true
+					if MinimapAPI.PickupListByType[checkType][checkVariant] then
+						local checkSubType = ent.SubType
+						if not MinimapAPI.PickupListByType[checkType][checkVariant][checkSubType] then
+							checkSubType = -1
+						end
+						if MinimapAPI.PickupListByType[checkType][checkVariant][checkSubType] then
+							local currentidtable = MinimapAPI.PickupListByType[checkType][checkVariant][checkSubType]
+							if currentidtable then
+								local lastPriority = -9999
+								for _, v in ipairs(currentidtable) do
+									local currentid = MinimapAPI.PickupList[v]
+									if currentid then
+										-- Replace a match only when this icon has higher priority.
+										if not currentid.Priority or lastPriority < currentid.Priority then
+											if not currentid.Condition or currentid.Condition(ent) then
+												lastPriority = currentid.Priority
+												ent:GetData().MinimapAPIPickupID = v
+												id = v
+												success = true
+											end
 										end
 									end
 								end
@@ -551,6 +557,7 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 				end
 			end
 			if not success then
+				-- Cache misses so unmatched entities are not checked again.
 				ent:GetData().MinimapAPIPickupID = false
 			end
 		end
