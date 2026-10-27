@@ -2397,8 +2397,26 @@ local function renderCallbackFunction(_)
 			end
 		end
 		if resetPlayerDistance then
+			-- reset room distances to nil
+			for _,room in ipairs(MinimapAPI:GetLevel()) do
+				room.PlayerDistance = nil
+			end
 			currentroomdata.PlayerDistance = 0
-			calcAdjacentDistances(currentroomdata)
+			-- calculate player distance for each room recursively
+			local function calcadjdistances(thisroom)
+				for _,room in ipairs(thisroom:GetAdjacentRooms()) do
+					if room.PlayerDistance == nil or (room.PlayerDistance and room.PlayerDistance > thisroom.PlayerDistance + 1) then
+						if room:GetDisplayFlags() > 0 then
+							room.PlayerDistance = thisroom.PlayerDistance + 1
+							calcadjdistances(room)
+						else
+							room.PlayerDistance = false
+						end
+					end
+				end
+			end
+
+			calcadjdistances(currentroomdata)
 		end
 
 		if MinimapAPI:GetConfig("AltSemivisitedSprite") then
