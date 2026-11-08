@@ -2259,19 +2259,6 @@ function MinimapAPI:renderRoomShadows(useCutOff)
 	end
 end
 
-local function calcAdjacentDistances(curRoomData)
-	for _,room in ipairs(curRoomData:GetAdjacentRooms()) do
-		if room.PlayerDistance == nil or (room.PlayerDistance and room.PlayerDistance > curRoomData.PlayerDistance + 1) then
-			if room:GetDisplayFlags() > 0 then
-				room.PlayerDistance = curRoomData.PlayerDistance + 1
-				calcAdjacentDistances(room)
-			else
-				room.PlayerDistance = false
-			end
-		end
-	end
-end
-
 local function renderCallbackFunction(_)
 	if MinimapAPI:GetConfig("Disable") or MinimapAPI.Disable then return end
 
@@ -2459,13 +2446,11 @@ local function renderCallbackFunction(_)
 				if not islarge and MinimapAPI:GetConfig("DisplayMode") == 2 and MinimapAPI.GlobalScaleX >= 1 then -- Bounded map
 					if MinimapAPI:GetConfig("DisplayLevelFlags") == 1 then                            -- LEFT
 						levelflagoffset = Vector(
-							screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX")
-							+ roomPixelSize.X,
+							screen_size.X - MinimapAPI:GetConfig("MapFrameWidth") - MinimapAPI:GetConfig("PositionX") - roomPixelSize.X,
 							screen_size.Y + MinimapAPI:GetConfig("PositionY") + 3)
 					else -- BOTTOM
-						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX") + roomPixelSize.X,
-							screen_size.Y + MinimapAPI:GetConfig("MapFrameHeight") + MinimapAPI:GetConfig("PositionY") +
-							3)
+						levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX") - 5,
+							screen_size.Y + MinimapAPI:GetConfig("MapFrameHeight") + MinimapAPI:GetConfig("PositionY") + roomPixelSize.Y)
 					end
 				elseif not islarge and MinimapAPI:GetConfig("DisplayMode") == 4 then -- hidden map
 					levelflagoffset = Vector(screen_size.X - MinimapAPI:GetConfig("PositionX") - roomPixelSize.X,
