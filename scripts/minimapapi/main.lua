@@ -319,6 +319,7 @@ function MinimapAPI:AddPickup(id, iconid, typ, variant, subtype, call, icongroup
 			Condition = condition,
 		}
 	end
+	newPickup.IsVanillaPickup = false -- mark this pickup as a custom pickup
 	MinimapAPI.PickupList[id] = newPickup
 	MinimapAPI.PickupListByType[newPickup.Type] = MinimapAPI.PickupListByType[newPickup.Type] or {}
 	MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant] = MinimapAPI.PickupListByType[newPickup.Type][newPickup.Variant] or {}
@@ -564,24 +565,26 @@ function MinimapAPI:GetCurrentRoomPickupIDs() --gets pickup icon ids for current
 
 		local pickupicon = MinimapAPI.PickupList[id]
 		if pickupicon then
-			local ind = MinimapAPI:GetConfig("PickupNoGrouping") and (#pickupgroupset + 1) or pickupicon.IconGroup
-			if not pickupgroupset[ind] or MinimapAPI.PickupList[pickupgroupset[ind]].Priority < pickupicon.Priority then
-				if (not pickupicon.Call) or pickupicon.Call(ent) then
-					if pickupicon.IconGroup then
-						pickupgroupset[ind] = id
+			if not MinimapAPI:GetConfig("OnlyShowVanillaPickups") or pickupicon.IsVanillaPickup then
+				local ind = MinimapAPI:GetConfig("PickupNoGrouping") and (#pickupgroupset + 1) or pickupicon.IconGroup
+				if not pickupgroupset[ind] or MinimapAPI.PickupList[pickupgroupset[ind]].Priority < pickupicon.Priority then
+					if (not pickupicon.Call) or pickupicon.Call(ent) then
+						if pickupicon.IconGroup then
+							pickupgroupset[ind] = id
+						end
 					end
 				end
 			end
 		end
 	end
-	for _,v in pairs(pickupgroupset) do
+	for _, v in pairs(pickupgroupset) do
 		table.insert(addIcons, v)
 	end
 	local iconList = {}
-	for i,v in ipairs(addIcons) do
+	for i, v in ipairs(addIcons) do
 		iconList[i] = MinimapAPI.PickupList[v].IconID
 	end
-	for _,v in ipairs(MinimapAPI:GetCurrentRoomGridIDs()) do
+	for _, v in ipairs(MinimapAPI:GetCurrentRoomGridIDs()) do
 		table.insert(iconList, v)
 	end
 	return iconList

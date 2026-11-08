@@ -716,6 +716,28 @@ if modconfigexists then
 
 	MCM.AddSetting(
 		"Minimap API",
+		"Pickups",
+		{
+			Type = MCM.OptionType.BOOLEAN,
+			CurrentSetting = function()
+				return MinimapAPI.Config.PickupNoGrouping
+			end,
+			Display = function()
+				return "Only show Vanilla Pickups: " .. (MinimapAPI.Config.OnlyShowVanillaPickups and "ON" or "OFF")
+			end,
+			OnChange = function(currentBool)
+				MinimapAPI.Config.OnlyShowVanillaPickups = currentBool
+				MinimapAPI.Config.ConfigPreset = 0
+			end,
+			Info = {
+				"Only display pickups that the vanilla game",
+				"would show on the map as icons."
+			}
+		}
+	)
+
+	MCM.AddSetting(
+		"Minimap API",
 		"Colors",
 		{
 			Type = MCM.OptionType.NUMBER,

@@ -318,6 +318,7 @@ MinimapAPI.PickupList = {
 
 MinimapAPI.PickupListByType = {}
 for i, v in pairs(MinimapAPI.PickupList) do
+	v.IsVanillaPickup = true -- mark all pickups in the list as vanilla by default
 	if v and v.Type then
 		local typ = v.Type or -1
 		local variant = v.Variant or -1

@@ -55,6 +55,7 @@ MinimapAPI.Config = {
 	["MouseTeleportUncleared"] = false,
 	["MouseTeleportDamageOnCurseRoom"] = true,
 	["MouseTeleportDisableMovement"] = true,
+	["OnlyShowVanillaPickups"] = false,
 
 	["ConfigPreset"] = 1,
 

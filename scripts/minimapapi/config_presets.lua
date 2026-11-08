@@ -35,6 +35,7 @@ return {
         TeleportConfirmButton = ButtonAction.ACTION_PAUSE,
         MouseTeleportUncleared = false,
         MouseTeleportDamageOnCurseRoom = true,
+        OnlyShowVanillaPickups = false,
     },
     { --vanilla
         ShowIcons = true,
@@ -72,6 +73,7 @@ return {
         TeleportConfirmButton = ButtonAction.ACTION_PAUSE,
         MouseTeleportUncleared = false,
         MouseTeleportDamageOnCurseRoom = true,
+        OnlyShowVanillaPickups = false,
     },
     { --all
         ShowIcons = true,
@@ -110,6 +112,7 @@ return {
         MouseTeleportUncleared = false,
         MouseTeleportDamageOnCurseRoom = true,
         MouseTeleportDisableMovement = true,
+        OnlyShowVanillaPickups = false,
     },
     { -- minimal
         ShowIcons = true,
@@ -147,5 +150,6 @@ return {
         TeleportConfirmButton = ButtonAction.ACTION_PAUSE,
         MouseTeleportUncleared = false,
         MouseTeleportDamageOnCurseRoom = true,
+        OnlyShowVanillaPickups = false,
     },
 }
